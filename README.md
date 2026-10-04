@@ -6,7 +6,7 @@ notifications, with separate workspaces for students, lecturers, the registrar a
 **Stack:** Java 21 · Spring Boot 4.1 · Spring Security (JWT + rotating refresh tokens) · Spring Data JPA ·
 PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · TanStack Query · Docker · GitHub Actions
 
-> **Status: Phase 4 of 9 complete — foundation, authentication, academic structure, accounts, course registration, and results & GPA.** See the [roadmap](docs/05-roadmap.md)
+> **Status: Phase 5 of 9 complete — foundation, authentication, academic structure, accounts, course registration, results & GPA, and transcripts.** See the [roadmap](docs/05-roadmap.md)
 > for what each phase delivers. Features listed below are marked ✅ when implemented.
 
 ---
@@ -55,7 +55,8 @@ PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · T
 | | Grading scale as data (validated: starts at 0, no gaps or overlaps, passes above fails) | ✅ |
 | | Semester GPA and CGPA in **one tested `GpaCalculator`** (credit-weighted, latest attempt of a repeated course, half-up to 2 dp) | ✅ |
 | | Class statistics; finalized passes satisfy registration prerequisites | ✅ |
-| | Unofficial transcript (print + PDF) | Phase 5 |
+| Transcripts | Unofficial transcript: print view and PDF, watermarked with generation time and reference on every page | ✅ |
+| | Content-derived **verification reference** the registrar can check (genuine / superseded / never issued) | ✅ |
 | Finance | Fee ledger, payments, reversals, simulated gateway, reports | Phase 6 |
 | Engagement | Notifications & announcements | Phase 7 |
 | | Role dashboards with charts | Phase 8 |
@@ -149,6 +150,7 @@ every variable with a description.
 | `COOKIE_SECURE` | no | `true` (default) in production; `false` only for plain-HTTP local dev |
 | `CORS_ALLOWED_ORIGINS` | no | Only needed if SPA and API are on different origins |
 | `APP_BASE_URL` | no | Public web-app URL used in activation / reset links |
+| `UNIVERSITY_NAME` | no | Name printed on transcripts (default `UniSphere University`) |
 | `AUTH_RATE_LIMIT_PER_MINUTE` | no | Per-IP limit on login, activation and password-reset requests (default 20; token refresh is not limited) |
 | `BOOTSTRAP_ADMIN_EMAIL` / `BOOTSTRAP_ADMIN_PASSWORD` | first run | Creates the first admin if none exists |
 | `MAIL_LOG_LINKS` | no | `true` prints activation/reset links to the log (development only) |
@@ -202,6 +204,8 @@ cd backend
 | `RegistrationFlowIT` | Draft → submit → timetable, every rule over HTTP, closed registration, **two students racing for the last seat**, approval with return and resubmission, add/drop moving seats until the deadline, ownership, suspended students |
 | `GpaCalculatorTest`, `GradingRulesTest`, `ResultStatisticsTest` | GPA weighting and half-up rounding, repeated courses, band boundaries, mark limits, scale validation, mean/median/pass rate |
 | `ResultsFlowIT` | Marks draft → incomplete submit rejected → submit → return → resubmit → finalize, student GPA/CGPA, grades unchanged by later scale edits, lecturer ownership and role boundaries, weight and class-list freezes |
+| `TranscriptFingerprintTest`, `TranscriptPdfRendererTest` | Stable, content-derived references; PDF content, and watermark + timestamp + reference on every page of a multi-page transcript |
+| `TranscriptIT` | JSON and PDF for the student, headers, re-issue stability, verification (current vs superseded), registrar access, role boundaries, empty record |
 | `AccountProvisioningIT` | Student creation → activation → sign-in, unique numbers and emails, resend activation, record updates, staff role limits, RBAC |
 
 ### Frontend

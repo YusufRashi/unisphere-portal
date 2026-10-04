@@ -181,10 +181,21 @@ Both are computed in `GpaCalculator` with exact decimals and rounded half-up to 
 ### 2.9 Transcripts — `/api/transcripts`
 | Method | Path | Access | Description |
 |--------|------|--------|-------------|
-| GET | `/me` | S | Transcript JSON |
-| GET | `/me/pdf` | S | `application/pdf` |
-| GET | `/students/{studentId}` | A | Transcript JSON for any student |
-| GET | `/students/{studentId}/pdf` | A | PDF |
+Built from finalized results only, semesters oldest first, with semester GPA, CGPA, the configured
+university name (`UNIVERSITY_NAME`), the watermark `UNOFFICIAL — NOT VALID WITHOUT REGISTRAR CERTIFICATION`,
+the generation time and a **verification reference** (`XXXX-XXXX-XXXX-XXXX`). The reference is the first
+64 bits of a SHA-256 over the student number and every finalized grade: re-issuing an unchanged record
+gives the same reference, any change gives a new one. Every issue is recorded (and audited) so the
+registrar can check a printed copy. PDFs are sent with `Content-Disposition: attachment` and
+`Cache-Control: no-store`.
+
+| Method | Path | Access | Description |
+|--------|------|--------|-------------|
+| GET | `/me` | S | Own transcript (JSON) |
+| GET | `/me/pdf` | S | Own transcript, `application/pdf`; watermark, timestamp and reference on every page |
+| GET | `/students/{studentId}` | A | Any student's transcript (JSON) |
+| GET | `/students/{studentId}/pdf` | A | Any student's transcript (PDF) |
+| GET | `/verify/{reference}` | A | Student, CGPA, credits and course count recorded for the reference, first/last issue and count, and `current` (false once the record has changed since). `404` if never issued |
 
 ### 2.10 Finance — `/api/fees`
 | Method | Path | Access | Description |

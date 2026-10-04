@@ -300,6 +300,13 @@ historical records. A grade band stores only its lower bound (`min_mark`); it
 covers marks up to the next band's minimum, so bands cannot overlap or leave
 gaps. A partial unique index allows one active scale.
 
+**Transcripts.** Transcripts are generated on demand from finalized results, never
+stored. `transcript_references` keeps one row per distinct transcript content
+(primary key = the printed verification reference, a prefix of `content_sha256`)
+with the CGPA, credits and course count it showed and when it was first/last
+issued. The registrar uses it to check a paper copy; an upsert makes
+simultaneous issues safe.
+
 **Finance.** Each student has one `fee_account`. Its balance is *derived*:
 `Σ fee_charges.amount − Σ payments.amount WHERE status = 'COMPLETED'`. Rows are
 never updated or deleted for corrections; a reversed payment gets
@@ -341,8 +348,9 @@ Migrations grow with the roadmap so every phase ships a working schema:
 | V3 | 2 | semesters, course_offerings, offering_sessions |
 | V4 | 3 | registrations, registration_items |
 | V5 | 4 | grading_scales, grade_bands (+ default 4.0 scale), results; results lifecycle columns on course_offerings |
-| V6 | 6 | fee_accounts, fee_structures, fee_charges, payments |
-| V7 | 7 | notifications, announcements |
+| V6 | 5 | transcript_references |
+| V7 | 6 | fee_accounts, fee_structures, fee_charges, payments |
+| V8 | 7 | notifications, announcements |
 
 Demo data is **not** in migrations; it is loaded by a `demo` Spring profile
 seeder so production databases never receive fake records.

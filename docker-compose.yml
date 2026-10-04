@@ -1,0 +1,59 @@
+# Local full-stack environment: PostgreSQL + Spring Boot API + Nginx-served React app.
+#   cp .env.example .env   # then fill in the secrets
+#   docker compose up --build
+# App: http://localhost:3000   API docs: http://localhost:8080/swagger-ui.html
+name: unisphere
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: unisphere
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_SUPERUSER_PASSWORD:?Set POSTGRES_SUPERUSER_PASSWORD in .env}
+      # Consumed by docker/postgres/init to create the least-privileged application role.
+      APP_DB_USER: ${DB_USERNAME:?Set DB_USERNAME in .env}
+      APP_DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d unisphere"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/unisphere
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env (openssl rand -base64 48)}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:3000}
+      BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-}
+      MAIL_LOG_LINKS: ${MAIL_LOG_LINKS:-true}
+      API_DOCS_ENABLED: "true"
+    ports:
+      - "127.0.0.1:8080:8080"
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3000:80"
+
+volumes:
+  db-data:

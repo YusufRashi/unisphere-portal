@@ -45,11 +45,11 @@ filters. Response:
 
 | Status | `code` examples |
 |--------|-----------------|
-| 400 | `VALIDATION_ERROR`, `MALFORMED_REQUEST` |
+| 400 | `VALIDATION_ERROR`, `MALFORMED_REQUEST`, `WEAK_PASSWORD` |
 | 401 | `UNAUTHENTICATED`, `INVALID_CREDENTIALS`, `TOKEN_EXPIRED`, `INVALID_TOKEN` |
 | 403 | `FORBIDDEN`, `ACCOUNT_DEACTIVATED` |
 | 404 | `NOT_FOUND` |
-| 409 | `DUPLICATE_RESOURCE`, `DUPLICATE_COURSE`, `COURSE_FULL`, `CONCURRENT_MODIFICATION`, `INVALID_STATE` |
+| 409 | `DUPLICATE_RESOURCE`, `RESOURCE_IN_USE`, `PREREQUISITE_CYCLE`, `SCHEDULE_CONFLICT`, `DUPLICATE_COURSE`, `COURSE_FULL`, `CONCURRENT_MODIFICATION`, `INVALID_STATE` |
 | 422 | `REGISTRATION_CLOSED`, `PREREQUISITE_NOT_MET`, `CREDIT_LIMIT`, `ADD_DROP_DEADLINE_PASSED` |
 | 423 | `ACCOUNT_LOCKED` |
 | 429 | `RATE_LIMITED` |
@@ -74,26 +74,36 @@ filters. Response:
 |--------|------|--------|-------------|
 | GET | `/` | A | Search users (`q`, `role`, `status`), paginated |
 | GET | `/{id}` | A | User detail |
-| POST | `/students` | A | Create student (user + profile) → `201`, activation link issued |
-| POST | `/lecturers` | A | Create lecturer → `201` |
-| POST | `/staff` | A | Create admin/finance user → `201` |
-| PUT | `/{id}` | A | Update names/phone/roles |
+| POST | `/staff` | A | Create ADMIN and/or FINANCE account → `201`, activation link issued |
+| PUT | `/{id}` | A | Update name and phone |
 | POST | `/{id}/deactivate` | A | Deactivate + revoke sessions → `204` |
 | POST | `/{id}/activate` | A | Reactivate → `204` |
-| POST | `/{id}/resend-activation` | A | New activation token → `204` |
+| POST | `/{id}/resend-activation` | A | New activation link (pending accounts only; older links stop working) → `204` |
+
+### 2.2b Admin — students & lecturers
+| Method | Path | Access | Description |
+|--------|------|--------|-------------|
+| GET | `/api/admin/students` | A | Search `q` (name/email/number), `programId`, `departmentId`, `status`, `yearOfStudy`; sort `studentNumber`, `lastName`, `yearOfStudy`, `admissionDate`, `status` |
+| GET | `/api/admin/students/{id}` | A | Student record |
+| POST | `/api/admin/students` | A | Create account + profile; number generated (`S2026-00042`) → `201` |
+| PUT | `/api/admin/students/{id}` | A | `{programId, yearOfStudy, status}` |
+| GET | `/api/admin/lecturers` | A | Search `q`, `departmentId`; sort `lastName`, `staffNumber`, `department` |
+| GET | `/api/admin/lecturers/{id}` | A | Lecturer profile |
+| POST | `/api/admin/lecturers` | A | Create account + profile; staff number generated (`STF-00007`) → `201` |
+| PUT | `/api/admin/lecturers/{id}` | A | `{departmentId, title, office}` |
 
 ### 2.3 Academic structure
 | Method | Path | Access | Description |
 |--------|------|--------|-------------|
 | GET | `/api/departments` | any | List (small, unpaginated) |
 | POST / PUT | `/api/admin/departments[/{id}]` | A | Create / update |
+| DELETE | `/api/admin/departments/{id}` | A | Only when it has no programs, courses or lecturers; otherwise `409 RESOURCE_IN_USE` |
 | GET | `/api/programs` | any | List, `?departmentId` |
 | POST / PUT | `/api/admin/programs[/{id}]` | A | Create / update |
 | GET | `/api/courses` | any | Search `q`, `departmentId`, `level`, `active`; paginated |
 | GET | `/api/courses/{id}` | any | Detail incl. prerequisites |
 | POST / PUT | `/api/admin/courses[/{id}]` | A | Create / update |
-| PATCH | `/api/admin/courses/{id}/status` | A | `{active}` |
-| PUT | `/api/admin/courses/{id}/prerequisites` | A | `{prerequisiteIds: []}`; cycle → `409` |
+| PUT | `/api/admin/courses/{id}/prerequisites` | A | `{prerequisiteIds: []}`; a cycle → `409 PREREQUISITE_CYCLE` naming the path (e.g. `CS101 → CS301 → CS201 → CS101`) |
 
 ### 2.4 Semesters & offerings
 | Method | Path | Access | Description |
@@ -106,7 +116,8 @@ filters. Response:
 | POST | `/api/admin/semesters/{id}/registration/close` | A | Close |
 | GET | `/api/offerings` | any | `semesterId` (default current), `q`, `departmentId`, `level`; paginated; includes seats left |
 | GET | `/api/offerings/{id}` | any | Detail incl. sessions, prerequisites |
-| POST / PUT | `/api/admin/offerings[/{id}]` | A | Create / update (lecturer, capacity, sessions, exam slot, weights) |
+| POST / PUT | `/api/admin/offerings[/{id}]` | A | Create / update (lecturer, capacity, sessions, exam slot, weights). Venue or lecturer clash → `409 SCHEDULE_CONFLICT` |
+| DELETE | `/api/admin/offerings/{id}` | A | Only when no students are enrolled |
 
 ### 2.5 Students — `/api/students`
 | Method | Path | Access | Description |

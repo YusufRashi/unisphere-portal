@@ -58,10 +58,10 @@ export function HomePage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader title="Your workspace" />
-          <ul className="grid gap-px overflow-hidden rounded-b-lg bg-slate-200 sm:grid-cols-2">
+          <ul className="grid sm:grid-cols-2">
             {modules.map(({ title, description, icon: Icon, to }) => {
               const content = (
-                <div className="flex h-full gap-3 bg-white p-4">
+                <div className="flex h-full gap-3 p-4">
                   <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-brand-50 text-brand-800">
                     <Icon aria-hidden="true" className="size-4" />
                   </div>
@@ -75,9 +75,9 @@ export function HomePage() {
                 </div>
               )
               return (
-                <li key={title}>
+                <li key={title} className="border-t border-slate-200 first:border-t-0 sm:odd:border-r sm:[&:nth-child(2)]:border-t-0">
                   {to ? (
-                    <Link to={to} className="block h-full transition-colors hover:[&>div]:bg-slate-50">
+                    <Link to={to} className="block h-full transition-colors hover:bg-slate-50">
                       {content}
                     </Link>
                   ) : (

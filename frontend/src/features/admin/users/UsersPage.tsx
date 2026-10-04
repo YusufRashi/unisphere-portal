@@ -17,6 +17,7 @@ import { Pagination } from '@/components/ui/Pagination'
 import { Spinner } from '@/components/ui/Spinner'
 import { useToast } from '@/components/ui/toastContext'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
+import { cn } from '@/lib/cn'
 import { formatDateTime, ROLE_LABELS, STATUS_LABELS } from '@/lib/format'
 import { ROLES, USER_STATUSES, type Role, type UserAccount, type UserStatus } from '@/types/api'
 
@@ -30,11 +31,12 @@ const STATUS_TONES: Record<UserStatus, BadgeTone> = {
 
 type SortField = 'lastName' | 'email' | 'status' | 'lastLoginAt' | 'createdAt'
 
-function SortHeader({ field, label, sort, onSort }: {
+function SortHeader({ field, label, sort, onSort, className }: {
   field: SortField
   label: string
   sort: string
   onSort: (sort: string) => void
+  className?: string
 }) {
   const [current, direction] = sort.split(',')
   const active = current === field
@@ -44,9 +46,9 @@ function SortHeader({ field, label, sort, onSort }: {
     <th
       scope="col"
       aria-sort={active ? (direction === 'asc' ? 'ascending' : 'descending') : 'none'}
-      className="px-5 py-3 text-left text-xs font-semibold tracking-wide text-slate-600 uppercase"
+      className={cn('px-5 py-3 text-left text-xs font-semibold tracking-wide text-slate-600 uppercase', className)}
     >
-      <button type="button" onClick={() => onSort(next)} className="inline-flex items-center gap-1 hover:text-slate-900">
+      <button type="button" onClick={() => onSort(next)} className="inline-flex items-center gap-1 tracking-wide uppercase hover:text-slate-900">
         {label}
         <Icon aria-hidden="true" className={active ? 'size-3.5 text-slate-900' : 'size-3.5 text-slate-400'} />
       </button>
@@ -175,7 +177,8 @@ export function UsersPage() {
           />
         ) : (
           <>
-            <div className="overflow-x-auto" aria-busy={usersQuery.isFetching}>
+            {/* relative: keeps absolutely positioned sr-only text inside the scroll area on narrow screens */}
+            <div className="relative overflow-x-auto" aria-busy={usersQuery.isFetching}>
               <table className="min-w-full divide-y divide-slate-200">
                 <caption className="sr-only">User accounts</caption>
                 <thead className="bg-slate-50">
@@ -184,8 +187,8 @@ export function UsersPage() {
                     <th scope="col" className="px-5 py-3 text-left text-xs font-semibold tracking-wide text-slate-600 uppercase">
                       Roles
                     </th>
-                    <SortHeader field="status" label="Status" sort={sort} onSort={(s) => updateParams({ sort: s, page: 0 })} />
-                    <SortHeader field="lastLoginAt" label="Last sign-in" sort={sort} onSort={(s) => updateParams({ sort: s, page: 0 })} />
+                    <SortHeader field="status" label="Status" className="hidden md:table-cell" sort={sort} onSort={(s) => updateParams({ sort: s, page: 0 })} />
+                    <SortHeader field="lastLoginAt" label="Last sign-in" className="hidden md:table-cell" sort={sort} onSort={(s) => updateParams({ sort: s, page: 0 })} />
                     <th scope="col" className="px-5 py-3">
                       <span className="sr-only">Actions</span>
                     </th>
@@ -199,6 +202,10 @@ export function UsersPage() {
                           {u.lastName}, {u.firstName}
                         </p>
                         <p className="text-xs text-slate-500">{u.email}</p>
+                        {/* On small screens the status column is hidden; show it under the name instead. */}
+                        <div className="mt-1 md:hidden">
+                          <Badge tone={STATUS_TONES[u.status]}>{STATUS_LABELS[u.status]}</Badge>
+                        </div>
                       </td>
                       <td className="px-5 py-3">
                         <div className="flex flex-wrap gap-1">
@@ -209,10 +216,10 @@ export function UsersPage() {
                           ))}
                         </div>
                       </td>
-                      <td className="px-5 py-3">
+                      <td className="hidden px-5 py-3 md:table-cell">
                         <Badge tone={STATUS_TONES[u.status]}>{STATUS_LABELS[u.status]}</Badge>
                       </td>
-                      <td className="px-5 py-3 whitespace-nowrap text-slate-600">{formatDateTime(u.lastLoginAt, 'Never')}</td>
+                      <td className="hidden px-5 py-3 whitespace-nowrap text-slate-600 md:table-cell">{formatDateTime(u.lastLoginAt, 'Never')}</td>
                       <td className="px-5 py-3 text-right">
                         {u.id !== me?.id &&
                           (u.status === 'DEACTIVATED' ? (

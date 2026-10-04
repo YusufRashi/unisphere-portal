@@ -58,6 +58,7 @@ springdoc:
 
 unisphere:
   app-base-url: ${APP_BASE_URL:http://localhost:5173}
+  university-name: ${UNIVERSITY_NAME:UniSphere University}
   security:
     jwt:
       # Base64-encoded secret, at least 32 bytes (256 bits) after decoding.

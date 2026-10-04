@@ -17,6 +17,7 @@ public final class TestFixtures {
     public static UniSphereProperties properties() {
         return new UniSphereProperties(
                 "http://localhost:5173",
+                "UniSphere University",
                 new UniSphereProperties.Security(
                         new UniSphereProperties.Jwt("unused-in-unit-tests", "unisphere", Duration.ofMinutes(15)),
                         Duration.ofDays(7),

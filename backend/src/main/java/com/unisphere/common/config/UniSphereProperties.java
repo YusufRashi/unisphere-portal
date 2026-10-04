@@ -17,6 +17,8 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "unisphere")
 public record UniSphereProperties(
         @NotBlank String appBaseUrl,
+        /** Printed on transcripts and other documents. */
+        @NotBlank String universityName,
         @NotNull @Valid Security security,
         @NotNull Mail mail,
         @NotNull BootstrapAdmin bootstrapAdmin) {

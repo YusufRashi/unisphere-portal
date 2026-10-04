@@ -6,170 +6,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
-import com.unisphere.academic.DepartmentRepository;
-import com.unisphere.academic.ProgramRepository;
-import com.unisphere.lecturer.Lecturer;
-import com.unisphere.lecturer.LecturerRepository;
-import com.unisphere.student.Student;
-import com.unisphere.student.StudentRepository;
-import com.unisphere.support.IntegrationTest;
-import com.unisphere.user.IdentifierGenerator;
-import com.unisphere.user.Role;
-import com.unisphere.user.User;
-import java.math.BigDecimal;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.util.HashMap;
+import com.unisphere.support.AcademicIntegrationTest;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.transaction.support.TransactionTemplate;
 import tools.jackson.databind.JsonNode;
 
 /**
  * Marks entry → submission → return/finalization → student results, against real PostgreSQL. Registration
  * uses the test stub for prerequisites, so the real {@link ResultsAcademicHistory} is checked directly.
  */
-class ResultsFlowIT extends IntegrationTest {
+class ResultsFlowIT extends AcademicIntegrationTest {
 
-    @Autowired
-    private StudentRepository studentRepository;
-    @Autowired
-    private ProgramRepository programRepository;
-    @Autowired
-    private DepartmentRepository departmentRepository;
-    @Autowired
-    private LecturerRepository lecturerRepository;
-    @Autowired
-    private IdentifierGenerator identifiers;
     @Autowired
     private ResultsAcademicHistory resultsHistory;
-    @Autowired
-    private TransactionTemplate tx;
-
-    private String admin;
-    private long departmentId;
-    private long programId;
-    private long semesterId;
-
-    private record Person(long id, String number, String auth) {
-    }
-
-    @BeforeEach
-    void setUp() throws Exception {
-        admin = adminBearer();
-        departmentId = call(postJson("/api/admin/departments", Map.of("code", unique("D"), "name", unique("Dept ")), admin), 201)
-                .get("id").asLong();
-        programId = call(postJson("/api/admin/programs", Map.of("departmentId", departmentId, "code", unique("P"),
-                "name", "BSc", "awardLevel", "BACHELOR", "durationYears", 4), admin), 201).get("id").asLong();
-        openSemester();
-    }
-
-    // ---- Fixtures ----
-
-    private void openSemester() throws Exception {
-        LocalDate today = LocalDate.ofInstant(clock.instant(), ZoneOffset.UTC);
-        Map<String, Object> body = new HashMap<>();
-        body.put("code", unique("S"));
-        body.put("name", "Results semester");
-        body.put("academicYear", today.getYear() + "/" + (today.getYear() + 1));
-        body.put("term", 1);
-        body.put("startDate", today.minusDays(3).toString());
-        body.put("endDate", today.plusMonths(3).toString());
-        body.put("registrationOpensAt", clock.instant().minus(Duration.ofDays(1)).toString());
-        body.put("registrationClosesAt", clock.instant().plus(Duration.ofDays(7)).toString());
-        body.put("addDropDeadline", clock.instant().plus(Duration.ofDays(14)).toString());
-        body.put("requiresApproval", false);
-        body.put("minCredits", 0);
-        body.put("maxCredits", 24);
-        semesterId = call(postJson("/api/admin/semesters", body, admin), 201).get("id").asLong();
-        as(admin, post("/api/admin/semesters/" + semesterId + "/make-current"), 200);
-        as(admin, post("/api/admin/semesters/" + semesterId + "/registration/open"), 200);
-    }
-
-    private Person lecturer() throws Exception {
-        User user = createActiveUser(Role.LECTURER);
-        long id = tx.execute(status -> lecturerRepository.save(new Lecturer(user, identifiers.nextStaffNumber(),
-                departmentRepository.findById(departmentId).orElseThrow(), "Dr.", null)).getId());
-        return new Person(id, null, bearer(login(user.getEmail(), DEFAULT_PASSWORD)));
-    }
-
-    private Person student() throws Exception {
-        User user = createActiveUser(Role.STUDENT);
-        Student s = tx.execute(status -> studentRepository.save(new Student(user, identifiers.nextStudentNumber(2026),
-                programRepository.findById(programId).orElseThrow(), 1, LocalDate.of(2026, 9, 1))));
-        return new Person(s.getId(), s.getStudentNumber(), bearer(login(user.getEmail(), DEFAULT_PASSWORD)));
-    }
-
-    private long course(int credits) throws Exception {
-        return call(postJson("/api/admin/courses", Map.of("departmentId", departmentId, "code", unique("C"),
-                "title", "Course", "credits", credits, "level", 100), admin), 201).get("id").asLong();
-    }
-
-    private Map<String, Object> offeringBody(long courseId, long lecturerId, int catWeight, String day) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("courseId", courseId);
-        body.put("semesterId", semesterId);
-        body.put("section", "A");
-        body.put("lecturerId", lecturerId);
-        body.put("capacity", 30);
-        body.put("catWeight", catWeight);
-        body.put("examWeight", 100 - catWeight);
-        body.put("sessions", List.of(Map.of("dayOfWeek", day, "startTime", "08:00", "endTime", "10:00", "venue", unique("R"))));
-        return body;
-    }
-
-    private long offering(long courseId, Person lecturer, String day) throws Exception {
-        return call(postJson("/api/admin/offerings", offeringBody(courseId, lecturer.id(), 30, day), admin), 201).get("id").asLong();
-    }
-
-    /** Registers the student for the offerings and submits (no approval needed in this semester). */
-    private void register(Person student, long... offeringIds) throws Exception {
-        for (long id : offeringIds) {
-            call(postJson("/api/registrations/me/current/items", Map.of("offeringId", id), student.auth()), 200);
-        }
-        assertThat(as(student.auth(), post("/api/registrations/me/current/submit"), 200).get("status").asString())
-                .isEqualTo("APPROVED");
-    }
-
-    private JsonNode as(String auth, MockHttpServletRequestBuilder request, int expectedStatus) throws Exception {
-        return call(request.header(HttpHeaders.AUTHORIZATION, auth), expectedStatus);
-    }
-
-    private JsonNode sheet(String auth, long offeringId, int expectedStatus) throws Exception {
-        return as(auth, get("/api/lecturer/offerings/" + offeringId + "/results"), expectedStatus);
-    }
-
-    /** registrationItemId of each student on the sheet, keyed by student number. */
-    private Map<String, Long> itemIds(JsonNode sheet) {
-        Map<String, Long> ids = new HashMap<>();
-        sheet.get("rows").forEach(r -> ids.put(r.get("studentNumber").asString(), r.get("registrationItemId").asLong()));
-        return ids;
-    }
-
-    private static Map<String, Object> mark(long itemId, String cat, String exam) {
-        Map<String, Object> m = new HashMap<>();
-        m.put("registrationItemId", itemId);
-        m.put("catMark", cat == null ? null : new BigDecimal(cat));
-        m.put("examMark", exam == null ? null : new BigDecimal(exam));
-        return m;
-    }
-
-    private JsonNode saveMarks(String auth, long offeringId, int expectedStatus, Map<?, ?>... entries) throws Exception {
-        return call(putJson("/api/lecturer/offerings/" + offeringId + "/results", Map.of("entries", List.of(entries)), auth),
-                expectedStatus);
-    }
-
-    private JsonNode row(JsonNode sheet, Person student) {
-        return sheet.get("rows").valueStream()
-                .filter(r -> r.get("studentNumber").asString().equals(student.number()))
-                .findFirst().orElseThrow();
-    }
 
     // ---- Tests ----
 

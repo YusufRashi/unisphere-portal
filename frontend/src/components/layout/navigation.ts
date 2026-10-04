@@ -1,4 +1,16 @@
-import { LayoutDashboard, Settings, Users, type LucideIcon } from 'lucide-react'
+import {
+  BookOpen,
+  Building2,
+  CalendarDays,
+  CalendarRange,
+  GraduationCap,
+  LayoutDashboard,
+  Presentation,
+  Settings,
+  UserCog,
+  Users,
+  type LucideIcon,
+} from 'lucide-react'
 import type { Role } from '@/types/api'
 
 export interface NavItem {
@@ -14,17 +26,28 @@ export interface NavSection {
   items: NavItem[]
 }
 
-/**
- * Sidebar structure. Each phase adds the modules it delivers here (e.g. Phase 2 adds Departments,
- * Programs, Courses and Semesters under "Administration"), so the menu only ever shows working screens.
- */
+/** Sidebar structure. Each phase adds the modules it delivers, so the menu only ever shows working screens. */
 export const NAVIGATION: NavSection[] = [
   {
     items: [{ label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard }],
   },
   {
-    title: 'Administration',
-    items: [{ label: 'Users', to: '/admin/users', icon: Users, roles: ['ADMIN'] }],
+    title: 'Academic',
+    items: [
+      { label: 'Departments', to: '/admin/departments', icon: Building2, roles: ['ADMIN'] },
+      { label: 'Programs', to: '/admin/programs', icon: GraduationCap, roles: ['ADMIN'] },
+      { label: 'Courses', to: '/admin/courses', icon: BookOpen, roles: ['ADMIN'] },
+      { label: 'Semesters', to: '/admin/semesters', icon: CalendarDays, roles: ['ADMIN'] },
+      { label: 'Course offerings', to: '/admin/offerings', icon: CalendarRange, roles: ['ADMIN'] },
+    ],
+  },
+  {
+    title: 'People',
+    items: [
+      { label: 'Students', to: '/admin/students', icon: Users, roles: ['ADMIN'] },
+      { label: 'Lecturers', to: '/admin/lecturers', icon: Presentation, roles: ['ADMIN'] },
+      { label: 'All accounts', to: '/admin/users', icon: UserCog, roles: ['ADMIN'] },
+    ],
   },
   {
     title: 'Account',

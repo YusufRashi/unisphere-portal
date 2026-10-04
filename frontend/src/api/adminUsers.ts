@@ -1,20 +1,14 @@
 import { api } from './client'
+import { cleanParams, type ListParams } from './query'
 import type { PageResponse, Role, UserAccount, UserStatus } from '@/types/api'
 
-export interface UserSearchParams {
-  q?: string
+export interface UserSearchParams extends ListParams {
   role?: Role
   status?: UserStatus
-  page?: number
-  size?: number
-  sort?: string
 }
 
 export async function searchUsers(params: UserSearchParams): Promise<PageResponse<UserAccount>> {
-  // Drop empty values so they are not sent as "?role=".
-  const query = Object.fromEntries(Object.entries(params).filter(([, v]) => v !== undefined && v !== ''))
-  const { data } = await api.get<PageResponse<UserAccount>>('/admin/users', { params: query })
-  return data
+  return (await api.get<PageResponse<UserAccount>>('/admin/users', { params: cleanParams(params) })).data
 }
 
 export async function deactivateUser(id: number): Promise<void> {

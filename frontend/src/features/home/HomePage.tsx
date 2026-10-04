@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  CalendarRange,
   ClipboardList,
   FileText,
   GraduationCap,
@@ -29,8 +30,9 @@ interface Module {
 // Modules per role. Entries without a route are scheduled in docs/05-roadmap.md and gain a link as
 // each phase ships; Phase 8 replaces this page with full role dashboards and charts.
 const MODULES: Module[] = [
-  { title: 'User accounts', description: 'Search, review and deactivate accounts.', icon: Users, roles: ['ADMIN'], to: '/admin/users' },
-  { title: 'Academic structure', description: 'Departments, programs, courses and semesters.', icon: Landmark, roles: ['ADMIN'] },
+  { title: 'Academic structure', description: 'Departments, programs and the course catalogue.', icon: Landmark, roles: ['ADMIN'], to: '/admin/courses' },
+  { title: 'Semesters & offerings', description: 'Calendar, registration windows and timetables.', icon: CalendarRange, roles: ['ADMIN'], to: '/admin/offerings' },
+  { title: 'Students & staff', description: 'Create accounts and manage records.', icon: Users, roles: ['ADMIN'], to: '/admin/students' },
   { title: 'Course registration', description: 'Browse this semester’s courses and register.', icon: ClipboardList, roles: ['STUDENT'] },
   { title: 'Results & GPA', description: 'Semester results, GPA and CGPA.', icon: GraduationCap, roles: ['STUDENT'] },
   { title: 'Transcript', description: 'Download an unofficial transcript.', icon: FileText, roles: ['STUDENT'] },

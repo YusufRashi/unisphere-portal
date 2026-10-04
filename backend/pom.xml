@@ -19,6 +19,8 @@
     <properties>
         <java.version>21</java.version>
         <springdoc.version>3.1.1</springdoc.version>
+        <!-- Placeholder so tools like JaCoCo can prepend agents via @{argLine}. -->
+        <argLine/>
     </properties>
 
     <dependencies>
@@ -140,10 +142,33 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+            <!-- Exposes ${org.mockito:mockito-core:jar} so Mockito can be loaded as a Java agent
+                 (dynamic self-attach is deprecated and will be blocked by future JDKs). -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar} -Xshare:off</argLine>
+                </configuration>
+            </plugin>
             <!-- Unit tests (*Test) run in `test`; Testcontainers-backed *IT tests run in `verify` -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar} -Xshare:off</argLine>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>

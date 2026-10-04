@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -34,6 +35,20 @@ public interface CourseOfferingRepository extends JpaRepository<CourseOffering, 
             left join fetch o.lecturer
             where o.semester.id = :semesterId and (:excludeId is null or o.id <> :excludeId)""")
     List<OfferingSession> findSessionsInSemester(@Param("semesterId") Long semesterId, @Param("excludeId") Long excludeId);
+
+    /** Takes a seat only if one is free; returns 0 when the offering is full. Atomic in a single statement. */
+    @Modifying
+    @Query(value = "update course_offerings set enrolled_count = enrolled_count + 1 where id = :id and enrolled_count < capacity",
+            nativeQuery = true)
+    int takeSeat(@Param("id") Long id);
+
+    @Modifying
+    @Query(value = "update course_offerings set enrolled_count = enrolled_count - 1 where id = :id and enrolled_count > 0",
+            nativeQuery = true)
+    int releaseSeat(@Param("id") Long id);
+
+    @Query(value = "select enrolled_count from course_offerings where id = :id", nativeQuery = true)
+    int currentEnrolledCount(@Param("id") Long id);
 
     boolean existsBySemesterId(Long semesterId);
 

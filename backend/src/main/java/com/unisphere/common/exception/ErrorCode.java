@@ -19,6 +19,7 @@ public enum ErrorCode {
     FORBIDDEN(HttpStatus.FORBIDDEN, "Forbidden"),
     ACCOUNT_DEACTIVATED(HttpStatus.FORBIDDEN, "Account deactivated"),
     CSRF_CHECK_FAILED(HttpStatus.FORBIDDEN, "Request rejected"),
+    STUDENT_NOT_ELIGIBLE(HttpStatus.FORBIDDEN, "Not eligible to register"),
 
     NOT_FOUND(HttpStatus.NOT_FOUND, "Resource not found"),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "Method not allowed"),
@@ -31,9 +32,16 @@ public enum ErrorCode {
     RESOURCE_IN_USE(HttpStatus.CONFLICT, "Resource is in use"),
     PREREQUISITE_CYCLE(HttpStatus.CONFLICT, "Prerequisite cycle"),
     SCHEDULE_CONFLICT(HttpStatus.CONFLICT, "Schedule conflict"),
+    COURSE_FULL(HttpStatus.CONFLICT, "Course is full"),
+    DUPLICATE_COURSE(HttpStatus.CONFLICT, "Course already registered"),
+    TIMETABLE_CLASH(HttpStatus.CONFLICT, "Timetable clash"),
 
     UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Unsupported media type"),
     BUSINESS_RULE_VIOLATION(HttpStatus.UNPROCESSABLE_CONTENT, "Business rule violated"),
+    REGISTRATION_CLOSED(HttpStatus.UNPROCESSABLE_CONTENT, "Registration closed"),
+    PREREQUISITE_NOT_MET(HttpStatus.UNPROCESSABLE_CONTENT, "Prerequisite not met"),
+    CREDIT_LIMIT(HttpStatus.UNPROCESSABLE_CONTENT, "Credit limit"),
+    ADD_DROP_DEADLINE_PASSED(HttpStatus.UNPROCESSABLE_CONTENT, "Add/drop deadline passed"),
     ACCOUNT_LOCKED(HttpStatus.LOCKED, "Account temporarily locked"),
     RATE_LIMITED(HttpStatus.TOO_MANY_REQUESTS, "Too many requests"),
 

@@ -50,7 +50,11 @@ public class CourseOffering extends AuditableEntity {
     @Column(nullable = false)
     private int capacity;
 
-    @Column(name = "enrolled_count", nullable = false)
+    /**
+     * Seats taken. Never written by Hibernate (an entity save could overwrite a concurrent change with a stale
+     * value); it changes only through the guarded atomic updates in {@link SeatService}.
+     */
+    @Column(name = "enrolled_count", nullable = false, insertable = false, updatable = false)
     private int enrolledCount;
 
     @Column(name = "cat_weight", nullable = false, precision = 5, scale = 2)

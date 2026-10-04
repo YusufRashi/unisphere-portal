@@ -20,4 +20,10 @@ public class IntegrationTestBeans {
     IntegrationTest.CapturingMailer capturingMailer() {
         return new IntegrationTest.CapturingMailer();
     }
+
+    @Bean
+    @Primary
+    StubAcademicHistory stubAcademicHistory() {
+        return new StubAcademicHistory();
+    }
 }

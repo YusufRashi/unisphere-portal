@@ -55,6 +55,14 @@ public class OfferingService {
         if (effectiveSemester == null) {
             return new PageResponse<>(List.of(), pageable.getPageNumber(), pageable.getPageSize(), 0, 0);
         }
+        return PageResponse.of(searchInSemester(effectiveSemester, q, departmentId, level, lecturerId, pageable),
+                OfferingResponse::from);
+    }
+
+    /** Entity-level search used by other features (e.g. the student registration catalogue). */
+    @Transactional(readOnly = true)
+    public Page<CourseOffering> searchInSemester(Long effectiveSemester, String q, Long departmentId, Integer level,
+                                                 Long lecturerId, Pageable pageable) {
         String pattern = Specs.containsPattern(q);
         Specification<CourseOffering> spec = Specs.allOf(
                 (r, cq, cb) -> cb.equal(r.get("semester").get("id"), effectiveSemester),
@@ -64,8 +72,7 @@ public class OfferingService {
                 departmentId == null ? null : (r, cq, cb) -> cb.equal(r.get("course").get("department").get("id"), departmentId),
                 level == null ? null : (r, cq, cb) -> cb.equal(r.get("course").get("level"), level),
                 lecturerId == null ? null : (r, cq, cb) -> cb.equal(r.get("lecturer").get("id"), lecturerId));
-        Page<CourseOffering> page = offerings.findAll(spec, pageable);
-        return PageResponse.of(page, OfferingResponse::from);
+        return offerings.findAll(spec, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -96,7 +103,8 @@ public class OfferingService {
         if (!offering.getSemester().getId().equals(r.semesterId())) {
             throw ApiException.validation("semesterId", "The semester of an existing offering cannot be changed.");
         }
-        offering.apply(validate(r, offering.getCourse(), offering.getSemester(), id, offering.getEnrolledCount()));
+        // Read the live seat count: the entity copy may be stale if a student registered meanwhile.
+        offering.apply(validate(r, offering.getCourse(), offering.getSemester(), id, offerings.currentEnrolledCount(id)));
         audit.record(AuditAction.UPDATED, ENTITY, id, Map.of("offering", offering.getLabel()));
         return OfferingResponse.from(offering);
     }
@@ -105,9 +113,10 @@ public class OfferingService {
     @Transactional
     public void delete(Long id) {
         CourseOffering offering = loadDetailed(id);
-        if (offering.getEnrolledCount() > 0) {
+        int enrolled = offerings.currentEnrolledCount(id);
+        if (enrolled > 0) {
             throw ApiException.inUse("%s has %d enrolled student(s) and cannot be deleted."
-                    .formatted(offering.getLabel(), offering.getEnrolledCount()));
+                    .formatted(offering.getLabel(), enrolled));
         }
         String label = offering.getLabel();
         offerings.delete(offering);
@@ -157,7 +166,7 @@ public class OfferingService {
                 r.examStartsAt(), r.examVenue(), slots);
     }
 
-    private CourseOffering loadDetailed(Long id) {
+    public CourseOffering loadDetailed(Long id) {
         return offerings.findDetailedById(id).orElseThrow(() -> ApiException.notFound("Offering", id));
     }
 }

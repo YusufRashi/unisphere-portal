@@ -101,7 +101,8 @@ IDs are referenced from user stories, tests and commit messages.
 | REG-7 | Registration actions are rejected when the registration window is closed. |
 | REG-8 | Confirming a registration reserves seats and sets status `SUBMITTED`; if the semester requires approval, admin approves/rejects with a reason, otherwise it is auto-approved. |
 | REG-9 | Student may drop a course until the add/drop deadline; the seat is released. |
-| REG-10 | Student receives a notification on submission, approval and rejection. |
+| REG-10 | Student receives a notification on submission, approval and rejection (Phase 7). |
+| REG-11 | A course whose sessions overlap another registered course cannot be added (timetable clash). |
 
 ### 4.5 Results & GPA (RES)
 | ID | Requirement |

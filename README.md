@@ -6,7 +6,7 @@ notifications, with separate workspaces for students, lecturers, the registrar a
 **Stack:** Java 21 · Spring Boot 4.1 · Spring Security (JWT + rotating refresh tokens) · Spring Data JPA ·
 PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · TanStack Query · Docker · GitHub Actions
 
-> **Status: Phase 2 of 9 complete — foundation, authentication, academic structure & accounts.** See the [roadmap](docs/05-roadmap.md)
+> **Status: Phase 3 of 9 complete — foundation, authentication, academic structure, accounts and course registration.** See the [roadmap](docs/05-roadmap.md)
 > for what each phase delivers. Features listed below are marked ✅ when implemented.
 
 ---
@@ -47,7 +47,10 @@ PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · T
 | | Semesters with registration windows and a single current semester | ✅ |
 | | Course offerings with weekly timetable and **venue / lecturer clash detection** | ✅ |
 | People | Admin-created student, lecturer and staff accounts with activation links and generated student/staff numbers | ✅ |
-| | Course registration with credit-load, prerequisite, capacity and deadline rules | Phase 3 |
+| Registration | Course catalogue with per-course eligibility (prerequisites, seats, clashes) and reasons | ✅ |
+| | Draft → submit → approve/return workflow with credit limits, deadlines and add/drop | ✅ |
+| | **Race-free seat reservation** (guarded atomic update; tested with concurrent students) | ✅ |
+| | Weekly student timetable (grid on desktop, agenda on phones) | ✅ |
 | | Marks entry, configurable grading scale, GPA / CGPA | Phase 4 |
 | | Unofficial transcript (print + PDF) | Phase 5 |
 | Finance | Fee ledger, payments, reversals, simulated gateway, reports | Phase 6 |
@@ -192,6 +195,8 @@ cd backend
 | `PrerequisiteGraphTest`, `TimetableRulesTest`, `SemesterTest` | Cycle detection, timetable overlaps and clashes, semester date rules and status |
 | `AcademicStructureIT` | Department/program/course CRUD, uniqueness, safe delete, field errors, prerequisite cycles, catalogue search, read-only access for students |
 | `SemesterAndOfferingIT` | Semester validation, single current semester, registration flag + window, offering sections, weights, venue and lecturer clashes |
+| `RegistrationRulesTest` | Window and add/drop deadline, duplicate course in any section, prerequisites, seats, credit limits, timetable clashes |
+| `RegistrationFlowIT` | Draft → submit → timetable, every rule over HTTP, closed registration, **two students racing for the last seat**, approval with return and resubmission, add/drop moving seats until the deadline, ownership, suspended students |
 | `AccountProvisioningIT` | Student creation → activation → sign-in, unique numbers and emails, resend activation, record updates, staff role limits, RBAC |
 
 ### Frontend
@@ -206,7 +211,9 @@ npm run lint
 Covers login form validation and redirects (including open-redirect protection), route guards for every
 role, password-rule feedback, the accessible confirmation dialog, role-based navigation, the searchable
 select (keyboard and async search), offering timetable validation, server-error mapping onto form fields,
-and the departments screen (listing, safe delete with confirmation, validation and duplicate conflicts).
+the departments screen (listing, safe delete with confirmation, validation and duplicate conflicts), the
+registration screen (eligibility reasons, add, server rule violations, submit and drop confirmations) and
+the timetable layout and credit meter.
 
 ### API testing collection
 

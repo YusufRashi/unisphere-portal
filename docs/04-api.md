@@ -47,9 +47,9 @@ filters. Response:
 |--------|-----------------|
 | 400 | `VALIDATION_ERROR`, `MALFORMED_REQUEST`, `WEAK_PASSWORD` |
 | 401 | `UNAUTHENTICATED`, `INVALID_CREDENTIALS`, `TOKEN_EXPIRED`, `INVALID_TOKEN` |
-| 403 | `FORBIDDEN`, `ACCOUNT_DEACTIVATED` |
+| 403 | `FORBIDDEN`, `ACCOUNT_DEACTIVATED`, `CSRF_CHECK_FAILED`, `STUDENT_NOT_ELIGIBLE` |
 | 404 | `NOT_FOUND` |
-| 409 | `DUPLICATE_RESOURCE`, `RESOURCE_IN_USE`, `PREREQUISITE_CYCLE`, `SCHEDULE_CONFLICT`, `DUPLICATE_COURSE`, `COURSE_FULL`, `CONCURRENT_MODIFICATION`, `INVALID_STATE` |
+| 409 | `DUPLICATE_RESOURCE`, `RESOURCE_IN_USE`, `PREREQUISITE_CYCLE`, `SCHEDULE_CONFLICT`, `DUPLICATE_COURSE`, `COURSE_FULL`, `TIMETABLE_CLASH`, `CONCURRENT_MODIFICATION`, `INVALID_STATE` |
 | 422 | `REGISTRATION_CLOSED`, `PREREQUISITE_NOT_MET`, `CREDIT_LIMIT`, `ADD_DROP_DEADLINE_PASSED` |
 | 423 | `ACCOUNT_LOCKED` |
 | 429 | `RATE_LIMITED` |
@@ -128,16 +128,23 @@ filters. Response:
 | GET | `/{id}` | A, F | Student profile |
 
 ### 2.6 Registration — `/api/registrations`
+Lifecycle: `DRAFT → SUBMITTED → APPROVED` (straight to `APPROVED` when the semester needs no approval);
+`SUBMITTED → REJECTED` releases seats and the student's next change reopens it as a `DRAFT`.
+Drafts hold no seats; seats are taken at submission, all or nothing.
+
 | Method | Path | Access | Description |
 |--------|------|--------|-------------|
-| GET | `/me/current` | S | Own registration for current semester (creates DRAFT lazily) incl. items, credits, warnings |
-| POST | `/me/current/items` | S | `{offeringId}` → add; may return `409`/`422` |
-| DELETE | `/me/current/items/{itemId}` | S | Remove (draft) or drop (submitted, before add/drop deadline) |
-| POST | `/me/current/submit` | S | Validate all rules, reserve seats → `SUBMITTED` or `APPROVED` |
+| GET | `/me/current` | S | Own registration for the current semester (`status: null` before the first course) with `permissions` (`canAdd`, `canRemove`, `canSubmit`, `removeMeansDrop`, `lockedReason`) |
+| GET | `/me/catalogue` | S | Current semester's offerings (`q`, `departmentId`, `level`, paginated), each with prerequisite status and `availability` (`AVAILABLE`, `IN_REGISTRATION`, `SAME_COURSE_REGISTERED`, `PREREQUISITES_MISSING`, `FULL`, `TIMETABLE_CLASH`, `CREDIT_LIMIT`) plus a reason |
+| POST | `/me/current/items` | S | `{offeringId}` → updated view. `422 REGISTRATION_CLOSED` / `PREREQUISITE_NOT_MET` / `CREDIT_LIMIT` / `ADD_DROP_DEADLINE_PASSED`; `409 DUPLICATE_COURSE` / `COURSE_FULL` / `TIMETABLE_CLASH` / `INVALID_STATE` |
+| DELETE | `/me/current/items/{itemId}` | S own | Remove from a draft, or drop after submission (releases the seat; not below the minimum load; before the add/drop deadline) |
+| POST | `/me/current/submit` | S | Re-checks the rules, enforces min/max credits, reserves every seat in one transaction |
 | GET | `/me` | S | Registration history |
-| GET | `/api/admin/registrations` | A | Queue: `semesterId`, `status`, `q`; paginated |
-| POST | `/api/admin/registrations/{id}/approve` | A | → `APPROVED`, notifies |
-| POST | `/api/admin/registrations/{id}/reject` | A | `{reason}` → `REJECTED`, releases seats, notifies |
+| GET | `/api/students/me/timetable` | S | Weekly sessions of the submitted registration for the current semester |
+| GET | `/api/admin/registrations` | A | `semesterId` (default current), `status`, `q`; sort `submittedAt`, `status`, `studentNumber` |
+| GET | `/api/admin/registrations/{id}` | A | Detail with items and credit limits |
+| POST | `/api/admin/registrations/{id}/approve` | A | `SUBMITTED → APPROVED` |
+| POST | `/api/admin/registrations/{id}/reject` | A | `{reason}` → `REJECTED`, seats released |
 
 ### 2.7 Lecturer — `/api/lecturer`
 | Method | Path | Access | Description |

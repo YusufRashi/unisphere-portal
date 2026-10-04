@@ -6,6 +6,8 @@ export class ApiError extends Error {
   readonly status: number
   readonly code: string
   readonly fieldErrors: Record<string, string>
+  /** Every field error in order; a field may appear more than once (e.g. several problems with one list). */
+  readonly errors: { field: string; message: string }[]
   readonly violations: string[]
   readonly requestId?: string
 
@@ -14,7 +16,8 @@ export class ApiError extends Error {
     this.name = 'ApiError'
     this.status = problem.status
     this.code = problem.code ?? 'UNKNOWN'
-    this.fieldErrors = Object.fromEntries((problem.errors ?? []).map((e) => [e.field, e.message]))
+    this.errors = problem.errors ?? []
+    this.fieldErrors = Object.fromEntries(this.errors.map((e) => [e.field, e.message]))
     this.violations = problem.violations ?? []
     this.requestId = problem.requestId
   }

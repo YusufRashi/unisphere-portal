@@ -175,7 +175,7 @@ export interface Offering {
   examWeight: number
   examStartsAt: string | null
   examVenue: string | null
-  resultsStatus: 'DRAFT' | 'SUBMITTED' | 'FINALIZED'
+  resultsStatus: ResultsStatus
   sessions: OfferingSession[]
 }
 
@@ -321,4 +321,131 @@ export interface RegistrationDetail {
   rejectionReason: string | null
   minCredits: number
   maxCredits: number
+}
+
+// ---- Results & GPA -----------------------------------------------------------------------------
+
+export const RESULTS_STATUSES = ['DRAFT', 'SUBMITTED', 'FINALIZED'] as const
+export type ResultsStatus = (typeof RESULTS_STATUSES)[number]
+
+/** Numbers arrive as JSON numbers (BigDecimal on the server). */
+export interface GradeBand {
+  letter: string
+  minMark: number
+  gradePoints: number
+  passing: boolean
+}
+
+/** Bands are ordered highest first; each covers marks from its minimum up to the next band's minimum. */
+export interface GradingScale {
+  id: number
+  name: string
+  bands: GradeBand[]
+}
+
+export interface MarkRow {
+  registrationItemId: number
+  studentId: number
+  studentNumber: string
+  name: string
+  catMark: number | null
+  examMark: number | null
+  totalMark: number | null
+  /** Final grade once finalized, otherwise a preview from the current scale. */
+  grade: string | null
+  gradePoints: number | null
+  passed: boolean | null
+}
+
+export interface MarksSheet {
+  offering: {
+    id: number
+    courseCode: string
+    courseTitle: string
+    credits: number
+    section: string
+    semester: { id: number; code: string; name: string }
+    lecturer: string | null
+    catWeight: number
+    examWeight: number
+    resultsStatus: ResultsStatus
+    submittedAt: string | null
+    finalizedAt: string | null
+    returnComment: string | null
+  }
+  rows: MarkRow[]
+  classSize: number
+  complete: number
+  permissions: { canEdit: boolean; canSubmit: boolean; lockedReason: string | null }
+}
+
+export interface MarkEntry {
+  registrationItemId: number
+  catMark: number | null
+  examMark: number | null
+}
+
+export interface ClassStatistics {
+  classSize: number
+  graded: number
+  mean: number | null
+  median: number | null
+  highest: number | null
+  lowest: number | null
+  passRate: number | null
+  distribution: { letter: string; count: number }[]
+}
+
+export interface TeachingOffering {
+  offering: Offering
+  classSize: number
+  marksComplete: number
+}
+
+export interface ResultsQueueEntry {
+  offeringId: number
+  courseCode: string
+  courseTitle: string
+  section: string
+  semester: { id: number; code: string; name: string }
+  lecturer: string | null
+  resultsStatus: ResultsStatus
+  classSize: number
+  marksComplete: number
+  submittedAt: string | null
+  finalizedAt: string | null
+}
+
+export interface CourseGrade {
+  resultId: number
+  courseId: number
+  courseCode: string
+  courseTitle: string
+  credits: number
+  section: string
+  catMark: number
+  examMark: number
+  totalMark: number
+  grade: string
+  gradePoints: number
+  passed: boolean
+  /** False for an earlier attempt of a course that was later repeated. */
+  countsTowardCgpa: boolean
+}
+
+export interface SemesterRecord {
+  semester: { id: number; code: string; name: string }
+  courses: CourseGrade[]
+  gpa: number | null
+  creditsAttempted: number
+  creditsEarned: number
+}
+
+export interface AcademicRecord {
+  student: { id: number; studentNumber: string; name: string; programCode: string; programName: string }
+  /** Newest semester first. */
+  semesters: SemesterRecord[]
+  cgpa: number | null
+  creditsAttempted: number
+  creditsEarned: number
 }

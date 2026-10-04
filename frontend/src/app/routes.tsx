@@ -34,6 +34,21 @@ const appRoutes: RouteObject[] = [
             children: [
               { path: 'registration', lazy: async () => ({ Component: (await import('@/features/student/registration/RegistrationPage')).RegistrationPage }) },
               { path: 'timetable', lazy: async () => ({ Component: (await import('@/features/student/timetable/TimetablePage')).TimetablePage }) },
+              { path: 'results', lazy: async () => ({ Component: (await import('@/features/student/results/ResultsPage')).ResultsPage }) },
+            ],
+          },
+          {
+            path: '/lecturer',
+            element: <RequireRole roles={['LECTURER']} />,
+            children: [
+              { path: 'courses', lazy: async () => ({ Component: (await import('@/features/lecturer/courses/MyCoursesPage')).MyCoursesPage }) },
+              {
+                path: 'courses/:offeringId',
+                lazy: async () => {
+                  const { MarksSheetPage } = await import('@/features/results/MarksSheetPage')
+                  return { element: <MarksSheetPage mode="lecturer" /> }
+                },
+              },
             ],
           },
           {
@@ -51,6 +66,15 @@ const appRoutes: RouteObject[] = [
               { path: 'students', lazy: async () => ({ Component: (await import('@/features/admin/students/StudentsPage')).StudentsPage }) },
               { path: 'lecturers', lazy: async () => ({ Component: (await import('@/features/admin/lecturers/LecturersPage')).LecturersPage }) },
               { path: 'registrations', lazy: async () => ({ Component: (await import('@/features/admin/registrations/RegistrationsPage')).RegistrationsPage }) },
+              { path: 'results', lazy: async () => ({ Component: (await import('@/features/admin/results/ResultsQueuePage')).ResultsQueuePage }) },
+              {
+                path: 'results/:offeringId',
+                lazy: async () => {
+                  const { MarksSheetPage } = await import('@/features/results/MarksSheetPage')
+                  return { element: <MarksSheetPage mode="registrar" /> }
+                },
+              },
+              { path: 'grading-scale', lazy: async () => ({ Component: (await import('@/features/admin/results/GradingScalePage')).GradingScalePage }) },
             ],
           },
         ],

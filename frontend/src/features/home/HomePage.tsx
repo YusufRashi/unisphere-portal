@@ -38,9 +38,10 @@ const MODULES: Module[] = [
   { title: 'Course registration', description: 'Browse this semester’s courses and register.', icon: ClipboardList, roles: ['STUDENT'], to: '/student/registration' },
   { title: 'My timetable', description: 'Your weekly classes and venues.', icon: Clock, roles: ['STUDENT'], to: '/student/timetable' },
   { title: 'Registrations', description: 'Review and approve course registrations.', icon: ClipboardCheck, roles: ['ADMIN'], to: '/admin/registrations' },
-  { title: 'Results & GPA', description: 'Semester results, GPA and CGPA.', icon: GraduationCap, roles: ['STUDENT'] },
+  { title: 'Results & GPA', description: 'Semester results, GPA and CGPA.', icon: GraduationCap, roles: ['STUDENT'], to: '/student/results' },
   { title: 'Transcript', description: 'Download an unofficial transcript.', icon: FileText, roles: ['STUDENT'] },
-  { title: 'My courses', description: 'Class lists, marks entry and statistics.', icon: BookOpen, roles: ['LECTURER'] },
+  { title: 'My courses', description: 'Class lists, marks entry and statistics.', icon: BookOpen, roles: ['LECTURER'], to: '/lecturer/courses' },
+  { title: 'Results', description: 'Review, finalize or return submitted marks.', icon: GraduationCap, roles: ['ADMIN'], to: '/admin/results' },
   { title: 'Fee accounts', description: 'Balances, payments and reports.', icon: Receipt, roles: ['FINANCE'] },
   { title: 'Account settings', description: 'Change your password.', icon: KeyRound, roles: ['STUDENT', 'LECTURER', 'ADMIN', 'FINANCE'], to: '/account' },
 ]

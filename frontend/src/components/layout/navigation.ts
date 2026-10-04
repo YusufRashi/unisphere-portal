@@ -6,9 +6,12 @@ import {
   ClipboardCheck,
   ClipboardList,
   Clock,
+  FileCheck2,
   GraduationCap,
   LayoutDashboard,
+  NotebookPen,
   Presentation,
+  Scale,
   Settings,
   UserCog,
   Users,
@@ -39,7 +42,12 @@ export const NAVIGATION: NavSection[] = [
     items: [
       { label: 'Course registration', to: '/student/registration', icon: ClipboardList, roles: ['STUDENT'] },
       { label: 'My timetable', to: '/student/timetable', icon: Clock, roles: ['STUDENT'] },
+      { label: 'My results', to: '/student/results', icon: GraduationCap, roles: ['STUDENT'] },
     ],
+  },
+  {
+    title: 'Teaching',
+    items: [{ label: 'My courses', to: '/lecturer/courses', icon: NotebookPen, roles: ['LECTURER'] }],
   },
   {
     title: 'Academic',
@@ -50,6 +58,8 @@ export const NAVIGATION: NavSection[] = [
       { label: 'Semesters', to: '/admin/semesters', icon: CalendarDays, roles: ['ADMIN'] },
       { label: 'Course offerings', to: '/admin/offerings', icon: CalendarRange, roles: ['ADMIN'] },
       { label: 'Registrations', to: '/admin/registrations', icon: ClipboardCheck, roles: ['ADMIN'] },
+      { label: 'Results', to: '/admin/results', icon: FileCheck2, roles: ['ADMIN'] },
+      { label: 'Grading scale', to: '/admin/grading-scale', icon: Scale, roles: ['ADMIN'] },
     ],
   },
   {

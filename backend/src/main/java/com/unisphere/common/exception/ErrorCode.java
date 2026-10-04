@@ -42,6 +42,7 @@ public enum ErrorCode {
     PREREQUISITE_NOT_MET(HttpStatus.UNPROCESSABLE_CONTENT, "Prerequisite not met"),
     CREDIT_LIMIT(HttpStatus.UNPROCESSABLE_CONTENT, "Credit limit"),
     ADD_DROP_DEADLINE_PASSED(HttpStatus.UNPROCESSABLE_CONTENT, "Add/drop deadline passed"),
+    MARKS_INCOMPLETE(HttpStatus.UNPROCESSABLE_CONTENT, "Marks incomplete"),
     ACCOUNT_LOCKED(HttpStatus.LOCKED, "Account temporarily locked"),
     RATE_LIMITED(HttpStatus.TOO_MANY_REQUESTS, "Too many requests"),
 

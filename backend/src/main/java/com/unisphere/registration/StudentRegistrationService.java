@@ -8,6 +8,7 @@ import com.unisphere.common.security.CurrentUser;
 import com.unisphere.common.web.PageResponse;
 import com.unisphere.offering.CourseOffering;
 import com.unisphere.offering.OfferingService;
+import com.unisphere.offering.ResultsStatus;
 import com.unisphere.offering.SeatService;
 import com.unisphere.offering.dto.OfferingDtos.OfferingResponse;
 import com.unisphere.registration.RegistrationRules.OfferingFacts;
@@ -134,6 +135,7 @@ public class StudentRegistrationService {
         }
         boolean afterSubmission = registration.isApproved();
         fail((afterSubmission ? RegistrationRules.addDropOpen(window, now) : RegistrationRules.registrationOpen(window, now)));
+        requireClassListOpen(offering);
 
         List<OfferingFacts> registered = registration.activeItems().stream().map(i -> RegistrationMapper.facts(i.getOffering())).toList();
         List<Violation> violations = RegistrationRules.violationsForAdding(RegistrationMapper.facts(offering), registered,
@@ -176,6 +178,7 @@ public class StudentRegistrationService {
             registration.removeDraftItem(item);
         } else {
             fail(RegistrationRules.addDropOpen(window, now));
+            requireClassListOpen(item.getOffering());
             fail(RegistrationRules.dropKeepsMinimum(RegistrationMapper.facts(item.getOffering()), registration.totalCredits(),
                     semester.getMinCredits()));
             if (item.isSeatReserved()) {
@@ -214,6 +217,7 @@ public class StudentRegistrationService {
         Set<Long> passed = history.passedCourseIds(student.getId());
         for (RegistrationItem item : items) {
             fail(RegistrationRules.prerequisitesMet(RegistrationMapper.facts(item.getOffering()), passed));
+            requireClassListOpen(item.getOffering());
         }
 
         for (RegistrationItem item : items) {
@@ -252,6 +256,14 @@ public class StudentRegistrationService {
     private Semester currentSemester() {
         return semesters.findByCurrentTrue()
                 .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND, "No semester is currently open for registration."));
+    }
+
+    /** Once a class's marks are submitted its class list is frozen: nobody can join or leave it. */
+    private static void requireClassListOpen(CourseOffering offering) {
+        if (offering.getResultsStatus() != ResultsStatus.DRAFT) {
+            throw ApiException.invalidState("Results for %s have already been submitted, so its class list can no longer change."
+                    .formatted(offering.getLabel()));
+        }
     }
 
     private static ApiException awaitingApproval() {

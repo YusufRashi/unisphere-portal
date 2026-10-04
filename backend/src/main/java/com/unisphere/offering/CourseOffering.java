@@ -73,6 +73,19 @@ public class CourseOffering extends AuditableEntity {
     @Column(name = "results_status", nullable = false, length = 20)
     private ResultsStatus resultsStatus = ResultsStatus.DRAFT;
 
+    @Column(name = "results_submitted_at")
+    private Instant resultsSubmittedAt;
+
+    @Column(name = "results_finalized_at")
+    private Instant resultsFinalizedAt;
+
+    @Column(name = "results_finalized_by")
+    private Long resultsFinalizedBy;
+
+    /** Why the registrar sent the marks back to the lecturer; cleared on the next submission. */
+    @Column(name = "results_return_comment", length = 500)
+    private String resultsReturnComment;
+
     @OneToMany(mappedBy = "offering", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("dayOfWeek, startTime")
     private List<OfferingSession> sessions = new ArrayList<>();
@@ -107,6 +120,36 @@ public class CourseOffering extends AuditableEntity {
 
     public int getSeatsLeft() {
         return Math.max(0, capacity - enrolledCount);
+    }
+
+    // Results lifecycle (DRAFT -> SUBMITTED -> FINALIZED, SUBMITTED -> DRAFT when returned). Callers check
+    // permissions and give user-facing messages; these guards only stop impossible transitions.
+
+    public void submitResults(Instant now) {
+        requireResultsStatus(ResultsStatus.DRAFT);
+        this.resultsStatus = ResultsStatus.SUBMITTED;
+        this.resultsSubmittedAt = now;
+        this.resultsReturnComment = null;
+    }
+
+    public void returnResults(String comment) {
+        requireResultsStatus(ResultsStatus.SUBMITTED);
+        this.resultsStatus = ResultsStatus.DRAFT;
+        this.resultsSubmittedAt = null;
+        this.resultsReturnComment = comment;
+    }
+
+    public void finalizeResults(Long finalizedBy, Instant now) {
+        requireResultsStatus(ResultsStatus.SUBMITTED);
+        this.resultsStatus = ResultsStatus.FINALIZED;
+        this.resultsFinalizedAt = now;
+        this.resultsFinalizedBy = finalizedBy;
+    }
+
+    private void requireResultsStatus(ResultsStatus expected) {
+        if (resultsStatus != expected) {
+            throw new IllegalStateException("Results of offering %d are %s, expected %s".formatted(getId(), resultsStatus, expected));
+        }
     }
 
     /** e.g. "CS201 (A)" — used in clash messages. */

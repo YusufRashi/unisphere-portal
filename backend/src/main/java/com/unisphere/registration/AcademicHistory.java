@@ -4,8 +4,8 @@ import java.util.Set;
 
 /**
  * Which courses a student has already passed — the input for prerequisite checks. Kept behind an interface
- * so registration does not depend on how results are stored. Phase 4 (results) supplies the implementation
- * backed by finalized grades.
+ * so registration does not depend on how results are stored; the results feature implements it from
+ * finalized grades.
  */
 public interface AcademicHistory {
 

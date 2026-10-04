@@ -20,6 +20,12 @@ public final class CurrentUser {
         return id;
     }
 
+    /** Whether the signed-in user holds {@code role} (e.g. "ADMIN"), for checks that depend on data as well as role. */
+    public static boolean hasRole(String role) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth != null && auth.getAuthorities().stream().anyMatch(a -> ("ROLE_" + role).equals(a.getAuthority()));
+    }
+
     public static Long idOrNull() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof Jwt jwt) {

@@ -1,5 +1,6 @@
 package com.unisphere.offering;
 
+import jakarta.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -49,6 +51,21 @@ public interface CourseOfferingRepository extends JpaRepository<CourseOffering, 
 
     @Query(value = "select enrolled_count from course_offerings where id = :id", nativeQuery = true)
     int currentEnrolledCount(@Param("id") Long id);
+
+    /** Row-locks the offering so results transitions (save, submit, return, finalize) run one at a time. */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select o from CourseOffering o where o.id = :id")
+    Optional<CourseOffering> lockById(@Param("id") Long id);
+
+    @EntityGraph(attributePaths = {"course", "course.department", "semester", "lecturer", "lecturer.user"})
+    List<CourseOffering> findByLecturerIdAndSemesterIdOrderByCourseCodeAscSectionAsc(Long lecturerId, Long semesterId);
+
+    /** Whether any student of the offering has marks recorded (native: results live in a later feature). */
+    @Query(value = """
+            select exists (select 1 from results r join registration_items i on i.id = r.registration_item_id
+                           where i.offering_id = :id and (r.cat_mark is not null or r.exam_mark is not null))""",
+            nativeQuery = true)
+    boolean hasMarks(@Param("id") Long id);
 
     boolean existsBySemesterId(Long semesterId);
 

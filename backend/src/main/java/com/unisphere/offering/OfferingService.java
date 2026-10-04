@@ -103,6 +103,15 @@ public class OfferingService {
         if (!offering.getSemester().getId().equals(r.semesterId())) {
             throw ApiException.validation("semesterId", "The semester of an existing offering cannot be changed.");
         }
+        if (offering.getResultsStatus() != ResultsStatus.DRAFT) {
+            throw ApiException.invalidState("Results for %s have been %s, so the offering can no longer be changed."
+                    .formatted(offering.getLabel(), offering.getResultsStatus().name().toLowerCase()));
+        }
+        boolean weightsChanged = offering.getCatWeight().compareTo(r.catWeight()) != 0
+                || offering.getExamWeight().compareTo(r.examWeight()) != 0;
+        if (weightsChanged && offerings.hasMarks(id)) {
+            throw ApiException.validation("catWeight", "Marks have already been entered against the current weights.");
+        }
         // Read the live seat count: the entity copy may be stale if a student registered meanwhile.
         offering.apply(validate(r, offering.getCourse(), offering.getSemester(), id, offerings.currentEnrolledCount(id)));
         audit.record(AuditAction.UPDATED, ENTITY, id, Map.of("offering", offering.getLabel()));

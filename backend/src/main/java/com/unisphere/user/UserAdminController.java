@@ -3,9 +3,13 @@ package com.unisphere.user;
 import com.unisphere.common.security.CurrentUser;
 import com.unisphere.common.web.PageResponse;
 import com.unisphere.common.web.PageableFactory;
+import com.unisphere.user.dto.AccountDtos.CreateStaffRequest;
+import com.unisphere.user.dto.AccountDtos.UpdateUserRequest;
 import com.unisphere.user.dto.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import java.net.URI;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -14,6 +18,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,6 +40,7 @@ public class UserAdminController {
             "createdAt", "createdAt");
 
     private final UserAdminService service;
+    private final AccountProvisioningService provisioning;
 
     @Operation(summary = "Search users")
     @GetMapping
@@ -52,6 +59,26 @@ public class UserAdminController {
     @GetMapping("/{id}")
     public UserResponse get(@PathVariable Long id) {
         return service.get(id);
+    }
+
+    @Operation(summary = "Create an ADMIN and/or FINANCE staff account and email an activation link")
+    @PostMapping("/staff")
+    public ResponseEntity<UserResponse> createStaff(@Valid @RequestBody CreateStaffRequest body) {
+        UserResponse created = provisioning.createStaff(body);
+        return ResponseEntity.created(URI.create("/api/admin/users/" + created.id())).body(created);
+    }
+
+    @Operation(summary = "Update a user's name and phone number")
+    @PutMapping("/{id}")
+    public UserResponse update(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest body) {
+        return provisioning.updateUser(id, body);
+    }
+
+    @Operation(summary = "Send a new activation link to a pending account")
+    @PostMapping("/{id}/resend-activation")
+    public ResponseEntity<Void> resendActivation(@PathVariable Long id) {
+        provisioning.resendActivation(id);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Deactivate a user and revoke all sessions")

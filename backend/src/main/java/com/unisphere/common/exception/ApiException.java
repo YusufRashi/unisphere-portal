@@ -44,6 +44,20 @@ public class ApiException extends RuntimeException {
         return new ApiException(code, message);
     }
 
+    /** Field-level validation failure detected by a service (same shape as Bean Validation errors). */
+    public static ApiException validation(String field, String message) {
+        return new ApiException(ErrorCode.VALIDATION_ERROR, "One or more fields are invalid.")
+                .with("errors", java.util.List.of(Map.of("field", field, "message", message)));
+    }
+
+    public static ApiException duplicate(String what, String value) {
+        return new ApiException(ErrorCode.DUPLICATE_RESOURCE, "%s '%s' already exists.".formatted(what, value));
+    }
+
+    public static ApiException inUse(String message) {
+        return new ApiException(ErrorCode.RESOURCE_IN_USE, message);
+    }
+
     public static ApiException invalidState(String message) {
         return new ApiException(ErrorCode.INVALID_STATE, message);
     }

@@ -1,6 +1,7 @@
 package com.unisphere.support;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.unisphere.auth.RefreshTokenCookies;
@@ -20,10 +21,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
@@ -113,6 +116,35 @@ public abstract class IntegrationTest {
 
     protected String bearer(LoginResult login) {
         return "Bearer " + login.accessToken();
+    }
+
+    protected String adminBearer() throws Exception {
+        return bearer(login(ADMIN_EMAIL, ADMIN_PASSWORD));
+    }
+
+    /** Short random code: tests share one database, so every created code must be unique. */
+    protected static String unique(String prefix) {
+        return prefix + UUID.randomUUID().toString().replace("-", "").substring(0, 6).toUpperCase();
+    }
+
+    protected MockHttpServletRequestBuilder postJson(String url, Object body, String auth) {
+        return withJson(post(url), body, auth);
+    }
+
+    protected MockHttpServletRequestBuilder putJson(String url, Object body, String auth) {
+        return withJson(put(url), body, auth);
+    }
+
+    /** Performs the request, expects {@code expectedStatus} and returns the parsed JSON body. */
+    protected JsonNode call(MockHttpServletRequestBuilder request, int expectedStatus) throws Exception {
+        MvcResult result = mvc.perform(request).andExpect(status().is(expectedStatus)).andReturn();
+        String body = result.getResponse().getContentAsString();
+        return body.isEmpty() ? null : json.readTree(body);
+    }
+
+    private MockHttpServletRequestBuilder withJson(MockHttpServletRequestBuilder builder, Object body, String auth) {
+        builder.contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(body));
+        return auth == null ? builder : builder.header(HttpHeaders.AUTHORIZATION, auth);
     }
 
     protected record LoginBody(String email, String password) {

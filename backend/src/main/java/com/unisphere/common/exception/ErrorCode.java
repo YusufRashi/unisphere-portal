@@ -28,6 +28,9 @@ public enum ErrorCode {
     CONCURRENT_MODIFICATION(HttpStatus.CONFLICT, "The resource was modified by someone else"),
     INVALID_STATE(HttpStatus.CONFLICT, "Operation not allowed in the current state"),
     DATA_CONFLICT(HttpStatus.CONFLICT, "Data conflict"),
+    RESOURCE_IN_USE(HttpStatus.CONFLICT, "Resource is in use"),
+    PREREQUISITE_CYCLE(HttpStatus.CONFLICT, "Prerequisite cycle"),
+    SCHEDULE_CONFLICT(HttpStatus.CONFLICT, "Schedule conflict"),
 
     UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Unsupported media type"),
     BUSINESS_RULE_VIOLATION(HttpStatus.UNPROCESSABLE_CONTENT, "Business rule violated"),

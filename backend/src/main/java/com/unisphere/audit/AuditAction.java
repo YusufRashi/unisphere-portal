@@ -13,5 +13,15 @@ public enum AuditAction {
     PASSWORD_CHANGED,
     USER_CREATED,
     USER_DEACTIVATED,
-    USER_REACTIVATED
+    USER_REACTIVATED,
+    USER_UPDATED,
+    ACTIVATION_RESENT,
+    // Generic data changes; the entity_type column says what changed.
+    CREATED,
+    UPDATED,
+    DELETED,
+    PREREQUISITES_CHANGED,
+    SEMESTER_MADE_CURRENT,
+    REGISTRATION_OPENED,
+    REGISTRATION_CLOSED
 }

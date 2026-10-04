@@ -3,6 +3,9 @@ import {
   Building2,
   CalendarDays,
   CalendarRange,
+  ClipboardCheck,
+  ClipboardList,
+  Clock,
   GraduationCap,
   LayoutDashboard,
   Presentation,
@@ -32,6 +35,13 @@ export const NAVIGATION: NavSection[] = [
     items: [{ label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard }],
   },
   {
+    title: 'My studies',
+    items: [
+      { label: 'Course registration', to: '/student/registration', icon: ClipboardList, roles: ['STUDENT'] },
+      { label: 'My timetable', to: '/student/timetable', icon: Clock, roles: ['STUDENT'] },
+    ],
+  },
+  {
     title: 'Academic',
     items: [
       { label: 'Departments', to: '/admin/departments', icon: Building2, roles: ['ADMIN'] },
@@ -39,6 +49,7 @@ export const NAVIGATION: NavSection[] = [
       { label: 'Courses', to: '/admin/courses', icon: BookOpen, roles: ['ADMIN'] },
       { label: 'Semesters', to: '/admin/semesters', icon: CalendarDays, roles: ['ADMIN'] },
       { label: 'Course offerings', to: '/admin/offerings', icon: CalendarRange, roles: ['ADMIN'] },
+      { label: 'Registrations', to: '/admin/registrations', icon: ClipboardCheck, roles: ['ADMIN'] },
     ],
   },
   {

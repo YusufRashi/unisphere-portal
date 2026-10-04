@@ -215,3 +215,110 @@ export interface Lecturer {
   department: DepartmentRef
   office: string | null
 }
+
+// ---- Course registration -----------------------------------------------------------------------
+
+export const REGISTRATION_STATUSES = ['DRAFT', 'SUBMITTED', 'APPROVED', 'REJECTED'] as const
+export type RegistrationStatus = (typeof REGISTRATION_STATUSES)[number]
+
+export interface SemesterWindow {
+  id: number
+  code: string
+  name: string
+  registrationOpensAt: string
+  registrationClosesAt: string
+  addDropDeadline: string
+  registrationOpen: boolean
+  addDropOpen: boolean
+  minCredits: number
+  maxCredits: number
+  requiresApproval: boolean
+}
+
+export interface RegistrationItem {
+  id: number
+  offeringId: number
+  courseId: number
+  courseCode: string
+  courseTitle: string
+  credits: number
+  section: string
+  lecturer: string | null
+  sessions: OfferingSession[]
+  seatReserved: boolean
+  addedAt: string
+  droppedAt: string | null
+}
+
+export interface RegistrationPermissions {
+  canAdd: boolean
+  canRemove: boolean
+  canSubmit: boolean
+  /** True once submitted: removing a course is a drop that releases the seat. */
+  removeMeansDrop: boolean
+  lockedReason: string | null
+}
+
+export interface RegistrationView {
+  id: number | null
+  semester: SemesterWindow
+  /** null until the student adds a first course. */
+  status: RegistrationStatus | null
+  items: RegistrationItem[]
+  droppedItems: RegistrationItem[]
+  totalCredits: number
+  submittedAt: string | null
+  reviewedAt: string | null
+  rejectionReason: string | null
+  permissions: RegistrationPermissions
+}
+
+export const AVAILABILITIES = [
+  'AVAILABLE', 'IN_REGISTRATION', 'SAME_COURSE_REGISTERED', 'PREREQUISITES_MISSING', 'FULL', 'TIMETABLE_CLASH', 'CREDIT_LIMIT',
+] as const
+export type Availability = (typeof AVAILABILITIES)[number]
+
+export interface CatalogueEntry {
+  offering: Offering
+  prerequisites: { courseId: number; code: string; met: boolean }[]
+  availability: Availability
+  reason: string | null
+}
+
+export interface TimetableEntry {
+  offeringId: number
+  courseCode: string
+  courseTitle: string
+  section: string
+  lecturer: string | null
+  dayOfWeek: DayOfWeek
+  startTime: string
+  endTime: string
+  venue: string
+}
+
+export interface Timetable {
+  semester: { id: number; code: string; name: string }
+  status: RegistrationStatus | null
+  entries: TimetableEntry[]
+}
+
+export interface RegistrationSummary {
+  id: number
+  student: { id: number; studentNumber: string; name: string; email: string; programCode: string }
+  semester: { id: number; code: string; name: string }
+  status: RegistrationStatus
+  totalCredits: number
+  courseCount: number
+  submittedAt: string | null
+  reviewedAt: string | null
+}
+
+export interface RegistrationDetail {
+  summary: RegistrationSummary
+  items: RegistrationItem[]
+  droppedItems: RegistrationItem[]
+  rejectionReason: string | null
+  minCredits: number
+  maxCredits: number
+}

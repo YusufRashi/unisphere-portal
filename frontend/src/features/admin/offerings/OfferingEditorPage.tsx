@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
 import { createOffering, getOffering, updateOffering } from '@/api/calendar'
@@ -30,7 +30,7 @@ function OfferingForm({ offering, defaultSemesterId }: { offering: Offering | nu
   const semesters = useSemesters()
   const [formError, setFormError] = useState<string | null>(null)
 
-  const { register, control, handleSubmit, setError, formState } = useForm<OfferingFormInput, unknown, OfferingFormValues>({
+  const { register, control, handleSubmit, setError, setValue, getValues, formState } = useForm<OfferingFormInput, unknown, OfferingFormValues>({
     resolver: zodResolver(offeringSchema),
     defaultValues: {
       course: offering ? { value: offering.course.id, label: `${offering.course.code} — ${offering.course.title}` } : null,
@@ -47,6 +47,14 @@ function OfferingForm({ offering, defaultSemesterId }: { offering: Offering | nu
     },
   })
   const { fields, append, remove } = useFieldArray({ control, name: 'sessions' })
+
+  // Opened without ?semesterId (bookmark, history): default to the current semester once it is known.
+  const currentSemesterId = semesters.data?.find((s) => s.current && s.status !== 'COMPLETED')?.id
+  useEffect(() => {
+    if (!offering && currentSemesterId && !getValues('semesterId')) {
+      setValue('semesterId', String(currentSemesterId))
+    }
+  }, [offering, currentSemesterId, getValues, setValue])
   const catWeight = Number(useWatch({ control, name: 'catWeight' }))
   const errors = formState.errors
 

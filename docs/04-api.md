@@ -50,7 +50,7 @@ filters. Response:
 | 403 | `FORBIDDEN`, `ACCOUNT_DEACTIVATED`, `CSRF_CHECK_FAILED`, `STUDENT_NOT_ELIGIBLE` |
 | 404 | `NOT_FOUND` |
 | 409 | `DUPLICATE_RESOURCE`, `RESOURCE_IN_USE`, `PREREQUISITE_CYCLE`, `SCHEDULE_CONFLICT`, `DUPLICATE_COURSE`, `COURSE_FULL`, `TIMETABLE_CLASH`, `CONCURRENT_MODIFICATION`, `INVALID_STATE` |
-| 422 | `REGISTRATION_CLOSED`, `PREREQUISITE_NOT_MET`, `CREDIT_LIMIT`, `ADD_DROP_DEADLINE_PASSED` |
+| 422 | `REGISTRATION_CLOSED`, `PREREQUISITE_NOT_MET`, `CREDIT_LIMIT`, `ADD_DROP_DEADLINE_PASSED`, `MARKS_INCOMPLETE` |
 | 423 | `ACCOUNT_LOCKED` |
 | 429 | `RATE_LIMITED` |
 | 500 | `INTERNAL_ERROR` (generic message, no stack trace) |
@@ -146,26 +146,37 @@ Drafts hold no seats; seats are taken at submission, all or nothing.
 | POST | `/api/admin/registrations/{id}/approve` | A | `SUBMITTED → APPROVED` |
 | POST | `/api/admin/registrations/{id}/reject` | A | `{reason}` → `REJECTED`, seats released |
 
-### 2.7 Lecturer — `/api/lecturer`
-| Method | Path | Access | Description |
-|--------|------|--------|-------------|
-| GET | `/offerings` | L | Own offerings, `?semesterId` |
-| GET | `/offerings/{id}/students` | L own, A | Class list |
-| GET | `/offerings/{id}/results` | L own, A | Marks grid |
-| PUT | `/offerings/{id}/results` | L own (DRAFT), A | Bulk upsert `[{registrationItemId, catMark, examMark}]` |
-| POST | `/offerings/{id}/results/submit` | L own | `DRAFT → SUBMITTED` |
-| GET | `/offerings/{id}/statistics` | L own, A | Mean, median, pass rate, distribution |
-| POST | `/offerings/{id}/announcements` | L own, A | Publish announcement |
+### 2.7 Marks entry — `/api/lecturer`
+Results lifecycle per offering: `DRAFT → SUBMITTED → FINALIZED`; `SUBMITTED → DRAFT` when the registrar
+returns the marks. CAT marks are out of the offering's CAT weight and exam marks out of its exam weight
+(default 30 + 70), so totals are out of 100. Only the lecturer assigned to an offering may enter its marks;
+registrars can view the sheet but correct marks by returning them (separation of duties). Once results
+are submitted the class list is frozen: adding or dropping that course returns `409 INVALID_STATE`, and
+the offering itself can no longer be edited (its weights are fixed as soon as any mark exists).
 
-### 2.8 Results — `/api/results`
 | Method | Path | Access | Description |
 |--------|------|--------|-------------|
-| GET | `/me` | S | Finalized results grouped by semester with GPA, plus CGPA |
-| GET | `/api/admin/results/pending` | A | Offerings in `SUBMITTED` |
-| POST | `/api/admin/offerings/{id}/results/finalize` | A | `SUBMITTED → FINALIZED`, snapshot grades, notify |
-| POST | `/api/admin/offerings/{id}/results/return` | A | `SUBMITTED → DRAFT` with comment |
-| GET | `/api/admin/grading-scale` | A | Active scale |
-| PUT | `/api/admin/grading-scale` | A | Replace bands (validated: contiguous, non-overlapping 0–100) |
+| GET | `/offerings` | L | Own offerings, `?semesterId` (default current), each with `classSize` and `marksComplete` |
+| GET | `/offerings/{id}/results` | L own, A | Marks sheet: class list (approved registrations) with marks, total, grade (preview from the current scale until finalized), `permissions` (`canEdit`, `canSubmit`, `lockedReason`) and the registrar's `returnComment` |
+| PUT | `/offerings/{id}/results` | L own, `DRAFT` only | `{entries: [{registrationItemId, catMark, examMark}]}` — saves a draft; only listed students change, `null` = not entered. `400` with `errors[].field` such as `entries[2].catMark` for marks above the weight, negative, more than 2 decimals, or students not in the class |
+| POST | `/offerings/{id}/results/submit` | L own | `DRAFT → SUBMITTED`; `422 MARKS_INCOMPLETE` while anyone is missing a mark |
+| GET | `/offerings/{id}/statistics` | L own, A | Class size, graded count, mean, median, highest, lowest, pass rate and grade distribution |
+| POST | `/offerings/{id}/announcements` | L own, A | Publish announcement (Phase 7) |
+
+### 2.8 Results & grading scale
+| Method | Path | Access | Description |
+|--------|------|--------|-------------|
+| GET | `/api/results/me` | S | Finalized results only, grouped by semester (newest first) with semester GPA, credits attempted/earned and `cgpa`; each course says whether it `countsTowardCgpa` |
+| GET | `/api/admin/students/{studentId}/results` | A | The same record for any student |
+| GET | `/api/admin/results` | A | Offerings of a semester (default current) with results status and marks progress; `status`, `q`; sort `code`, `status`, `submittedAt` |
+| POST | `/api/admin/offerings/{id}/results/finalize` | A | `SUBMITTED → FINALIZED`; re-checks completeness, stores grade, grade points and pass/fail from the active scale |
+| POST | `/api/admin/offerings/{id}/results/return` | A | `{comment}` → `SUBMITTED → DRAFT` |
+| GET | `/api/grading-scale` | any | Active scale, bands highest first (`letter`, `minMark`, `gradePoints`, `passing`) |
+| PUT | `/api/admin/grading-scale` | A | `{bands}` replaces the bands. Rejected with every problem listed (`errors[].field = "bands"`) unless: at least one pass and one fail, unique letters and thresholds, lowest band starts at 0, grade points never rise and passes never sit below fails as marks go down. Finalized results keep their grades |
+
+**GPA.** Semester GPA = Σ(credits × grade points) / Σ credits over that semester's finalized results.
+CGPA uses the same formula over all semesters but counts only the latest attempt of a repeated course.
+Both are computed in `GpaCalculator` with exact decimals and rounded half-up to 2 places.
 
 ### 2.9 Transcripts — `/api/transcripts`
 | Method | Path | Access | Description |

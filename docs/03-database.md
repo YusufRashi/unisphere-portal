@@ -195,7 +195,6 @@ erDiagram
         bigint scale_id FK
         varchar letter
         numeric min_mark
-        numeric max_mark
         numeric grade_points
         boolean passing
     }
@@ -291,10 +290,15 @@ semester" (e.g. two sections) is checked in the service.
 **Results.** A `result` belongs to exactly one `registration_item` (unique FK),
 which already identifies student, offering, course and semester — no
 duplicated foreign keys that could disagree. The result lifecycle
-(`DRAFT/SUBMITTED/FINALIZED`) lives on the *offering* (`results_status`)
-because marks are submitted and finalized per class. On finalization, `grade`,
-`grade_points` and `passed` are snapshotted from the active `grading_scale` so
-later scale changes never alter historical records.
+(`DRAFT/SUBMITTED/FINALIZED`) lives on the *offering* (`results_status`, with
+`results_submitted_at`, `results_finalized_at/_by` and `results_return_comment`)
+because marks are submitted and finalized per class. CAT and exam marks are out of
+the offering's weights, so `total_mark = cat_mark + exam_mark` is out of 100 (a
+CHECK enforces it). On finalization, `grade`, `grade_points` and `passed` are
+snapshotted from the active `grading_scale` so later scale changes never alter
+historical records. A grade band stores only its lower bound (`min_mark`); it
+covers marks up to the next band's minimum, so bands cannot overlap or leave
+gaps. A partial unique index allows one active scale.
 
 **Finance.** Each student has one `fee_account`. Its balance is *derived*:
 `Σ fee_charges.amount − Σ payments.amount WHERE status = 'COMPLETED'`. Rows are
@@ -336,7 +340,7 @@ Migrations grow with the roadmap so every phase ships a working schema:
 | V2 | 2 | departments, programs, courses, course_prerequisites, students, lecturers |
 | V3 | 2 | semesters, course_offerings, offering_sessions |
 | V4 | 3 | registrations, registration_items |
-| V5 | 4 | grading_scales, grade_bands (+ default scale), results |
+| V5 | 4 | grading_scales, grade_bands (+ default 4.0 scale), results; results lifecycle columns on course_offerings |
 | V6 | 6 | fee_accounts, fee_structures, fee_charges, payments |
 | V7 | 7 | notifications, announcements |
 

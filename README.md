@@ -6,7 +6,7 @@ notifications, with separate workspaces for students, lecturers, the registrar a
 **Stack:** Java 21 · Spring Boot 4.1 · Spring Security (JWT + rotating refresh tokens) · Spring Data JPA ·
 PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · TanStack Query · Docker · GitHub Actions
 
-> **Status: Phase 3 of 9 complete — foundation, authentication, academic structure, accounts and course registration.** See the [roadmap](docs/05-roadmap.md)
+> **Status: Phase 4 of 9 complete — foundation, authentication, academic structure, accounts, course registration, and results & GPA.** See the [roadmap](docs/05-roadmap.md)
 > for what each phase delivers. Features listed below are marked ✅ when implemented.
 
 ---
@@ -51,7 +51,10 @@ PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · T
 | | Draft → submit → approve/return workflow with credit limits, deadlines and add/drop | ✅ |
 | | **Race-free seat reservation** (guarded atomic update; tested with concurrent students) | ✅ |
 | | Weekly student timetable (grid on desktop, agenda on phones) | ✅ |
-| | Marks entry, configurable grading scale, GPA / CGPA | Phase 4 |
+| Results | Lecturer marks sheet (draft → submit), registrar finalize/return, grades fixed at finalization | ✅ |
+| | Grading scale as data (validated: starts at 0, no gaps or overlaps, passes above fails) | ✅ |
+| | Semester GPA and CGPA in **one tested `GpaCalculator`** (credit-weighted, latest attempt of a repeated course, half-up to 2 dp) | ✅ |
+| | Class statistics; finalized passes satisfy registration prerequisites | ✅ |
 | | Unofficial transcript (print + PDF) | Phase 5 |
 | Finance | Fee ledger, payments, reversals, simulated gateway, reports | Phase 6 |
 | Engagement | Notifications & announcements | Phase 7 |
@@ -197,6 +200,8 @@ cd backend
 | `SemesterAndOfferingIT` | Semester validation, single current semester, registration flag + window, offering sections, weights, venue and lecturer clashes |
 | `RegistrationRulesTest` | Window and add/drop deadline, duplicate course in any section, prerequisites, seats, credit limits, timetable clashes |
 | `RegistrationFlowIT` | Draft → submit → timetable, every rule over HTTP, closed registration, **two students racing for the last seat**, approval with return and resubmission, add/drop moving seats until the deadline, ownership, suspended students |
+| `GpaCalculatorTest`, `GradingRulesTest`, `ResultStatisticsTest` | GPA weighting and half-up rounding, repeated courses, band boundaries, mark limits, scale validation, mean/median/pass rate |
+| `ResultsFlowIT` | Marks draft → incomplete submit rejected → submit → return → resubmit → finalize, student GPA/CGPA, grades unchanged by later scale edits, lecturer ownership and role boundaries, weight and class-list freezes |
 | `AccountProvisioningIT` | Student creation → activation → sign-in, unique numbers and emails, resend activation, record updates, staff role limits, RBAC |
 
 ### Frontend

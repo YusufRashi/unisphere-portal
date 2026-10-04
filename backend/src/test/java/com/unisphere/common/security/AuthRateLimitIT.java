@@ -29,4 +29,14 @@ class AuthRateLimitIT extends IntegrationTest {
                 .andExpect(header().exists("Retry-After"))
                 .andExpect(jsonPath("$.code").value("RATE_LIMITED"));
     }
+
+    /** Regression: every page load refreshes the session, so throttling refresh signed users out (Phase 2). */
+    @Test
+    void tokenRefreshIsNotThrottled() throws Exception {
+        clock.set(Instant.now().truncatedTo(ChronoUnit.MINUTES).plusSeconds(1));
+        for (int i = 0; i < 10; i++) {
+            mvc.perform(post("/api/auth/refresh").header("X-Requested-With", "XMLHttpRequest"))
+                    .andExpect(status().isUnauthorized());
+        }
+    }
 }

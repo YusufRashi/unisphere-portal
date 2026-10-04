@@ -71,7 +71,7 @@ unisphere:
       max-failed-attempts: 5
       lock-duration: 15m
     rate-limit:
-      auth-requests-per-minute: ${AUTH_RATE_LIMIT_PER_MINUTE:10}
+      auth-requests-per-minute: ${AUTH_RATE_LIMIT_PER_MINUTE:20}
     activation-token-ttl: 72h
     password-reset-token-ttl: 30m
   mail:

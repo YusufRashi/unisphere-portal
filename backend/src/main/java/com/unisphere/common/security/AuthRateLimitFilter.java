@@ -18,9 +18,13 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
  */
 public class AuthRateLimitFilter extends OncePerRequestFilter {
 
+    /**
+     * Endpoints where an attacker could guess a secret (password or token). {@code /api/auth/refresh} is
+     * deliberately excluded: every page load calls it, many users share one IP behind a campus NAT, and its
+     * 256-bit token cannot be guessed (reuse is caught by rotation instead).
+     */
     private static final Set<String> LIMITED_PATHS = Set.of(
             "/api/auth/login",
-            "/api/auth/refresh",
             "/api/auth/activate",
             "/api/auth/password/forgot",
             "/api/auth/password/reset");

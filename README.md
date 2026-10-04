@@ -6,7 +6,7 @@ notifications, with separate workspaces for students, lecturers, the registrar a
 **Stack:** Java 21 · Spring Boot 4.1 · Spring Security (JWT + rotating refresh tokens) · Spring Data JPA ·
 PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · TanStack Query · Docker · GitHub Actions
 
-> **Status: Phase 1 of 9 complete — foundation & authentication.** See the [roadmap](docs/05-roadmap.md)
+> **Status: Phase 2 of 9 complete — foundation, authentication, academic structure & accounts.** See the [roadmap](docs/05-roadmap.md)
 > for what each phase delivers. Features listed below are marked ✅ when implemented.
 
 ---
@@ -43,7 +43,10 @@ PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · T
 | | Audit log of security-relevant actions | ✅ |
 | | Admin user directory: search, filter, sort, paginate, deactivate (with confirmation) | ✅ |
 | | Docker Compose stack, least-privilege DB role, CI pipeline | ✅ |
-| Academic | Departments, programs, courses, prerequisites, semesters, offerings | Phase 2 |
+| Academic | Departments, programs and courses with prerequisite **cycle detection** | ✅ |
+| | Semesters with registration windows and a single current semester | ✅ |
+| | Course offerings with weekly timetable and **venue / lecturer clash detection** | ✅ |
+| People | Admin-created student, lecturer and staff accounts with activation links and generated student/staff numbers | ✅ |
 | | Course registration with credit-load, prerequisite, capacity and deadline rules | Phase 3 |
 | | Marks entry, configurable grading scale, GPA / CGPA | Phase 4 |
 | | Unofficial transcript (print + PDF) | Phase 5 |
@@ -140,7 +143,7 @@ every variable with a description.
 | `COOKIE_SECURE` | no | `true` (default) in production; `false` only for plain-HTTP local dev |
 | `CORS_ALLOWED_ORIGINS` | no | Only needed if SPA and API are on different origins |
 | `APP_BASE_URL` | no | Public web-app URL used in activation / reset links |
-| `AUTH_RATE_LIMIT_PER_MINUTE` | no | Per-IP limit on auth endpoints (default 10) |
+| `AUTH_RATE_LIMIT_PER_MINUTE` | no | Per-IP limit on login, activation and password-reset requests (default 20; token refresh is not limited) |
 | `BOOTSTRAP_ADMIN_EMAIL` / `BOOTSTRAP_ADMIN_PASSWORD` | first run | Creates the first admin if none exists |
 | `MAIL_LOG_LINKS` | no | `true` prints activation/reset links to the log (development only) |
 | `API_DOCS_ENABLED` | no | Swagger UI / OpenAPI JSON (default `true`; set `false` in production) |
@@ -185,7 +188,11 @@ cd backend
 | `PasswordPolicyTest`, `FixedWindowRateLimiterTest`, `ActiveSessionValidatorTest`, `PageableFactoryTest` | Security and paging building blocks |
 | `AuthFlowIT` | Full HTTP flows: cookies & headers, Problem Details shape, lockout, rotation + theft detection, CSRF header, logout, activation, reset, change password, security headers |
 | `UserAdminIT` | RBAC (401 vs 403 for every non-admin role), search/filter/sort/paginate, LIKE-wildcard escaping, instant revocation on deactivation |
-| `AuthRateLimitIT` | 429 + `Retry-After` on auth endpoints |
+| `AuthRateLimitIT` | 429 + `Retry-After` on login; token refresh is never throttled (regression) |
+| `PrerequisiteGraphTest`, `TimetableRulesTest`, `SemesterTest` | Cycle detection, timetable overlaps and clashes, semester date rules and status |
+| `AcademicStructureIT` | Department/program/course CRUD, uniqueness, safe delete, field errors, prerequisite cycles, catalogue search, read-only access for students |
+| `SemesterAndOfferingIT` | Semester validation, single current semester, registration flag + window, offering sections, weights, venue and lecturer clashes |
+| `AccountProvisioningIT` | Student creation → activation → sign-in, unique numbers and emails, resend activation, record updates, staff role limits, RBAC |
 
 ### Frontend
 
@@ -197,7 +204,9 @@ npm run lint
 ```
 
 Covers login form validation and redirects (including open-redirect protection), route guards for every
-role, password-rule feedback, the accessible confirmation dialog, and role-based navigation.
+role, password-rule feedback, the accessible confirmation dialog, role-based navigation, the searchable
+select (keyboard and async search), offering timetable validation, server-error mapping onto form fields,
+and the departments screen (listing, safe delete with confirmation, validation and duplicate conflicts).
 
 ### API testing collection
 

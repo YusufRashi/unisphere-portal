@@ -111,7 +111,7 @@ export function AppLayout() {
         Skip to content
       </a>
 
-      <aside className="fixed inset-y-0 left-0 hidden w-64 bg-brand-950 lg:block">
+      <aside className="fixed inset-y-0 left-0 hidden w-64 bg-brand-950 lg:block print:hidden">
         <SidebarContent />
       </aside>
 
@@ -132,8 +132,8 @@ export function AppLayout() {
         </div>
       )}
 
-      <div className="lg:pl-64">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/95 px-4 backdrop-blur sm:px-6">
+      <div className="lg:pl-64 print:pl-0">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/95 px-4 backdrop-blur sm:px-6 print:hidden">
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
@@ -149,7 +149,7 @@ export function AppLayout() {
             <UserMenu />
           </div>
         </header>
-        <main id="main" className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <main id="main" className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 print:max-w-none print:p-0">
           <Outlet />
         </main>
       </div>

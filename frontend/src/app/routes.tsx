@@ -35,6 +35,13 @@ const appRoutes: RouteObject[] = [
               { path: 'registration', lazy: async () => ({ Component: (await import('@/features/student/registration/RegistrationPage')).RegistrationPage }) },
               { path: 'timetable', lazy: async () => ({ Component: (await import('@/features/student/timetable/TimetablePage')).TimetablePage }) },
               { path: 'results', lazy: async () => ({ Component: (await import('@/features/student/results/ResultsPage')).ResultsPage }) },
+              {
+                path: 'transcript',
+                lazy: async () => {
+                  const { TranscriptPage } = await import('@/features/transcript/TranscriptPage')
+                  return { element: <TranscriptPage mode="student" /> }
+                },
+              },
             ],
           },
           {
@@ -64,6 +71,14 @@ const appRoutes: RouteObject[] = [
               { path: 'offerings', lazy: async () => ({ Component: (await import('@/features/admin/offerings/OfferingsPage')).OfferingsPage }) },
               { path: 'offerings/:offeringId', lazy: async () => ({ Component: (await import('@/features/admin/offerings/OfferingEditorPage')).OfferingEditorPage }) },
               { path: 'students', lazy: async () => ({ Component: (await import('@/features/admin/students/StudentsPage')).StudentsPage }) },
+              {
+                path: 'students/:studentId/transcript',
+                lazy: async () => {
+                  const { TranscriptPage } = await import('@/features/transcript/TranscriptPage')
+                  return { element: <TranscriptPage mode="registrar" /> }
+                },
+              },
+              { path: 'transcripts/verify', lazy: async () => ({ Component: (await import('@/features/transcript/VerifyTranscriptPage')).VerifyTranscriptPage }) },
               { path: 'lecturers', lazy: async () => ({ Component: (await import('@/features/admin/lecturers/LecturersPage')).LecturersPage }) },
               { path: 'registrations', lazy: async () => ({ Component: (await import('@/features/admin/registrations/RegistrationsPage')).RegistrationsPage }) },
               { path: 'results', lazy: async () => ({ Component: (await import('@/features/admin/results/ResultsQueuePage')).ResultsQueuePage }) },

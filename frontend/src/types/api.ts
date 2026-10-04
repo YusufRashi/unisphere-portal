@@ -449,3 +449,44 @@ export interface AcademicRecord {
   creditsAttempted: number
   creditsEarned: number
 }
+
+// ---- Transcripts -------------------------------------------------------------------------------
+
+/** Semesters are oldest first, as printed; `reference` can be checked by the registrar. */
+export interface Transcript {
+  universityName: string
+  title: string
+  student: {
+    id: number
+    studentNumber: string
+    name: string
+    programCode: string
+    programName: string
+    awardLevel: AwardLevel
+    departmentName: string
+    admissionDate: string
+    yearOfStudy: number
+    status: StudentStatus
+  }
+  semesters: SemesterRecord[]
+  cgpa: number | null
+  creditsAttempted: number
+  creditsEarned: number
+  generatedAt: string
+  reference: string
+  watermark: string
+}
+
+export interface TranscriptVerification {
+  reference: string
+  studentNumber: string
+  studentName: string
+  cgpa: number | null
+  creditsEarned: number
+  resultsCount: number
+  firstIssuedAt: string
+  lastIssuedAt: string
+  issueCount: number
+  /** False once the student's results have changed since this transcript was issued. */
+  current: boolean
+}

@@ -35,3 +35,9 @@
     @apply outline-2 outline-offset-2 outline-brand-600;
   }
 }
+
+/* Printed documents (transcripts): A4 with margins so nothing runs to the paper edge. */
+@page {
+  size: A4;
+  margin: 16mm 14mm;
+}

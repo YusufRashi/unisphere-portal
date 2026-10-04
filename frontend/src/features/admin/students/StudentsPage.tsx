@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Pencil, Search, UserPlus, Users } from 'lucide-react'
+import { FileText, Pencil, Search, UserPlus, Users } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { Link } from 'react-router'
 import { z } from 'zod'
 import { applyServerErrors } from '@/api/formErrors'
 import { createStudent, searchStudents, updateStudent } from '@/api/people'
@@ -314,6 +315,13 @@ export function StudentsPage() {
                 {s.accountStatus === 'PENDING_ACTIVATION' && (
                   <ResendActivationButton userId={s.userId} name={`${s.firstName} ${s.lastName}`} />
                 )}
+                <Link
+                  to={`/admin/students/${s.id}/transcript`}
+                  aria-label={`Transcript of ${s.firstName} ${s.lastName}`}
+                  className="inline-flex h-8 items-center rounded-md px-3 text-slate-700 hover:bg-slate-100"
+                >
+                  <FileText aria-hidden="true" className="size-4" />
+                </Link>
                 <Button variant="ghost" size="sm" onClick={() => setEditing(s)} aria-label={`Edit ${s.firstName} ${s.lastName}`}>
                   <Pencil aria-hidden="true" className="size-4" />
                 </Button>

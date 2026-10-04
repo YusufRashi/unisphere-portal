@@ -25,7 +25,7 @@ describe('navigationFor', () => {
   })
 
   it('gives students their study tools and nothing administrative', () => {
-    expect(labels(['STUDENT'])).toEqual(['Dashboard', 'Course registration', 'My timetable', 'My results', 'Account settings'])
+    expect(labels(['STUDENT'])).toEqual(['Dashboard', 'Course registration', 'My timetable', 'My results', 'Transcript', 'Account settings'])
   })
 
   it('gives lecturers their courses', () => {

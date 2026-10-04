@@ -1,0 +1,37 @@
+@import '@fontsource-variable/inter';
+@import 'tailwindcss';
+
+/*
+ * Design tokens. "brand" is a deep academic blue; neutrals come from Tailwind's slate scale.
+ * Components use semantic utility classes built on these tokens rather than raw hex values.
+ */
+@theme {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --color-brand-50: #eff4ff;
+  --color-brand-100: #dbe6fe;
+  --color-brand-200: #bfd3fe;
+  --color-brand-300: #93b4fd;
+  --color-brand-400: #6090fa;
+  --color-brand-500: #3b6cf6;
+  --color-brand-600: #2550eb;
+  --color-brand-700: #1d3fd8;
+  --color-brand-800: #1e35af;
+  --color-brand-900: #1e3a8a;
+  --color-brand-950: #172554;
+}
+
+@layer base {
+  html {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+
+  body {
+    @apply min-h-dvh font-sans text-sm;
+  }
+
+  /* Visible focus for keyboard users only. */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-600;
+  }
+}

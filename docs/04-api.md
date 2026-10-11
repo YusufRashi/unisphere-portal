@@ -161,7 +161,7 @@ the offering itself can no longer be edited (its weights are fixed as soon as an
 | PUT | `/offerings/{id}/results` | L own, `DRAFT` only | `{entries: [{registrationItemId, catMark, examMark}]}` — saves a draft; only listed students change, `null` = not entered. `400` with `errors[].field` such as `entries[2].catMark` for marks above the weight, negative, more than 2 decimals, or students not in the class |
 | POST | `/offerings/{id}/results/submit` | L own | `DRAFT → SUBMITTED`; `422 MARKS_INCOMPLETE` while anyone is missing a mark |
 | GET | `/offerings/{id}/statistics` | L own, A | Class size, graded count, mean, median, highest, lowest, pass rate and grade distribution |
-| POST | `/offerings/{id}/announcements` | L own, A | Publish announcement (Phase 7) |
+| POST | `/offerings/{id}/announcements` | L own, A | Post an announcement to the class (see 2.11) |
 
 ### 2.8 Results & grading scale
 | Method | Path | Access | Description |
@@ -231,14 +231,32 @@ the failure path can be demonstrated. Online payments get a `UNI-yyyyMMdd-XXXXXX
 **CSV.** UTF-8 with a BOM and CRLF line endings so Excel opens it correctly; text cells starting with `=`,
 `+`, `-` or `@` are neutralised against formula injection. Sent as attachments with `Cache-Control: no-store`.
 
-### 2.11 Notifications — `/api/notifications`
+### 2.11 Notifications & announcements
 | Method | Path | Access | Description |
 |--------|------|--------|-------------|
-| GET | `/` | any | Own notifications, `?unreadOnly`, paginated |
-| GET | `/unread-count` | any | `{count}` |
-| POST | `/{id}/read` | any own | Mark read → `204` |
-| POST | `/read-all` | any | Mark all read → `204` |
-| GET | `/api/announcements` | S, L | Announcements for own offerings |
+| GET | `/api/notifications` | any | Own notifications, newest first, `?unreadOnly=true`, paginated |
+| GET | `/api/notifications/unread-count` | any | `{count}` for the bell badge |
+| POST | `/api/notifications/{id}/read` | any own | Mark read → `204` (again: no-op; someone else's: `404`) |
+| POST | `/api/notifications/read-all` | any | Mark all read → `204` |
+| GET | `/api/announcements` | S, L, A | Announcements of offerings the caller is enrolled in (approved registration) or teaches; all for A. `?offeringId`, paginated, newest first |
+| POST | `/api/lecturer/offerings/{id}/announcements` | L own, A | `{title, body}` (≤ 200 / ≤ 5000 chars) → `201 {announcement, notified}`; every enrolled student is notified in the same transaction |
+
+A notification is `{id, type, title, message, link, read, createdAt}`. `link` is always a path inside the
+web app (a database CHECK rejects anything else). Types and what sends them:
+
+| Type | Sent to | When |
+|------|---------|------|
+| `REGISTRATION_OPENED` | every active student | registration is opened for a semester (once per semester, even if re-opened) |
+| `REGISTRATION_SUBMITTED` / `_APPROVED` / `_REJECTED` | the student | submit, approval (or submit without approval), rejection with the reason |
+| `RESULTS_RELEASED` | the class list | the registrar finalizes an offering's results |
+| `ANNOUNCEMENT` | the class list | an announcement is posted (message shows the first 300 characters) |
+| `REGISTRATION_DEADLINE` | active students without a submitted or approved registration | reminder job, once per semester, when registration closes within 48 h |
+| `FEE_REMINDER` | active students with a positive balance | reminder job, at most once per 14-day window, with the balance |
+
+Event notifications are written **after** the business transaction commits, in a transaction of their own:
+a rolled-back action never notifies anyone, and a failure to notify is logged without undoing the action.
+The reminder job runs on `NOTIFICATION_REMINDER_CRON` (daily 06:00 UTC by default). Reminders carry a dedupe
+key with a unique index, so extra runs, or runs on several instances at once, never send duplicates.
 
 ### 2.12 Admin dashboard & audit
 | Method | Path | Access | Description |

@@ -241,7 +241,9 @@ erDiagram
         varchar title
         text message
         varchar link
+        varchar dedupe_key
         timestamptz read_at
+        timestamptz created_at
     }
     announcements {
         bigint id PK
@@ -249,6 +251,7 @@ erDiagram
         bigint author_id FK
         varchar title
         text body
+        timestamptz created_at
     }
     audit_logs {
         bigint id PK
@@ -327,8 +330,11 @@ provider's reason. `provider`/`provider_txn_id` let a real gateway be plugged in
 later. No card or credential data has a column to live in.
 
 **Notifications & audit.** `notifications` are per-user rows with `read_at`
-(NULL = unread). `announcements` belong to an offering and fan out into
-notifications for enrolled students. `audit_logs` is append-only; `details`
+(NULL = unread); `link` must be an in-app path (CHECK). Sending to a group is one
+`INSERT … SELECT`. `dedupe_key` plus a partial unique index on `(user_id, dedupe_key)`
+makes "once per semester" or "once per reminder window" a database guarantee, so the
+reminder job can run twice without duplicates. `announcements` belong to an offering and
+fan out into notifications for enrolled students in the same transaction. `audit_logs` is append-only; `details`
 is `JSONB` for flexible before/after snapshots; `actor_id` is nullable for
 system actions.
 
@@ -345,7 +351,8 @@ system actions.
 | registration_items | `(offering_id) WHERE status='ACTIVE'` | class lists |
 | payments | `(account_id, paid_at DESC)`, `(paid_at)`; unique `upper(reference)`, partial unique `(account_id, idempotency_key)` | payment history, date-range report, no double recording |
 | fee_charges | `(account_id)`; partial unique `(account_id, fee_structure_id)` | balance, idempotent billing |
-| notifications | `(user_id, created_at DESC)`, partial `(user_id) WHERE read_at IS NULL` | inbox, unread badge |
+| notifications | `(user_id, created_at DESC, id DESC)`, partial `(user_id) WHERE read_at IS NULL`; partial unique `(user_id, dedupe_key)` | inbox, unread badge, no duplicate reminders |
+| announcements | `(offering_id, created_at DESC)` | course announcements |
 | audit_logs | `(entity_type, entity_id)`, `(actor_id)`, `(created_at DESC)` | audit viewer filters |
 | semesters | partial unique `(is_current) WHERE is_current` | single current semester |
 

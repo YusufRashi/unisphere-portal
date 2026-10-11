@@ -10,6 +10,7 @@ import {
   Landmark,
   Receipt,
   Users,
+  Wallet,
   type LucideIcon,
 } from 'lucide-react'
 import { Link } from 'react-router'
@@ -42,7 +43,10 @@ const MODULES: Module[] = [
   { title: 'Transcript', description: 'Download an unofficial transcript.', icon: FileText, roles: ['STUDENT'], to: '/student/transcript' },
   { title: 'My courses', description: 'Class lists, marks entry and statistics.', icon: BookOpen, roles: ['LECTURER'], to: '/lecturer/courses' },
   { title: 'Results', description: 'Review, finalize or return submitted marks.', icon: GraduationCap, roles: ['ADMIN'], to: '/admin/results' },
-  { title: 'Fee accounts', description: 'Balances, payments and reports.', icon: Receipt, roles: ['FINANCE'] },
+  { title: 'Fees', description: 'Your balance, statement and online payment.', icon: Wallet, roles: ['STUDENT'], to: '/student/fees' },
+  { title: 'Fee accounts', description: 'Balances, payments, charges and corrections.', icon: Wallet, roles: ['FINANCE'], to: '/finance/accounts' },
+  { title: 'Fee structures', description: 'Tuition per program and semester billing.', icon: Landmark, roles: ['FINANCE'], to: '/finance/structures' },
+  { title: 'Finance reports', description: 'Outstanding balances and payments, with CSV export.', icon: Receipt, roles: ['FINANCE'], to: '/finance/reports' },
   { title: 'Account settings', description: 'Change your password.', icon: KeyRound, roles: ['STUDENT', 'LECTURER', 'ADMIN', 'FINANCE'], to: '/account' },
 ]
 

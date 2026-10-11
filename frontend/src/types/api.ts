@@ -490,3 +490,118 @@ export interface TranscriptVerification {
   /** False once the student's results have changed since this transcript was issued. */
   current: boolean
 }
+
+// ---- Finance -----------------------------------------------------------------------------------
+
+export const PAYMENT_METHODS = ['CASH', 'BANK_TRANSFER', 'MOBILE_MONEY', 'CARD'] as const
+export type PaymentMethod = (typeof PAYMENT_METHODS)[number]
+export const ONLINE_METHODS = ['MOBILE_MONEY', 'CARD'] as const satisfies readonly PaymentMethod[]
+export type PaymentStatus = 'COMPLETED' | 'FAILED' | 'REVERSED'
+export type ChargeStatus = 'ACTIVE' | 'VOIDED'
+
+/** Money arrives as JSON numbers with 2 decimals; amounts are sent back as strings to avoid float rounding. */
+export interface FeeCharge {
+  id: number
+  kind: 'TUITION' | 'MANUAL'
+  description: string
+  semester: { id: number; code: string; name: string } | null
+  amount: number
+  status: ChargeStatus
+  createdAt: string
+  voidedAt: string | null
+  voidReason: string | null
+}
+
+export interface FeePayment {
+  id: number
+  amount: number
+  method: PaymentMethod
+  channel: 'OFFICE' | 'ONLINE'
+  reference: string
+  status: PaymentStatus
+  failureReason: string | null
+  paidAt: string
+  note: string | null
+  reversedAt: string | null
+  reversalReason: string | null
+}
+
+/** `balance` > 0 is owed; < 0 is credit. */
+export interface FeeSummary {
+  totalCharged: number
+  totalPaid: number
+  balance: number
+}
+
+export interface FeeAccount {
+  student: { id: number; studentNumber: string; name: string; email: string; programCode: string; programName: string }
+  currency: string
+  summary: FeeSummary
+  charges: FeeCharge[]
+  payments: FeePayment[]
+}
+
+export interface OnlinePaymentResult {
+  payment: FeePayment
+  account: FeeAccount
+}
+
+export interface FeeAccountRow {
+  studentId: number
+  studentNumber: string
+  name: string
+  email: string
+  programCode: string
+  currency: string
+  totalCharged: number
+  totalPaid: number
+  balance: number
+}
+
+export interface FeeStructureRow {
+  program: { id: number; code: string; name: string }
+  structure: { id: number; amount: number; description: string } | null
+  chargedCount: number
+}
+
+export interface FeeStructures {
+  semester: { id: number; code: string; name: string }
+  currency: string
+  rows: FeeStructureRow[]
+}
+
+export interface ChargePreview {
+  semester: { id: number; code: string; name: string }
+  currency: string
+  registeredStudents: number
+  alreadyCharged: number
+  toCharge: number
+  amountToCharge: number
+  withoutFee: number
+  programsWithoutFee: string[]
+}
+
+export interface GenerationResult {
+  charged: number
+  alreadyCharged: number
+  withoutFee: number
+  amountCharged: number
+}
+
+export interface PaymentReport {
+  currency: string
+  from: string
+  to: string
+  totalCompleted: number
+  rows: {
+    paymentId: number
+    paidAt: string
+    reference: string
+    studentNumber: string
+    name: string
+    method: PaymentMethod
+    channel: 'OFFICE' | 'ONLINE'
+    status: PaymentStatus
+    amount: number
+  }[]
+}

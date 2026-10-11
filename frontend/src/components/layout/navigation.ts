@@ -9,14 +9,17 @@ import {
   FileCheck2,
   FileText,
   GraduationCap,
+  Landmark,
   LayoutDashboard,
   NotebookPen,
   Presentation,
+  Receipt,
   Scale,
   ShieldCheck,
   Settings,
   UserCog,
   Users,
+  Wallet,
   type LucideIcon,
 } from 'lucide-react'
 import type { Role } from '@/types/api'
@@ -46,6 +49,7 @@ export const NAVIGATION: NavSection[] = [
       { label: 'My timetable', to: '/student/timetable', icon: Clock, roles: ['STUDENT'] },
       { label: 'My results', to: '/student/results', icon: GraduationCap, roles: ['STUDENT'] },
       { label: 'Transcript', to: '/student/transcript', icon: FileText, roles: ['STUDENT'] },
+      { label: 'Fees', to: '/student/fees', icon: Wallet, roles: ['STUDENT'] },
     ],
   },
   {
@@ -64,6 +68,14 @@ export const NAVIGATION: NavSection[] = [
       { label: 'Results', to: '/admin/results', icon: FileCheck2, roles: ['ADMIN'] },
       { label: 'Grading scale', to: '/admin/grading-scale', icon: Scale, roles: ['ADMIN'] },
       { label: 'Verify transcript', to: '/admin/transcripts/verify', icon: ShieldCheck, roles: ['ADMIN'] },
+    ],
+  },
+  {
+    title: 'Finance',
+    items: [
+      { label: 'Fee accounts', to: '/finance/accounts', icon: Wallet, roles: ['FINANCE', 'ADMIN'] },
+      { label: 'Fee structures', to: '/finance/structures', icon: Landmark, roles: ['FINANCE', 'ADMIN'] },
+      { label: 'Finance reports', to: '/finance/reports', icon: Receipt, roles: ['FINANCE', 'ADMIN'] },
     ],
   },
   {

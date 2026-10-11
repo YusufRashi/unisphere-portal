@@ -35,6 +35,7 @@ const appRoutes: RouteObject[] = [
               { path: 'registration', lazy: async () => ({ Component: (await import('@/features/student/registration/RegistrationPage')).RegistrationPage }) },
               { path: 'timetable', lazy: async () => ({ Component: (await import('@/features/student/timetable/TimetablePage')).TimetablePage }) },
               { path: 'results', lazy: async () => ({ Component: (await import('@/features/student/results/ResultsPage')).ResultsPage }) },
+              { path: 'fees', lazy: async () => ({ Component: (await import('@/features/student/fees/FeesPage')).FeesPage }) },
               {
                 path: 'transcript',
                 lazy: async () => {
@@ -56,6 +57,17 @@ const appRoutes: RouteObject[] = [
                   return { element: <MarksSheetPage mode="lecturer" /> }
                 },
               },
+            ],
+          },
+          {
+            // Finance staff manage fees; administrators (registrar) can view everything here but change nothing.
+            path: '/finance',
+            element: <RequireRole roles={['FINANCE', 'ADMIN']} />,
+            children: [
+              { path: 'accounts', lazy: async () => ({ Component: (await import('@/features/finance/accounts/FeeAccountsPage')).FeeAccountsPage }) },
+              { path: 'accounts/:studentId', lazy: async () => ({ Component: (await import('@/features/finance/accounts/FeeAccountPage')).FeeAccountPage }) },
+              { path: 'structures', lazy: async () => ({ Component: (await import('@/features/finance/structures/FeeStructuresPage')).FeeStructuresPage }) },
+              { path: 'reports', lazy: async () => ({ Component: (await import('@/features/finance/reports/FinanceReportsPage')).FinanceReportsPage }) },
             ],
           },
           {

@@ -25,14 +25,18 @@ describe('navigationFor', () => {
   })
 
   it('gives students their study tools and nothing administrative', () => {
-    expect(labels(['STUDENT'])).toEqual(['Dashboard', 'Course registration', 'My timetable', 'My results', 'Transcript', 'Account settings'])
+    expect(labels(['STUDENT'])).toEqual(['Dashboard', 'Course registration', 'My timetable', 'My results', 'Transcript', 'Fees', 'Account settings'])
   })
 
   it('gives lecturers their courses', () => {
     expect(labels(['LECTURER'])).toEqual(['Dashboard', 'My courses', 'Account settings'])
   })
 
-  it('always offers the dashboard and account settings', () => {
-    expect(labels(['FINANCE'])).toEqual(['Dashboard', 'Account settings'])
+  it('gives finance staff the finance screens and nothing academic', () => {
+    expect(labels(['FINANCE'])).toEqual(['Dashboard', 'Fee accounts', 'Fee structures', 'Finance reports', 'Account settings'])
+  })
+
+  it('lets admins view the finance screens', () => {
+    expect(labels(['ADMIN'])).toEqual(expect.arrayContaining(['Fee accounts', 'Fee structures', 'Finance reports']))
   })
 })

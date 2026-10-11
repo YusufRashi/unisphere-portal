@@ -208,20 +208,26 @@ erDiagram
         bigint program_id FK
         bigint semester_id FK
         numeric amount
+        varchar description
     }
     fee_charges {
         bigint id PK
         bigint account_id FK
         bigint semester_id FK
+        bigint fee_structure_id FK
+        varchar kind
         varchar description
         numeric amount
+        varchar status
     }
     payments {
         bigint id PK
         bigint account_id FK
-        bigint semester_id FK
         numeric amount
         varchar method
+        varchar channel
+        varchar status
+        varchar idempotency_key
         varchar reference UK
         varchar provider
         varchar status
@@ -307,12 +313,18 @@ with the CGPA, credits and course count it showed and when it was first/last
 issued. The registrar uses it to check a paper copy; an upsert makes
 simultaneous issues safe.
 
-**Finance.** Each student has one `fee_account`. Its balance is *derived*:
-`Σ fee_charges.amount − Σ payments.amount WHERE status = 'COMPLETED'`. Rows are
-never updated or deleted for corrections; a reversed payment gets
-`status = 'REVERSED'` and an audit entry. `payments.reference` is unique to make
-double-recording impossible. `provider`/`provider_txn_id` let a real gateway be
-plugged in later. No card or credential data has a column to live in.
+**Finance.** Each student has one `fee_account` (created on first use). Its balance
+is *derived*, never stored: `Σ fee_charges.amount WHERE status = 'ACTIVE' −
+Σ payments.amount WHERE status = 'COMPLETED'`. Rows are never deleted: a charge is
+corrected by `status = 'VOIDED'` and a payment by `status = 'REVERSED'`, each with
+who, when and a required reason (CHECK constraints enforce the reason). A tuition
+charge points at its `fee_structure`; a partial unique index on
+`(account_id, fee_structure_id)` makes generating charges twice harmless.
+`payments.reference` is unique case-insensitively so a receipt cannot be recorded
+twice, and `(account_id, idempotency_key)` is unique so a retried online payment
+cannot charge twice. Declined online payments are kept as `FAILED` with the
+provider's reason. `provider`/`provider_txn_id` let a real gateway be plugged in
+later. No card or credential data has a column to live in.
 
 **Notifications & audit.** `notifications` are per-user rows with `read_at`
 (NULL = unread). `announcements` belong to an offering and fan out into
@@ -331,8 +343,8 @@ system actions.
 | course_offerings | `(semester_id)`, `(lecturer_id)` | catalogue, lecturer views |
 | registrations | `(semester_id, status)` | approval queue, dashboard counts |
 | registration_items | `(offering_id) WHERE status='ACTIVE'` | class lists |
-| payments | `(account_id, paid_at DESC)` | payment history |
-| fee_charges | `(account_id)` | balance |
+| payments | `(account_id, paid_at DESC)`, `(paid_at)`; unique `upper(reference)`, partial unique `(account_id, idempotency_key)` | payment history, date-range report, no double recording |
+| fee_charges | `(account_id)`; partial unique `(account_id, fee_structure_id)` | balance, idempotent billing |
 | notifications | `(user_id, created_at DESC)`, partial `(user_id) WHERE read_at IS NULL` | inbox, unread badge |
 | audit_logs | `(entity_type, entity_id)`, `(actor_id)`, `(created_at DESC)` | audit viewer filters |
 | semesters | partial unique `(is_current) WHERE is_current` | single current semester |

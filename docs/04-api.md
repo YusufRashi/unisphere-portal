@@ -198,18 +198,38 @@ registrar can check a printed copy. PDFs are sent with `Content-Disposition: att
 | GET | `/verify/{reference}` | A | Student, CGPA, credits and course count recorded for the reference, first/last issue and count, and `current` (false once the record has changed since). `404` if never issued |
 
 ### 2.10 Finance — `/api/fees`
+Money is `NUMERIC(12,2)` in the database and `BigDecimal` in Java; responses carry amounts as JSON numbers
+with two decimals and requests take them as decimal strings (`"1500.00"`) so nothing is rounded through
+floating point. One currency is configured per installation (`FEE_CURRENCY`, default `KES`). The balance
+is never stored: it is Σ active charges − Σ completed payments, so `balance > 0` is owed and `< 0` is credit.
+Nothing is deleted: a charge is **voided** and a payment **reversed**, each with a reason, and both stay in
+the history (and the audit log). Finance staff (`F`) manage fees; administrators/registrar (`A`) can read
+accounts, fee structures and reports but not change them.
+
 | Method | Path | Access | Description |
 |--------|------|--------|-------------|
-| GET | `/me` | S | Own account: totals, balance, charges, payments |
-| POST | `/me/payments/simulate` | S | `{amount, method}` → simulated gateway payment |
-| GET | `/accounts` | F, A | Search `q`, `programId`, `hasBalance`; sort by balance; paginated |
-| GET | `/accounts/{studentId}` | F, A | Account detail |
-| POST | `/accounts/{studentId}/charges` | F | Manual charge |
-| POST | `/accounts/{studentId}/payments` | F | Record payment (unique `reference`) |
-| POST | `/payments/{id}/reverse` | F | `{reason}` → `REVERSED` |
-| POST | `/semesters/{semesterId}/generate-charges` | F, A | Apply fee structure to registered students (idempotent) |
-| GET | `/reports/outstanding` | F, A | Report JSON; `?format=csv` for CSV |
-| GET | `/reports/payments` | F, A | Payments in date range; CSV option |
+| GET | `/me` | S | Own account: student, currency, `summary {totalCharged, totalPaid, balance}`, charges and payments (newest first) |
+| POST | `/me/payments/simulate` | S | `{amount, method, idempotencyKey}` → `{payment, account}`. Method `MOBILE_MONEY` or `CARD`; amount ≤ balance (`422` otherwise). A declined payment returns `200` with `payment.status = FAILED` and a `failureReason`, and changes nothing. Repeating a key returns the first outcome instead of paying again |
+| GET | `/accounts` | F, A | Students with balances: `q`, `programId`, `hasBalance`; sort `balance` (default desc), `name`, `studentNumber`; paginated |
+| GET | `/accounts/{studentId}` | F, A | Account detail (same shape as `/me`) |
+| POST | `/accounts/{studentId}/charges` | F | `{description, amount, semesterId?}` manual charge → account |
+| POST | `/accounts/{studentId}/payments` | F | `{amount, method, reference, paidAt?, note?}` office payment → account. `reference` is unique (case-insensitive, `409` if recorded before); `paidAt` defaults to now and cannot be in the future |
+| POST | `/payments/{paymentId}/reverse` | F | `{reason}` → `REVERSED`; only completed payments (`409` otherwise) |
+| POST | `/charges/{chargeId}/void` | F | `{reason}` → `VOIDED` (`409` if already voided) |
+| GET | `/structures?semesterId=` | F, A | One row per active program: its fee for the semester (or `null`) and how many students were charged it |
+| PUT | `/structures` | F | `{programId, semesterId, amount, description}` create or update. The amount is fixed once anyone was charged (`409`); the description can still change |
+| DELETE | `/structures/{structureId}` | F | `204`; `409` once charged |
+| GET | `/semesters/{semesterId}/charges/preview` | F | Registered (approved) students, already charged, to charge now and the amount, and programs with registered students but no fee |
+| POST | `/semesters/{semesterId}/generate-charges` | F | Charge every registered student their program's fee → `{charged, alreadyCharged, withoutFee, amountCharged}`. Safe to repeat: a unique index stops a student being billed twice for one fee |
+| GET | `/reports/outstanding` | F, A | Students who owe money, largest first; `programId`; `?format=csv` for a spreadsheet |
+| GET | `/reports/payments` | F, A | `from`, `to` (ISO dates, inclusive, UTC) → rows and `totalCompleted`; `?format=csv` |
+
+**Simulated gateway.** `SimulatedPaymentGateway` stands in for a payment provider behind the
+`PaymentGateway` interface. It approves every amount except those ending in `.13`, which it declines so
+the failure path can be demonstrated. Online payments get a `UNI-yyyyMMdd-XXXXXXXX` reference.
+
+**CSV.** UTF-8 with a BOM and CRLF line endings so Excel opens it correctly; text cells starting with `=`,
+`+`, `-` or `@` are neutralised against formula injection. Sent as attachments with `Cache-Control: no-store`.
 
 ### 2.11 Notifications — `/api/notifications`
 | Method | Path | Access | Description |
@@ -225,7 +245,7 @@ registrar can check a printed copy. PDFs are sent with `Content-Disposition: att
 |--------|------|--------|-------------|
 | GET | `/api/admin/dashboard` | A | KPIs, registration activity series, recent results |
 | GET | `/api/lecturer/dashboard` | L | Own KPIs |
-| GET | `/api/fees/dashboard` | F | Collections KPIs |
+| GET | `/api/fees/dashboard` | F | Collections KPIs (Phase 8) |
 | GET | `/api/admin/audit-logs` | A | `actorId`, `action`, `entityType`, `from`, `to`; paginated |
 
 ### 2.13 Operational

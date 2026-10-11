@@ -35,4 +35,8 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
 
     @EntityGraph(attributePaths = {"semester"})
     List<Registration> findByStudentIdOrderBySemesterStartDateDesc(Long studentId);
+
+    /** e.g. every approved registration of a semester, for billing. */
+    @EntityGraph(attributePaths = {"student", "student.program"})
+    List<Registration> findBySemesterIdAndStatus(Long semesterId, RegistrationStatus status);
 }

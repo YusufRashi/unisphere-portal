@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import java.time.Duration;
 import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -21,7 +22,8 @@ public record UniSphereProperties(
         @NotBlank String universityName,
         @NotNull @Valid Security security,
         @NotNull Mail mail,
-        @NotNull BootstrapAdmin bootstrapAdmin) {
+        @NotNull BootstrapAdmin bootstrapAdmin,
+        @NotNull @Valid Finance finance) {
 
     public record Security(
             @NotNull @Valid Jwt jwt,
@@ -50,6 +52,10 @@ public record UniSphereProperties(
     }
 
     public record Mail(boolean logLinks) {
+    }
+
+    /** {@code currency} is an ISO 4217 code used for every fee account (one currency per installation). */
+    public record Finance(@NotBlank @Pattern(regexp = "^[A-Z]{3}$", message = "must be an ISO 4217 code such as KES") String currency) {
     }
 
     public record BootstrapAdmin(String email, String password, String firstName, String lastName) {

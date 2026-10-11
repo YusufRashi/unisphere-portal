@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class SemesterService {
     private final SemesterRepository semesters;
     private final EntityManager entityManager;
     private final AuditService audit;
+    private final ApplicationEventPublisher events;
     private final Clock clock;
 
     @Transactional(readOnly = true)
@@ -86,6 +88,7 @@ public class SemesterService {
         }
         s.openRegistration();
         audit.record(AuditAction.REGISTRATION_OPENED, ENTITY, id, Map.of("code", s.getCode()));
+        events.publishEvent(new RegistrationOpenedEvent(id, s.getName(), s.getRegistrationOpensAt(), s.getRegistrationClosesAt()));
         return toResponse(s);
     }
 

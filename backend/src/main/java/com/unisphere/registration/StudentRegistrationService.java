@@ -39,6 +39,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,6 +62,7 @@ public class StudentRegistrationService {
     private final SeatService seats;
     private final AcademicHistory history;
     private final AuditService audit;
+    private final ApplicationEventPublisher events;
     private final Clock clock;
 
     // ---- Queries ----
@@ -227,6 +229,7 @@ public class StudentRegistrationService {
         registration.submit(now, semester.isRequiresApproval());
         audit.record(AuditAction.REGISTRATION_SUBMITTED, "Registration", registration.getId(), Map.of(
                 "credits", registration.totalCredits(), "status", registration.getStatus().name()));
+        events.publishEvent(new RegistrationStatusChangedEvent(student.getUser().getId(), semester.getName(), registration.getStatus(), null));
         registrations.flush();
         return view(student, semester, registration);
     }

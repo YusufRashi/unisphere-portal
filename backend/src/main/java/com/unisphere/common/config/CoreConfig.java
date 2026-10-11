@@ -3,8 +3,10 @@ package com.unisphere.common.config;
 import java.time.Clock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Configuration
+@EnableScheduling
 public class CoreConfig {
 
     /** Injected everywhere time matters so that tests can control "now". */

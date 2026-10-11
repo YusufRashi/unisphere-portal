@@ -29,7 +29,8 @@ public final class TestFixtures {
                         Duration.ofMinutes(30)),
                 new UniSphereProperties.Mail(false),
                 new UniSphereProperties.BootstrapAdmin(null, null, null, null),
-                new UniSphereProperties.Finance("KES"));
+                new UniSphereProperties.Finance("KES"),
+                new UniSphereProperties.Notifications("-", Duration.ofHours(48), Duration.ofDays(14)));
     }
 
     /** An active user with the given id and password hash, as if loaded from the database. */

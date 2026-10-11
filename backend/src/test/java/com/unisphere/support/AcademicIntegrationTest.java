@@ -50,6 +50,8 @@ public abstract class AcademicIntegrationTest extends IntegrationTest {
     protected long departmentId;
     protected long programId;
     protected long semesterId;
+    /** Unique per semester, so tests can tell their semester apart from those other tests left in the database. */
+    protected String semesterName;
 
     protected record Person(long id, String number, String auth) {
     }
@@ -67,10 +69,15 @@ public abstract class AcademicIntegrationTest extends IntegrationTest {
     // ---- Fixtures ----
 
     protected void openSemester() throws Exception {
+        openSemester(false);
+    }
+
+    protected void openSemester(boolean requiresApproval) throws Exception {
         LocalDate today = LocalDate.ofInstant(clock.instant(), ZoneOffset.UTC);
         Map<String, Object> body = new HashMap<>();
         body.put("code", unique("S"));
-        body.put("name", "Results semester");
+        semesterName = unique("Semester ");
+        body.put("name", semesterName);
         body.put("academicYear", today.getYear() + "/" + (today.getYear() + 1));
         body.put("term", 1);
         body.put("startDate", today.minusDays(3).toString());
@@ -78,7 +85,7 @@ public abstract class AcademicIntegrationTest extends IntegrationTest {
         body.put("registrationOpensAt", clock.instant().minus(Duration.ofDays(1)).toString());
         body.put("registrationClosesAt", clock.instant().plus(Duration.ofDays(7)).toString());
         body.put("addDropDeadline", clock.instant().plus(Duration.ofDays(14)).toString());
-        body.put("requiresApproval", false);
+        body.put("requiresApproval", requiresApproval);
         body.put("minCredits", 0);
         body.put("maxCredits", 24);
         semesterId = call(postJson("/api/admin/semesters", body, admin), 201).get("id").asLong();

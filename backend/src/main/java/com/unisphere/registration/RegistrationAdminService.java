@@ -19,6 +19,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class RegistrationAdminService {
     private final SemesterRepository semesters;
     private final SeatService seats;
     private final AuditService audit;
+    private final ApplicationEventPublisher events;
     private final Clock clock;
 
     @Transactional(readOnly = true)
@@ -67,6 +69,7 @@ public class RegistrationAdminService {
         r.approve(CurrentUser.id(), clock.instant());
         audit.record(AuditAction.REGISTRATION_APPROVED, "Registration", id,
                 Map.of("student", r.getStudent().getStudentNumber(), "credits", r.totalCredits()));
+        publishStatus(r, null);
         return detail(r);
     }
 
@@ -82,7 +85,12 @@ public class RegistrationAdminService {
         r.reject(CurrentUser.id(), now, reason.trim());
         audit.record(AuditAction.REGISTRATION_REJECTED, "Registration", id,
                 Map.of("student", r.getStudent().getStudentNumber(), "reason", reason.trim()));
+        publishStatus(r, reason.trim());
         return detail(r);
+    }
+
+    private void publishStatus(Registration r, String reason) {
+        events.publishEvent(new RegistrationStatusChangedEvent(r.getStudent().getUser().getId(), r.getSemester().getName(), r.getStatus(), reason));
     }
 
     private Registration lockPending(Long id) {

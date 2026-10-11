@@ -42,6 +42,8 @@ import tools.jackson.databind.json.JsonMapper;
         "AUTH_RATE_LIMIT_PER_MINUTE=1000",
         "BOOTSTRAP_ADMIN_EMAIL=admin@uni.test",
         "BOOTSTRAP_ADMIN_PASSWORD=Registrar-Key-2026",
+        // Tests run the reminder job themselves, at the times they choose.
+        "NOTIFICATION_REMINDER_CRON=-",
 })
 @AutoConfigureMockMvc
 @Import(IntegrationTestBeans.class)

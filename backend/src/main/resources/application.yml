@@ -85,6 +85,11 @@ unisphere:
     last-name: Administrator
   finance:
     currency: ${FEE_CURRENCY:KES}
+  notifications:
+    # Daily at 06:00 UTC. Every reminder is sent at most once, so extra or overlapping runs are harmless.
+    reminder-cron: ${NOTIFICATION_REMINDER_CRON:0 0 6 * * *}
+    registration-deadline-lead: 48h
+    fee-reminder-interval: 14d
 
 logging:
   pattern:

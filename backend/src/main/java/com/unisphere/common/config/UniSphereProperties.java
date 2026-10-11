@@ -23,7 +23,8 @@ public record UniSphereProperties(
         @NotNull @Valid Security security,
         @NotNull Mail mail,
         @NotNull BootstrapAdmin bootstrapAdmin,
-        @NotNull @Valid Finance finance) {
+        @NotNull @Valid Finance finance,
+        @NotNull @Valid Notifications notifications) {
 
     public record Security(
             @NotNull @Valid Jwt jwt,
@@ -56,6 +57,15 @@ public record UniSphereProperties(
 
     /** {@code currency} is an ISO 4217 code used for every fee account (one currency per installation). */
     public record Finance(@NotBlank @Pattern(regexp = "^[A-Z]{3}$", message = "must be an ISO 4217 code such as KES") String currency) {
+    }
+
+    /**
+     * @param reminderCron              when the reminder job runs (Spring cron, UTC); "-" disables it
+     * @param registrationDeadlineLead  how long before registration closes students without a submitted registration are reminded
+     * @param feeReminderInterval       how often students with an outstanding balance are reminded
+     */
+    public record Notifications(@NotBlank String reminderCron, @NotNull Duration registrationDeadlineLead,
+                                @NotNull Duration feeReminderInterval) {
     }
 
     public record BootstrapAdmin(String email, String password, String firstName, String lastName) {

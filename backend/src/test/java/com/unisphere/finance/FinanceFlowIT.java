@@ -103,7 +103,7 @@ class FinanceFlowIT extends AcademicIntegrationTest {
 
         JsonNode mine = as(amina.auth(), get("/api/fees/me"), 200);
         assertThat(balance(mine)).isEqualByComparingTo("85000.00");
-        assertThat(mine.get("charges").get(0).get("description").asString()).isEqualTo("Tuition — Results semester");
+        assertThat(mine.get("charges").get(0).get("description").asString()).isEqualTo("Tuition — " + semesterName);
         assertThat(balance(as(unregistered.auth(), get("/api/fees/me"), 200))).isEqualByComparingTo("0.00");
 
         // Office payment, then the same receipt again (any case) is refused.

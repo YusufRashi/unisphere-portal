@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,7 @@ public class ResultsAdminService {
     private final ClassResults classResults;
     private final GradingScaleService scale;
     private final AuditService audit;
+    private final ApplicationEventPublisher events;
     private final Clock clock;
 
     /** Offerings of a semester (default: current) with their results status and marks progress. */
@@ -81,6 +83,7 @@ public class ResultsAdminService {
         o.finalizeResults(CurrentUser.id(), now);
         audit.record(AuditAction.RESULTS_FINALIZED, "CourseOffering", offeringId,
                 Map.of("offering", o.getLabel(), "students", rows.size(), "passed", passed));
+        events.publishEvent(new ResultsFinalizedEvent(offeringId, o.getCourse().getCode(), o.getCourse().getTitle(), o.getSemester().getName()));
         return classResults.sheet(o, rows);
     }
 

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router'
 import { useAuth } from '@/auth/authContext'
 import { cn } from '@/lib/cn'
+import { NotificationBell } from '@/features/notifications/NotificationBell'
 import { initials, ROLE_LABELS } from '@/lib/format'
 import { Logo } from './Logo'
 import { navigationFor } from './navigation'
@@ -145,7 +146,8 @@ export function AppLayout() {
           <div className="lg:hidden">
             <Logo />
           </div>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2 sm:gap-4">
+            <NotificationBell />
             <UserMenu />
           </div>
         </header>

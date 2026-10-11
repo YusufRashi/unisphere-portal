@@ -95,9 +95,12 @@ export function MyCoursesPage() {
                     </div>
                   </div>
                 </div>
-                <div className="border-t border-slate-200 px-5 py-3">
+                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-slate-200 px-5 py-3">
                   <Link to={`/lecturer/courses/${o.id}`} className="text-sm font-medium text-brand-700 hover:text-brand-900">
                     {o.resultsStatus === 'DRAFT' ? `Enter marks for ${o.course.code}` : `View results for ${o.course.code}`} →
+                  </Link>
+                  <Link to={`/announcements?offeringId=${o.id}`} className="text-sm text-slate-600 hover:text-slate-900">
+                    Announcements<span className="sr-only"> for {o.course.code}</span>
                   </Link>
                 </div>
               </Card>

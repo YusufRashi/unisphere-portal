@@ -3,6 +3,7 @@ import {
   Building2,
   CalendarDays,
   CalendarRange,
+  Bell,
   ClipboardCheck,
   ClipboardList,
   Clock,
@@ -11,6 +12,7 @@ import {
   GraduationCap,
   Landmark,
   LayoutDashboard,
+  Megaphone,
   NotebookPen,
   Presentation,
   Receipt,
@@ -40,7 +42,10 @@ export interface NavSection {
 /** Sidebar structure. Each phase adds the modules it delivers, so the menu only ever shows working screens. */
 export const NAVIGATION: NavSection[] = [
   {
-    items: [{ label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard }],
+    items: [
+      { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
+      { label: 'Notifications', to: '/notifications', icon: Bell },
+    ],
   },
   {
     title: 'My studies',
@@ -50,11 +55,15 @@ export const NAVIGATION: NavSection[] = [
       { label: 'My results', to: '/student/results', icon: GraduationCap, roles: ['STUDENT'] },
       { label: 'Transcript', to: '/student/transcript', icon: FileText, roles: ['STUDENT'] },
       { label: 'Fees', to: '/student/fees', icon: Wallet, roles: ['STUDENT'] },
+      { label: 'Announcements', to: '/announcements', icon: Megaphone, roles: ['STUDENT'] },
     ],
   },
   {
     title: 'Teaching',
-    items: [{ label: 'My courses', to: '/lecturer/courses', icon: NotebookPen, roles: ['LECTURER'] }],
+    items: [
+      { label: 'My courses', to: '/lecturer/courses', icon: NotebookPen, roles: ['LECTURER'] },
+      { label: 'Announcements', to: '/announcements', icon: Megaphone, roles: ['LECTURER'] },
+    ],
   },
   {
     title: 'Academic',

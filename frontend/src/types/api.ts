@@ -605,3 +605,46 @@ export interface PaymentReport {
     amount: number
   }[]
 }
+
+// ---- Notifications & announcements ----
+
+export type NotificationType =
+  | 'REGISTRATION_OPENED'
+  | 'REGISTRATION_DEADLINE'
+  | 'REGISTRATION_SUBMITTED'
+  | 'REGISTRATION_APPROVED'
+  | 'REGISTRATION_REJECTED'
+  | 'RESULTS_RELEASED'
+  | 'FEE_REMINDER'
+  | 'ANNOUNCEMENT'
+
+/** Named AppNotification so it does not shadow the browser's Notification. */
+export interface AppNotification {
+  id: number
+  type: NotificationType
+  title: string
+  message: string
+  /** A path inside the app, e.g. "/student/results". */
+  link: string | null
+  read: boolean
+  createdAt: string
+}
+
+export interface Announcement {
+  id: number
+  offeringId: number
+  courseCode: string
+  courseTitle: string
+  section: string
+  semester: { id: number; code: string; name: string }
+  title: string
+  body: string
+  authorName: string
+  createdAt: string
+}
+
+export interface AnnouncementPublished {
+  announcement: Announcement
+  /** How many enrolled students were notified. */
+  notified: number
+}

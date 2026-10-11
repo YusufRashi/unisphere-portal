@@ -27,6 +27,12 @@ const appRoutes: RouteObject[] = [
         children: [
           { index: true, element: <Navigate to="/dashboard" replace /> },
           { path: '/dashboard', lazy: async () => ({ Component: (await import('@/features/home/HomePage')).HomePage }) },
+          { path: '/notifications', lazy: async () => ({ Component: (await import('@/features/notifications/NotificationsPage')).NotificationsPage }) },
+          {
+            path: '/announcements',
+            element: <RequireRole roles={['STUDENT', 'LECTURER', 'ADMIN']} />,
+            children: [{ index: true, lazy: async () => ({ Component: (await import('@/features/announcements/AnnouncementsPage')).AnnouncementsPage }) }],
+          },
           { path: '/account', lazy: async () => ({ Component: (await import('@/features/account/AccountPage')).AccountPage }) },
           {
             path: '/student',

@@ -11,6 +11,19 @@ export function formatDate(iso: string | null | undefined, fallback = '—'): st
   return iso ? date.format(new Date(iso)) : fallback
 }
 
+const relative = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' })
+
+/** "just now", "5 minutes ago", "yesterday"; the date itself once it is more than a week old. */
+export function timeAgo(iso: string, now: number = Date.now()): string {
+  const seconds = Math.round((new Date(iso).getTime() - now) / 1000)
+  const abs = Math.abs(seconds)
+  if (abs < 60) return 'just now'
+  if (abs < 3600) return relative.format(Math.round(seconds / 60), 'minute')
+  if (abs < 86_400) return relative.format(Math.round(seconds / 3600), 'hour')
+  if (abs < 7 * 86_400) return relative.format(Math.round(seconds / 86_400), 'day')
+  return formatDate(iso)
+}
+
 export const ROLE_LABELS: Record<Role, string> = {
   STUDENT: 'Student',
   LECTURER: 'Lecturer',

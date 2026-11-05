@@ -17,7 +17,7 @@
     <description>UniSphere — University Student Management &amp; Academic Portal (REST API)</description>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
         <springdoc.version>3.1.1</springdoc.version>
         <openpdf.version>2.2.2</openpdf.version>
         <!-- Placeholder so tools like JaCoCo can prepend agents via @{argLine}. -->

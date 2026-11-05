@@ -170,7 +170,7 @@ unisphere/
 
 ## 8. Deployment strategy (summary — detailed in Phase 9)
 
-- **Images:** multi-stage builds — `maven` → `eclipse-temurin:21-jre-alpine`
+- **Images:** multi-stage builds — `maven` → `eclipse-temurin:25-jre-alpine`
   for the API (non-root user); `node` → `nginx:alpine` for the SPA.
 - **Target:** any container host. Reference deployment: a single VM (or
   Render / Railway / Fly.io) running `deploy/docker-compose.prod.yml` behind

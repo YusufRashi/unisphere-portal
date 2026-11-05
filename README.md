@@ -3,7 +3,7 @@
 A full-stack university information system: course registration, results and GPA, transcripts, fees and
 notifications, with separate workspaces for students, lecturers, the registrar and finance.
 
-**Stack:** Java 21 · Spring Boot 4.1 · Spring Security (JWT + rotating refresh tokens) · Spring Data JPA ·
+**Stack:** Java 25 LTS · Spring Boot 4.1 · Spring Security (JWT + rotating refresh tokens) · Spring Data JPA ·
 PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · TanStack Query · Docker · GitHub Actions
 
 > **Status: Phase 8 of 9 complete — foundation, authentication, academic structure, accounts, course registration, results & GPA, transcripts, finance, notifications, and dashboards.** See the [roadmap](docs/05-roadmap.md)
@@ -88,7 +88,7 @@ no CORS in normal operation and `SameSite=Strict` cookies just work. Details, de
 | Tool | Version | Needed for |
 |------|---------|-----------|
 | Docker Desktop / Docker Engine + Compose v2 | 24+ | Everything (simplest path) |
-| JDK | 21 | Running/testing the backend outside Docker |
+| JDK | 25 LTS | Running/testing the backend outside Docker |
 | Node.js | 22+ (24 recommended) | Running/testing the frontend outside Docker |
 | OpenSSL (or any random generator) | — | Generating secrets |
 
@@ -181,7 +181,7 @@ Open http://localhost:5173. For this setup set `APP_BASE_URL=http://localhost:51
 links point at the dev server.
 
 > **No JDK installed?** You can build and test the backend in a container instead:
-> `docker run --rm -v "$PWD/backend:/app" -w /app maven:3.9-eclipse-temurin-21 mvn verify`
+> `docker run --rm -v "$PWD/backend:/app" -w /app maven:3.9-eclipse-temurin-25 mvn verify`
 > (integration tests additionally need `-v /var/run/docker.sock:/var/run/docker.sock -e TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal`).
 
 ## Running tests

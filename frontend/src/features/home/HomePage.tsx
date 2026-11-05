@@ -1,53 +1,17 @@
-import {
-  BookOpen,
-  CalendarRange,
-  ClipboardCheck,
-  ClipboardList,
-  Clock,
-  FileText,
-  GraduationCap,
-  KeyRound,
-  Landmark,
-  Receipt,
-  Users,
-  Wallet,
-  type LucideIcon,
-} from 'lucide-react'
-import { Link } from 'react-router'
+import { lazy, Suspense, type ComponentType } from 'react'
 import { useAuth } from '@/auth/authContext'
 import { PageHeader } from '@/components/layout/PageHeader'
-import { Badge } from '@/components/ui/Badge'
-import { Card, CardBody, CardHeader } from '@/components/ui/Card'
+import { DashboardLoading } from '@/features/dashboard/figures'
 import { ROLE_LABELS } from '@/lib/format'
 import type { Role } from '@/types/api'
 
-interface Module {
-  title: string
-  description: string
-  icon: LucideIcon
-  roles: Role[]
-  /** Route when the module is available; undefined while it is still on the roadmap. */
-  to?: string
-}
-
-// Modules per role. Entries without a route are scheduled in docs/05-roadmap.md and gain a link as
-// each phase ships; Phase 8 replaces this page with full role dashboards and charts.
-const MODULES: Module[] = [
-  { title: 'Academic structure', description: 'Departments, programs and the course catalogue.', icon: Landmark, roles: ['ADMIN'], to: '/admin/courses' },
-  { title: 'Semesters & offerings', description: 'Calendar, registration windows and timetables.', icon: CalendarRange, roles: ['ADMIN'], to: '/admin/offerings' },
-  { title: 'Students & staff', description: 'Create accounts and manage records.', icon: Users, roles: ['ADMIN'], to: '/admin/students' },
-  { title: 'Course registration', description: 'Browse this semester’s courses and register.', icon: ClipboardList, roles: ['STUDENT'], to: '/student/registration' },
-  { title: 'My timetable', description: 'Your weekly classes and venues.', icon: Clock, roles: ['STUDENT'], to: '/student/timetable' },
-  { title: 'Registrations', description: 'Review and approve course registrations.', icon: ClipboardCheck, roles: ['ADMIN'], to: '/admin/registrations' },
-  { title: 'Results & GPA', description: 'Semester results, GPA and CGPA.', icon: GraduationCap, roles: ['STUDENT'], to: '/student/results' },
-  { title: 'Transcript', description: 'Download an unofficial transcript.', icon: FileText, roles: ['STUDENT'], to: '/student/transcript' },
-  { title: 'My courses', description: 'Class lists, marks entry and statistics.', icon: BookOpen, roles: ['LECTURER'], to: '/lecturer/courses' },
-  { title: 'Results', description: 'Review, finalize or return submitted marks.', icon: GraduationCap, roles: ['ADMIN'], to: '/admin/results' },
-  { title: 'Fees', description: 'Your balance, statement and online payment.', icon: Wallet, roles: ['STUDENT'], to: '/student/fees' },
-  { title: 'Fee accounts', description: 'Balances, payments, charges and corrections.', icon: Wallet, roles: ['FINANCE'], to: '/finance/accounts' },
-  { title: 'Fee structures', description: 'Tuition per program and semester billing.', icon: Landmark, roles: ['FINANCE'], to: '/finance/structures' },
-  { title: 'Finance reports', description: 'Outstanding balances and payments, with CSV export.', icon: Receipt, roles: ['FINANCE'], to: '/finance/reports' },
-  { title: 'Account settings', description: 'Change your password.', icon: KeyRound, roles: ['STUDENT', 'LECTURER', 'ADMIN', 'FINANCE'], to: '/account' },
+// Code-split per role: each user only downloads their own dashboard, and only those with charts pull in the
+// chart library.
+const DASHBOARDS: { role: Role; Dashboard: ComponentType }[] = [
+  { role: 'STUDENT', Dashboard: lazy(async () => ({ default: (await import('@/features/dashboard/StudentDashboard')).StudentDashboard })) },
+  { role: 'LECTURER', Dashboard: lazy(async () => ({ default: (await import('@/features/dashboard/LecturerDashboard')).LecturerDashboard })) },
+  { role: 'ADMIN', Dashboard: lazy(async () => ({ default: (await import('@/features/dashboard/AdminDashboard')).AdminDashboard })) },
+  { role: 'FINANCE', Dashboard: lazy(async () => ({ default: (await import('@/features/dashboard/FinanceDashboard')).FinanceDashboard })) },
 ]
 
 function greeting(): string {
@@ -57,76 +21,24 @@ function greeting(): string {
   return 'Good evening'
 }
 
+/** The page after signing in: the dashboard of each role the user holds. */
 export function HomePage() {
   const { user } = useAuth()
   if (!user) return null
-  const modules = MODULES.filter((m) => m.roles.some((r) => user.roles.includes(r)))
+  const mine = DASHBOARDS.filter((d) => user.roles.includes(d.role))
 
   return (
     <>
-      <PageHeader title={`${greeting()}, ${user.firstName}`} description="Here is what you can do in UniSphere." />
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader title="Your workspace" />
-          <ul className="grid sm:grid-cols-2">
-            {modules.map(({ title, description, icon: Icon, to }) => {
-              const content = (
-                <div className="flex h-full gap-3 p-4">
-                  <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-brand-50 text-brand-800">
-                    <Icon aria-hidden="true" className="size-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium text-slate-900">{title}</p>
-                      {!to && <Badge>Coming soon</Badge>}
-                    </div>
-                    <p className="mt-0.5 text-sm text-slate-500">{description}</p>
-                  </div>
-                </div>
-              )
-              return (
-                <li key={title} className="border-t border-slate-200 first:border-t-0 sm:odd:border-r sm:[&:nth-child(2)]:border-t-0">
-                  {to ? (
-                    <Link to={to} className="block h-full transition-colors hover:bg-slate-50">
-                      {content}
-                    </Link>
-                  ) : (
-                    content
-                  )}
-                </li>
-              )
-            })}
-          </ul>
-        </Card>
-
-        <Card>
-          <CardHeader title="Your account" />
-          <CardBody>
-            <dl className="space-y-3 text-sm">
-              <div>
-                <dt className="text-slate-500">Name</dt>
-                <dd className="font-medium text-slate-900">
-                  {user.firstName} {user.lastName}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-slate-500">Email</dt>
-                <dd className="font-medium break-all text-slate-900">{user.email}</dd>
-              </div>
-              <div>
-                <dt className="text-slate-500">Roles</dt>
-                <dd className="mt-1 flex flex-wrap gap-1.5">
-                  {user.roles.map((r) => (
-                    <Badge key={r} tone="brand">
-                      {ROLE_LABELS[r]}
-                    </Badge>
-                  ))}
-                </dd>
-              </div>
-            </dl>
-          </CardBody>
-        </Card>
+      <PageHeader title={`${greeting()}, ${user.firstName}`} description="Here is where things stand." />
+      <div className="space-y-10">
+        {mine.map(({ role, Dashboard }) => (
+          <section key={role} aria-label={`${ROLE_LABELS[role]} dashboard`}>
+            {mine.length > 1 && <h2 className="mb-3 text-base font-semibold text-slate-900">{ROLE_LABELS[role]}</h2>}
+            <Suspense fallback={<DashboardLoading label="Loading your dashboard…" />}>
+              <Dashboard />
+            </Suspense>
+          </section>
+        ))}
       </div>
     </>
   )

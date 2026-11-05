@@ -648,3 +648,72 @@ export interface AnnouncementPublished {
   /** How many enrolled students were notified. */
   notified: number
 }
+
+// ---- Dashboards ----
+
+export interface StudentDashboardData {
+  semester: { id: number; code: string; name: string } | null
+  cgpa: number | null
+  creditsEarned: number
+  /** Oldest first. */
+  gpaTrend: { semester: { id: number; code: string; name: string }; gpa: number }[]
+  /** Null when there is no current semester; `status` is null before the student starts registering. */
+  registration: { status: RegistrationStatus | null; courses: number; credits: number; minCredits: number; maxCredits: number } | null
+  fees: { currency: string; balance: number }
+  upcomingExams: { offeringId: number; courseCode: string; courseTitle: string; startsAt: string; venue: string | null }[]
+}
+
+export interface LecturerDashboardData {
+  semester: { id: number; code: string; name: string } | null
+  courses: number
+  students: number
+  marksMissing: number
+  awaitingReview: number
+  offerings: {
+    offeringId: number
+    courseCode: string
+    courseTitle: string
+    section: string
+    resultsStatus: ResultsStatus
+    classSize: number
+    marksComplete: number
+  }[]
+}
+
+export interface AdminDashboardData {
+  semester: { id: number; code: string; name: string } | null
+  totalStudents: number
+  activeStudents: number
+  lecturers: number
+  activeCourses: number
+  registrations: { approved: number; awaitingApproval: number; draft: number; rejected: number }
+  resultsAwaitingReview: number
+  outstandingFees: { currency: string; amount: number; students: number }
+  /** One entry per UTC day, oldest first. */
+  registrationActivity: { date: string; count: number }[]
+  recentResults: {
+    offeringId: number
+    courseCode: string
+    courseTitle: string
+    section: string
+    semesterName: string
+    finalizedAt: string
+    students: number
+    passed: number
+  }[]
+}
+
+export interface FinanceDashboardData {
+  currency: string
+  totalCharged: number
+  totalCollected: number
+  outstanding: number
+  studentsOwing: number
+  /** Percentage; null before anything has been charged. */
+  collectionRate: number | null
+  collectedLast30Days: number
+  /** One entry per week (starting Monday, UTC), oldest first. */
+  weeklyCollections: { weekStart: string; amount: number }[]
+  methodsLast30Days: { method: PaymentMethod; amount: number; payments: number }[]
+  largestBalances: FeeAccountRow[]
+}

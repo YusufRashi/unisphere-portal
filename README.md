@@ -6,7 +6,7 @@ notifications, with separate workspaces for students, lecturers, the registrar a
 **Stack:** Java 21 · Spring Boot 4.1 · Spring Security (JWT + rotating refresh tokens) · Spring Data JPA ·
 PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · TanStack Query · Docker · GitHub Actions
 
-> **Status: Phase 7 of 9 complete — foundation, authentication, academic structure, accounts, course registration, results & GPA, transcripts, finance, and notifications.** See the [roadmap](docs/05-roadmap.md)
+> **Status: Phase 8 of 9 complete — foundation, authentication, academic structure, accounts, course registration, results & GPA, transcripts, finance, notifications, and dashboards.** See the [roadmap](docs/05-roadmap.md)
 > for what each phase delivers. Features listed below are marked ✅ when implemented.
 
 ---
@@ -61,7 +61,7 @@ PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · T
 | Engagement | In-app notifications for registration, results and fees (sent after commit, never duplicated), bell with unread badge and inbox | ✅ |
 | | Course announcements from lecturers to their enrolled students | ✅ |
 | | Scheduled reminders: registration deadline for students who have not submitted, outstanding fee balances | ✅ |
-| | Role dashboards with charts | Phase 8 |
+| | Dashboards for each role: student standing and GPA trend, lecturer marks progress, registrar overview and registration activity, finance collections; every chart also reads as a table | ✅ |
 
 Full requirements and user stories: [docs/01-requirements.md](docs/01-requirements.md).
 

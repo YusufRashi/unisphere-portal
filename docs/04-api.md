@@ -124,7 +124,7 @@ filters. Response:
 |--------|------|--------|-------------|
 | GET | `/me` | S | Own student profile |
 | GET | `/me/timetable` | S | Weekly sessions of active items, current semester |
-| GET | `/me/dashboard` | S | Aggregated dashboard payload |
+| GET | `/me/dashboard` | S | `{semester, cgpa, creditsEarned, gpaTrend (oldest first), registration (status, courses, credits, min/max credits), fees (currency, balance), upcomingExams (next 5, once submitted)}` |
 | GET | `/{id}` | A, F | Student profile |
 
 ### 2.6 Registration — `/api/registrations`
@@ -261,9 +261,9 @@ key with a unique index, so extra runs, or runs on several instances at once, ne
 ### 2.12 Admin dashboard & audit
 | Method | Path | Access | Description |
 |--------|------|--------|-------------|
-| GET | `/api/admin/dashboard` | A | KPIs, registration activity series, recent results |
-| GET | `/api/lecturer/dashboard` | L | Own KPIs |
-| GET | `/api/fees/dashboard` | F | Collections KPIs (Phase 8) |
+| GET | `/api/admin/dashboard` | A | Student, lecturer and active course counts, registrations of the current semester by status, results awaiting review, outstanding fees, `registrationActivity` (submissions per UTC day, last 30 days), `recentResults` (last 5 finalized, with pass counts) |
+| GET | `/api/lecturer/dashboard` | L | Current semester: `courses`, `students`, `marksMissing` (in draft courses), `awaitingReview`, marks progress per offering |
+| GET | `/api/fees/dashboard` | F, A | `totalCharged`, `totalCollected`, `outstanding`, `studentsOwing`, `collectionRate` (null before anything is charged), `collectedLast30Days`, `weeklyCollections` (12 weeks from Monday, UTC), `methodsLast30Days`, `largestBalances` (top 5). Only completed payments count; a student in credit does not reduce `outstanding` |
 | GET | `/api/admin/audit-logs` | A | `actorId`, `action`, `entityType`, `from`, `to`; paginated |
 
 ### 2.13 Operational

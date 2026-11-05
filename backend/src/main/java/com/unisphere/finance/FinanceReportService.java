@@ -6,6 +6,7 @@ import com.unisphere.common.persistence.Specs;
 import com.unisphere.common.web.PageResponse;
 import com.unisphere.finance.FinanceEnums.PaymentStatus;
 import com.unisphere.finance.dto.FinanceDtos.AccountRow;
+import com.unisphere.finance.dto.FinanceDtos.BalanceTotals;
 import com.unisphere.finance.dto.FinanceDtos.PaymentReport;
 import com.unisphere.finance.dto.FinanceDtos.PaymentReportRow;
 import java.math.BigDecimal;
@@ -82,6 +83,26 @@ public class FinanceReportService {
         String where = where(null, programId, true, params);
         return jdbc.sql("select * from (" + BALANCES + ") x" + where + " order by x.balance desc, x.student_number")
                 .params(params).query(this::row).list();
+    }
+
+    /** The students who owe the most, largest balance first. */
+    @Transactional(readOnly = true)
+    public List<AccountRow> largestBalances(int limit) {
+        return jdbc.sql("select * from (" + BALANCES + ") x where x.balance > 0 order by x.balance desc, x.student_number limit :limit")
+                .param("limit", limit).query(this::row).list();
+    }
+
+    /** Totals across all students. A student in credit does not reduce what the others owe. */
+    @Transactional(readOnly = true)
+    public BalanceTotals balanceTotals() {
+        return jdbc.sql("""
+                        select coalesce(sum(x.charged), 0) as charged, coalesce(sum(x.paid), 0) as paid,
+                               coalesce(sum(x.balance) filter (where x.balance > 0), 0) as outstanding,
+                               count(*) filter (where x.balance > 0) as owing
+                        from (""" + BALANCES + ") x")
+                .query((rs, i) -> new BalanceTotals(rs.getBigDecimal("charged").setScale(2), rs.getBigDecimal("paid").setScale(2),
+                        rs.getBigDecimal("outstanding").setScale(2), rs.getLong("owing")))
+                .single();
     }
 
     /** Payments with a payment date in [from, to] (whole days, UTC), all statuses, oldest first. */

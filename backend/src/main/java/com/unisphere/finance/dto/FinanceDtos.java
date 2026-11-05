@@ -91,6 +91,10 @@ public final class FinanceDtos {
 
     // ---- Lists and reports ----
 
+    /** Across all students; {@code outstanding} only adds up positive balances. */
+    public record BalanceTotals(BigDecimal charged, BigDecimal paid, BigDecimal outstanding, long studentsOwing) {
+    }
+
     public record AccountRow(
             Long studentId, String studentNumber, String name, String email, String programCode, String currency,
             BigDecimal totalCharged, BigDecimal totalPaid, BigDecimal balance) {

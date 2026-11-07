@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.parser.PdfTextExtractor;
+import org.openpdf.text.pdf.PdfReader;
+import org.openpdf.text.pdf.parser.PdfTextExtractor;
 import com.unisphere.support.AcademicIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;

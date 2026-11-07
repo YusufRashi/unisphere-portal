@@ -81,6 +81,7 @@ const appRoutes: RouteObject[] = [
             element: <RequireRole roles={['ADMIN']} />,
             children: [
               { path: 'users', lazy: async () => ({ Component: (await import('@/features/admin/users/UsersPage')).UsersPage }) },
+              { path: 'audit', lazy: async () => ({ Component: (await import('@/features/admin/audit/AuditLogPage')).AuditLogPage }) },
               { path: 'departments', lazy: async () => ({ Component: (await import('@/features/admin/departments/DepartmentsPage')).DepartmentsPage }) },
               { path: 'programs', lazy: async () => ({ Component: (await import('@/features/admin/programs/ProgramsPage')).ProgramsPage }) },
               { path: 'courses', lazy: async () => ({ Component: (await import('@/features/admin/courses/CoursesPage')).CoursesPage }) },

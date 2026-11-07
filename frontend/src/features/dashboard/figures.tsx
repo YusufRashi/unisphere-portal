@@ -20,7 +20,7 @@ export function StatTile({ label, value, hint, link }: {
   return (
     <div className="flex flex-col rounded-lg border border-slate-200 bg-white px-5 py-4 shadow-xs">
       <dt className="text-sm text-slate-500">{label}</dt>
-      <dd className="mt-1 text-2xl font-semibold tracking-tight break-words text-slate-900">{value}</dd>
+      <dd className="mt-1 text-xl font-semibold tracking-tight break-words text-slate-900">{value}</dd>
       {hint && <dd className="mt-1 text-xs text-slate-500">{hint}</dd>}
       {link && (
         <dd className="mt-auto pt-2 text-xs">

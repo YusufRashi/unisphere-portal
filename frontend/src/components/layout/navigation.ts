@@ -10,6 +10,7 @@ import {
   FileCheck2,
   FileText,
   GraduationCap,
+  History,
   Landmark,
   LayoutDashboard,
   Megaphone,
@@ -93,6 +94,7 @@ export const NAVIGATION: NavSection[] = [
       { label: 'Students', to: '/admin/students', icon: Users, roles: ['ADMIN'] },
       { label: 'Lecturers', to: '/admin/lecturers', icon: Presentation, roles: ['ADMIN'] },
       { label: 'All accounts', to: '/admin/users', icon: UserCog, roles: ['ADMIN'] },
+      { label: 'Audit log', to: '/admin/audit', icon: History, roles: ['ADMIN'] },
     ],
   },
   {

@@ -649,6 +649,25 @@ export interface AnnouncementPublished {
   notified: number
 }
 
+// ---- Audit log ----
+
+export interface AuditEntry {
+  id: number
+  createdAt: string
+  /** Null for system actions and failed sign-ins of unknown users. */
+  actor: { id: number; name: string; email: string } | null
+  action: string
+  entityType: string | null
+  entityId: string | null
+  details: Record<string, unknown>
+  ipAddress: string | null
+}
+
+export interface AuditFilters {
+  actions: string[]
+  entityTypes: string[]
+}
+
 // ---- Dashboards ----
 
 export interface StudentDashboardData {

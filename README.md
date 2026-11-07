@@ -8,8 +8,6 @@ PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · T
 
 > **Status: all nine roadmap phases are complete.** See the [roadmap](docs/05-roadmap.md) for what each one delivers.
 >
-> **Before real use:** no email provider is integrated yet, so activation and password-reset emails are not actually sent. See [Email](#email).
-
 | Student dashboard | Registrar dashboard |
 |---|---|
 | ![Student dashboard with CGPA, GPA trend, credit load, exams and notifications](docs/screenshots/student-dashboard.png) | ![Registrar dashboard with university figures and registration activity](docs/screenshots/registrar-dashboard.png) |
@@ -191,7 +189,11 @@ every variable with a description.
 | `NOTIFICATION_REMINDER_CRON` | no | When reminders are sent (Spring cron, UTC; default `0 0 6 * * *`, `-` turns them off) |
 | `AUTH_RATE_LIMIT_PER_MINUTE` | no | Per-IP limit on login, activation and password-reset requests (default 20; token refresh is not limited) |
 | `BOOTSTRAP_ADMIN_EMAIL` / `BOOTSTRAP_ADMIN_PASSWORD` | first run | Creates the first admin if none exists |
-| `MAIL_LOG_LINKS` | no | `true` prints activation/reset links to the log (development only) |
+| `MAIL_HOST` / `MAIL_PORT` | production | SMTP server for activation and password-reset emails (port default `587`). Empty: nothing is sent. See [Email](#email) |
+| `MAIL_USERNAME` / `MAIL_PASSWORD` | if the server needs them | SMTP credentials |
+| `MAIL_SECURITY` | no | `STARTTLS` (default), `TLS`, or `NONE` for a local test server |
+| `MAIL_FROM` | with `MAIL_HOST` | Sender, e.g. `UniSphere <no-reply@university.edu>`. The API refuses to start without a valid one |
+| `MAIL_LOG_LINKS` | no | `true` prints activation/reset links to the log while `MAIL_HOST` is empty (development only) |
 | `API_DOCS_ENABLED` | no | Swagger UI / OpenAPI JSON (default `true`; set `false` in production) |
 | `SPRING_PROFILES_ACTIVE` / `DEMO_PASSWORD` | demo only | `demo` loads the [demo university](#try-it-with-demo-data) into an empty database, with this password on every account |
 | `TRUSTED_PROXY_CIDR` | behind a proxy | Web container: the proxy allowed to report the client's address and scheme (default: none) |
@@ -310,7 +312,8 @@ PostgreSQL, remove the `db` service and set `DB_URL`; create the application rol
 
 The images are platform-neutral:
 
-- **API container:** all required variables, `COOKIE_SECURE=true`, `API_DOCS_ENABLED=false`, `MAIL_LOG_LINKS=false`.
+- **API container:** all required variables, the `MAIL_*` settings, `COOKIE_SECURE=true`, `API_DOCS_ENABLED=false`,
+  `MAIL_LOG_LINKS=false`.
   Readiness probe: `/actuator/health/readiness`. Never publish its port: it trusts `X-Forwarded-*` headers.
 - **Web container:** serves the SPA and proxies `/api` to the API (service name `backend`). Terminate TLS in front of it
   and set `TRUSTED_PROXY_CIDR` to your proxy's address range. Without it, every user appears to come from the proxy
@@ -325,11 +328,27 @@ checks and publishes `ghcr.io/<owner>/unisphere-api` and `-web`, tagged `1.0.0`,
 
 ### Email
 
-**No email provider is integrated yet.** `LoggingAccountMailer` stands behind the `AccountMailer` interface, so
-activation and password-reset emails are not sent. In production, the first administrator comes from
-`BOOTSTRAP_ADMIN_*`, but anyone else you create cannot activate their account until you either implement
-`AccountMailer` for your provider (recommended) or temporarily set `MAIL_LOG_LINKS=true` and pass on the links from the
-log. Those links are secrets, so treat the log accordingly and turn the setting back off.
+New accounts are activated, and forgotten passwords reset, through links sent by email. Set `MAIL_HOST`, `MAIL_FROM` and,
+if your provider needs them, `MAIL_USERNAME`/`MAIL_PASSWORD`. Any SMTP service works:
+
+| Provider | `MAIL_HOST` | `MAIL_USERNAME` |
+|----------|-------------|-----------------|
+| Amazon SES | `email-smtp.<region>.amazonaws.com` | SMTP credentials from the SES console |
+| SendGrid | `smtp.sendgrid.net` | `apikey` (the password is the API key) |
+| Mailgun | `smtp.mailgun.org` | the domain's SMTP login |
+| Microsoft 365 | `smtp.office365.com` | the mailbox address |
+
+The sender's domain must be verified with the provider (SPF/DKIM), or messages land in spam.
+
+Emails are plain text and go out only after the change that created the link is saved, on a background thread with
+three attempts. A slow or unavailable mail server therefore never slows down or fails a request, and "forgot password"
+answers the same way whether or not the address has an account. If sending fails, the log says so (without the link),
+and the registrar can send a new activation link from the user's record. Encryption is required by default: with
+`STARTTLS` the API refuses to send over an unencrypted connection.
+
+Without `MAIL_HOST`, nothing is sent. That suits development, where `MAIL_LOG_LINKS=true` prints the links to the log
+instead; never use that setting in production, because the links are secrets. The production Compose file refuses to
+start without `MAIL_HOST`.
 
 ## API documentation
 

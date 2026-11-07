@@ -61,8 +61,14 @@ services:
       NOTIFICATION_REMINDER_CRON: ${NOTIFICATION_REMINDER_CRON:-0 0 6 * * *}
       BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-}
       BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-}
-      # Links contain secrets, so they stay out of the logs. See "Email" in the README.
-      MAIL_LOG_LINKS: ${MAIL_LOG_LINKS:-false}
+      # Account emails go out through this SMTP server. Links contain secrets, so they never go to the logs here.
+      MAIL_LOG_LINKS: "false"
+      MAIL_HOST: ${MAIL_HOST:?Set MAIL_HOST in .env.prod - without it nobody can activate an account}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_SECURITY: ${MAIL_SECURITY:-STARTTLS}
+      MAIL_FROM: ${MAIL_FROM:?Set MAIL_FROM in .env.prod}
     networks:
       - internal
 

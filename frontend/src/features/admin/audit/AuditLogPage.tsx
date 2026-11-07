@@ -45,7 +45,7 @@ export function AuditLogPage() {
       <Card>
         <TableToolbar className="sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_14rem_11rem_10rem_10rem_auto]">
           <div className="relative">
-            <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-slate-400" />
+            <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-neutral-400" />
             <TextField
               label="Search by name or email"
               hideLabel
@@ -106,28 +106,28 @@ export function AuditLogPage() {
           }
         >
           {data?.content.map((e) => (
-            <tr key={e.id} className="hover:bg-slate-50/60">
-              <Td className="whitespace-nowrap text-slate-600">{formatDateTime(e.createdAt)}</Td>
+            <tr key={e.id} className="hover:bg-neutral-50/60">
+              <Td className="whitespace-nowrap text-neutral-600">{formatDateTime(e.createdAt)}</Td>
               <Td>
                 {e.actor ? (
                   <>
-                    <p className="font-medium text-slate-900">{e.actor.name}</p>
-                    <p className="text-xs text-slate-500">{e.actor.email}</p>
+                    <p className="font-medium text-neutral-900">{e.actor.name}</p>
+                    <p className="text-xs text-neutral-500">{e.actor.email}</p>
                   </>
                 ) : (
-                  <span className="text-slate-500">System</span>
+                  <span className="text-neutral-500">System</span>
                 )}
               </Td>
-              <Td className="whitespace-nowrap text-slate-900">{actionLabel(e.action)}</Td>
-              <Td className="whitespace-nowrap text-slate-600">{e.entityType ? `${e.entityType}${e.entityId ? ` #${e.entityId}` : ''}` : '—'}</Td>
-              <Td className="min-w-48 text-xs break-words text-slate-600">
+              <Td className="whitespace-nowrap text-neutral-900">{actionLabel(e.action)}</Td>
+              <Td className="whitespace-nowrap text-neutral-600">{e.entityType ? `${e.entityType}${e.entityId ? ` #${e.entityId}` : ''}` : '—'}</Td>
+              <Td className="min-w-48 text-xs break-words text-neutral-600">
                 {Object.entries(e.details).map(([key, value]) => (
                   <p key={key}>
-                    <span className="text-slate-500">{key}:</span> {detailText(value)}
+                    <span className="text-neutral-500">{key}:</span> {detailText(value)}
                   </p>
                 ))}
               </Td>
-              <Td className="hidden whitespace-nowrap text-slate-500 tabular-nums xl:table-cell">{e.ipAddress ?? '—'}</Td>
+              <Td className="hidden whitespace-nowrap text-neutral-500 tabular-nums xl:table-cell">{e.ipAddress ?? '—'}</Td>
             </tr>
           ))}
         </DataTable>

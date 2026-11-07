@@ -85,7 +85,7 @@ function CreateStaffModal({ onClose }: { onClose: () => void }) {
         {formError && <Alert tone="error">{formError}</Alert>}
         <PersonFields register={form.register} errors={form.formState.errors} />
         <fieldset className="space-y-3">
-          <legend className="text-sm font-medium text-slate-700">Roles</legend>
+          <legend className="text-sm font-medium text-neutral-700">Roles</legend>
           <CheckboxField label="Registrar / Admin" description="Full access to academic administration and accounts." {...form.register('admin')} />
           <CheckboxField label="Finance" description="Fee accounts, payments and financial reports." {...form.register('finance')} />
           {form.formState.errors.finance && <p className="text-xs font-medium text-red-700">{form.formState.errors.finance.message}</p>}
@@ -137,7 +137,7 @@ export function UsersPage() {
       <Card>
         <TableToolbar className="sm:grid-cols-[minmax(0,1fr)_12rem_12rem]">
           <div className="relative">
-            <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-slate-400" />
+            <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-neutral-400" />
             <TextField
               label="Search users"
               hideLabel
@@ -207,12 +207,12 @@ export function UsersPage() {
           }
         >
           {data?.content.map((u) => (
-            <tr key={u.id} className="hover:bg-slate-50/60">
+            <tr key={u.id} className="hover:bg-neutral-50/60">
               <Td>
-                <p className="font-medium text-slate-900">
+                <p className="font-medium text-neutral-900">
                   {u.lastName}, {u.firstName}
                 </p>
-                <p className="text-xs text-slate-500">{u.email}</p>
+                <p className="text-xs text-neutral-500">{u.email}</p>
                 {/* On small screens the status column is hidden; show it under the name instead. */}
                 <div className="mt-1 md:hidden">
                   <Badge tone={STATUS_TONES[u.status]}>{STATUS_LABELS[u.status]}</Badge>
@@ -230,7 +230,7 @@ export function UsersPage() {
               <Td className="hidden md:table-cell">
                 <Badge tone={STATUS_TONES[u.status]}>{STATUS_LABELS[u.status]}</Badge>
               </Td>
-              <Td className="hidden whitespace-nowrap text-slate-600 md:table-cell">{formatDateTime(u.lastLoginAt, 'Never')}</Td>
+              <Td className="hidden whitespace-nowrap text-neutral-600 md:table-cell">{formatDateTime(u.lastLoginAt, 'Never')}</Td>
               <Td className="text-right whitespace-nowrap">
                 {u.status === 'PENDING_ACTIVATION' && <ResendActivationButton userId={u.id} name={`${u.firstName} ${u.lastName}`} />}
                 {u.id !== me?.id &&

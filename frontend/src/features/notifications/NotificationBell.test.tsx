@@ -1,11 +1,13 @@
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import * as notificationsApi from '@/api/notifications'
+import * as streamApi from '@/api/notificationStream'
 import { makeAuth, makeUser, renderWithProviders } from '@/test/utils'
 import type { AppNotification, PageResponse } from '@/types/api'
 import { NotificationBell } from './NotificationBell'
 
 vi.mock('@/api/notifications')
+vi.mock('@/api/notificationStream')
 
 function notification(id: number, overrides: Partial<AppNotification> = {}): AppNotification {
   return {
@@ -36,6 +38,22 @@ function renderBell() {
 }
 
 describe('NotificationBell', () => {
+  it('updates the badge the moment the server pushes a new count', async () => {
+    let push: ((e: streamApi.StreamEvent) => void) | undefined
+    vi.mocked(streamApi.listenToNotifications).mockImplementation((onEvent) => {
+      push = onEvent
+      return new Promise(() => {})
+    })
+    vi.mocked(notificationsApi.getUnreadCount).mockResolvedValue(1)
+    renderBell()
+
+    expect(await screen.findByRole('button', { name: 'Notifications, 1 unread' })).toBeInTheDocument()
+    push?.({ event: 'unread', data: '{"count":4}' })
+    expect(await screen.findByRole('button', { name: 'Notifications, 4 unread' })).toBeInTheDocument()
+    push?.({ event: 'unread', data: '{"count":0}' })
+    expect(await screen.findByRole('button', { name: 'Notifications' })).toBeInTheDocument()
+  })
+
   it('shows the unread count and loads the latest notifications when opened', async () => {
     const user = userEvent.setup()
     vi.mocked(notificationsApi.getUnreadCount).mockResolvedValue(12)

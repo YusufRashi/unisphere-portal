@@ -77,7 +77,7 @@ export function SetPasswordForm({ submitLabel, onSubmit }: {
         {PASSWORD_RULES.filter((r) => r.id !== 'email').map((rule) => {
           const ok = rule.test(password ?? '')
           return (
-            <li key={rule.id} className={cn('flex items-center gap-2 text-xs', ok ? 'text-emerald-700' : 'text-slate-500')}>
+            <li key={rule.id} className={cn('flex items-center gap-2 text-xs', ok ? 'text-emerald-700' : 'text-neutral-500')}>
               {ok ? <Check aria-hidden="true" className="size-3.5" /> : <Circle aria-hidden="true" className="size-3.5" />}
               {rule.label}
               <span className="sr-only">{ok ? '(met)' : '(not met)'}</span>

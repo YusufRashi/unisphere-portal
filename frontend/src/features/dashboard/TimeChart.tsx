@@ -2,12 +2,8 @@ import { useState, type ReactNode } from 'react'
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { Button } from '@/components/ui/Button'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
+import { useChartColors } from './useChartColors'
 
-// Recharts draws SVG attributes, so these repeat the theme: brand-600 (checked for contrast and colour
-// blindness against the white card) and slate-200 / slate-500 for the recessive grid and axis text.
-const SERIES = '#2550eb'
-const GRID = '#e2e8f0'
-const AXIS_TEXT = '#64748b'
 const HEIGHT = 240
 
 export interface TimePoint {
@@ -40,9 +36,9 @@ function PointTooltip({ active, payload }: { active?: boolean; payload?: readonl
   const point = payload?.[0]?.payload
   if (!active || !point) return null
   return (
-    <div className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs shadow-md">
-      <p className="text-sm font-semibold text-slate-900">{point.text}</p>
-      <p className="mt-0.5 text-slate-500">{point.period}</p>
+    <div className="rounded-lg border border-neutral-200 bg-surface px-3 py-2 text-xs shadow-md">
+      <p className="text-sm font-semibold text-neutral-900">{point.text}</p>
+      <p className="mt-0.5 text-neutral-500">{point.period}</p>
     </div>
   )
 }
@@ -53,16 +49,17 @@ function PointTooltip({ active, payload }: { active?: boolean; payload?: readonl
  */
 export function TimeChart({ title, description, kind, data, periodHeading, valueHeading, formatTick, domain, ticks, empty }: TimeChartProps) {
   const [asTable, setAsTable] = useState(false)
+  const c = useChartColors()
   const axes = (
     <>
-      <CartesianGrid vertical={false} stroke={GRID} />
+      <CartesianGrid vertical={false} stroke={c.grid} />
       <XAxis
         dataKey="label"
         tickLine={false}
-        axisLine={{ stroke: GRID }}
+        axisLine={{ stroke: c.grid }}
         interval="preserveStartEnd"
         minTickGap={24}
-        tick={{ fontSize: 12, fill: AXIS_TEXT }}
+        tick={{ fontSize: 12, fill: c.axis }}
       />
       <YAxis
         width={52}
@@ -72,7 +69,7 @@ export function TimeChart({ title, description, kind, data, periodHeading, value
         domain={domain ?? [0, 'auto']}
         ticks={ticks}
         tickFormatter={formatTick}
-        tick={{ fontSize: 12, fill: AXIS_TEXT }}
+        tick={{ fontSize: 12, fill: c.axis }}
       />
     </>
   )
@@ -97,16 +94,16 @@ export function TimeChart({ title, description, kind, data, periodHeading, value
             <table className="w-full text-sm">
               <caption className="sr-only">{title}</caption>
               <thead>
-                <tr className="border-b border-slate-200 text-left text-xs text-slate-500">
+                <tr className="border-b border-neutral-200 text-left text-xs text-neutral-500">
                   <th scope="col" className="py-2 font-medium">{periodHeading}</th>
                   <th scope="col" className="py-2 text-right font-medium">{valueHeading}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-neutral-100">
                 {data.map((p) => (
                   <tr key={p.period}>
-                    <td className="py-1.5 text-slate-700">{p.period}</td>
-                    <td className="py-1.5 text-right text-slate-900 tabular-nums">{p.text}</td>
+                    <td className="py-1.5 text-neutral-700">{p.period}</td>
+                    <td className="py-1.5 text-right text-neutral-900 tabular-nums">{p.text}</td>
                   </tr>
                 ))}
               </tbody>
@@ -119,23 +116,23 @@ export function TimeChart({ title, description, kind, data, periodHeading, value
               {kind === 'column' ? (
                 <BarChart data={data} margin={{ top: 8, right: 4, bottom: 0, left: 0 }} barCategoryGap="20%">
                   {axes}
-                  <Tooltip cursor={{ fill: '#f1f5f9' }} content={PointTooltip} />
-                  <Bar dataKey="value" fill={SERIES} maxBarSize={24} radius={[4, 4, 0, 0]} isAnimationActive={false} />
+                  <Tooltip cursor={{ fill: c.hover }} content={PointTooltip} />
+                  <Bar dataKey="value" fill={c.series} maxBarSize={24} radius={[4, 4, 0, 0]} isAnimationActive={false} />
                 </BarChart>
               ) : (
                 <LineChart data={data} margin={{ top: 16, right: 32, bottom: 0, left: 0 }}>
                   {axes}
-                  <Tooltip cursor={{ stroke: GRID }} content={PointTooltip} />
+                  <Tooltip cursor={{ stroke: c.grid }} content={PointTooltip} />
                   <Line
                     dataKey="value"
-                    stroke={SERIES}
+                    stroke={c.series}
                     strokeWidth={2}
-                    dot={{ r: 4, fill: SERIES, stroke: '#ffffff', strokeWidth: 2 }}
-                    activeDot={{ r: 5, fill: SERIES, stroke: '#ffffff', strokeWidth: 2 }}
+                    dot={{ r: 4, fill: c.series, stroke: c.surface, strokeWidth: 2 }}
+                    activeDot={{ r: 5, fill: c.series, stroke: c.surface, strokeWidth: 2 }}
                     isAnimationActive={false}
                     label={({ x, y, index }: { x?: number | string; y?: number | string; index?: number }) =>
                       index === data.length - 1 ? (
-                        <text x={Number(x)} y={Number(y) - 12} textAnchor="middle" fontSize={12} fontWeight={600} fill="#0f172a">
+                        <text x={Number(x)} y={Number(y) - 12} textAnchor="middle" fontSize={12} fontWeight={600} fill={c.ink}>
                           {data[index]?.text}
                         </text>
                       ) : (

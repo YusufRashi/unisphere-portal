@@ -1,3 +1,4 @@
+import graduatesCaps from '@/assets/photos/graduates-caps.webp'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { ArrowLeft, Download, Printer } from 'lucide-react'
 import { Link, useParams } from 'react-router'
@@ -38,6 +39,8 @@ export function TranscriptPage({ mode }: { mode: 'student' | 'registrar' }) {
           </Link>
         )}
         <PageHeader
+          image={graduatesCaps}
+          imageClassName="object-[center_30%]"
           title={mode === 'student' ? 'My transcript' : 'Student transcript'}
           description="Unofficial: valid only with registrar certification."
           actions={

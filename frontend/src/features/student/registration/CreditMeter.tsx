@@ -13,9 +13,9 @@ export function CreditMeter({ total, min, max }: { total: number; min: number; m
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <p className="text-sm font-medium text-slate-700">Credit load</p>
-        <p className="text-sm text-slate-600">
-          <span className="text-lg font-semibold text-slate-900 tabular-nums">{total}</span> / {max}
+        <p className="text-sm font-medium text-neutral-700">Credit load</p>
+        <p className="text-sm text-neutral-600">
+          <span className="text-lg font-semibold text-neutral-900 tabular-nums">{total}</span> / {max}
         </p>
       </div>
       <div
@@ -25,14 +25,14 @@ export function CreditMeter({ total, min, max }: { total: number; min: number; m
         aria-valuemax={max}
         aria-valuenow={total}
         aria-valuetext={`${total} of ${max} credits. ${message}`}
-        className="relative mt-2 h-2 rounded-full bg-slate-100"
+        className="relative mt-2 h-2 rounded-full bg-neutral-100"
       >
         <div
           className={cn('h-full rounded-full transition-[width]', state === 'ok' ? 'bg-emerald-500' : state === 'under' ? 'bg-amber-500' : 'bg-red-500')}
           style={{ width: `${percent}%` }}
         />
         {min > 0 && (
-          <div aria-hidden="true" className="absolute -top-1 h-4 w-0.5 rounded bg-slate-400" style={{ left: `${minPercent}%` }} />
+          <div aria-hidden="true" className="absolute -top-1 h-4 w-0.5 rounded bg-neutral-400" style={{ left: `${minPercent}%` }} />
         )}
       </div>
       <p className={cn('mt-1.5 text-xs', state === 'ok' ? 'text-emerald-700' : state === 'under' ? 'text-amber-700' : 'text-red-700')}>

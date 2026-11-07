@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Pagination } from '@/components/ui/Pagination'
+import { PillTabs } from '@/components/ui/PillTabs'
 import { Spinner } from '@/components/ui/Spinner'
 import { cn } from '@/lib/cn'
 import { NotificationContent } from './NotificationContent'
@@ -44,22 +45,16 @@ export function NotificationsPage() {
           </Button>
         }
       />
-      <div role="group" aria-label="Show" className="mb-4 inline-flex rounded-md border border-slate-300 bg-white p-0.5">
-        {[false, true].map((unread) => (
-          <button
-            key={String(unread)}
-            type="button"
-            aria-pressed={unreadOnly === unread}
-            onClick={() => setFilter(unread)}
-            className={cn(
-              'rounded px-3 py-1.5 text-sm font-medium',
-              unreadOnly === unread ? 'bg-brand-800 text-white' : 'text-slate-700 hover:bg-slate-100',
-            )}
-          >
-            {unread ? 'Unread' : 'All'}
-          </button>
-        ))}
-      </div>
+      <PillTabs
+        label="Show"
+        className="mb-4"
+        options={[
+          { value: 'all', label: 'All' },
+          { value: 'unread', label: 'Unread' },
+        ]}
+        value={unreadOnly ? 'unread' : 'all'}
+        onChange={(v) => setFilter(v === 'unread')}
+      />
 
       {query.error ? (
         <Alert tone="error">{errorMessage(query.error)}</Alert>
@@ -77,7 +72,7 @@ export function NotificationsPage() {
         </Card>
       ) : (
         <Card>
-          <ul aria-label="Notifications" className="divide-y divide-slate-100">
+          <ul aria-label="Notifications" className="divide-y divide-neutral-100">
             {query.data.content.map((n) => (
               <li key={n.id} className={cn('flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-start', !n.read && 'bg-brand-50/40')}>
                 <div className="min-w-0 flex-1">
@@ -88,7 +83,7 @@ export function NotificationsPage() {
                     <Link
                       to={n.link}
                       onClick={() => !n.read && markRead.mutate(n.id)}
-                      className="inline-flex h-8 items-center rounded-md border border-slate-300 bg-white px-3 text-xs font-medium text-slate-800 hover:bg-slate-50"
+                      className="inline-flex h-8 items-center rounded-lg border border-neutral-300 bg-surface px-3 text-xs font-medium text-neutral-800 hover:bg-neutral-50"
                     >
                       Open<span className="sr-only">: {n.title}</span>
                     </Link>

@@ -90,7 +90,7 @@ export function SearchSelect({
 
   return (
     <div className="space-y-1.5">
-      <label htmlFor={id} className="block text-sm font-medium text-slate-700">
+      <label htmlFor={id} className="block text-sm font-medium text-neutral-700">
         {label}
       </label>
       <div className="relative">
@@ -119,19 +119,19 @@ export function SearchSelect({
           }}
           onKeyDown={onKeyDown}
           className={cn(
-            'block h-9 w-full rounded-md border bg-white pr-14 pl-3 text-sm shadow-xs placeholder:text-slate-400',
-            'focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 focus:outline-none disabled:bg-slate-50 disabled:text-slate-500',
-            error ? 'border-red-500' : 'border-slate-300',
+            'block h-10 w-full rounded-lg border bg-surface pr-14 pl-3 text-sm shadow-xs placeholder:text-neutral-400',
+            'focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 focus:outline-none disabled:bg-neutral-50 disabled:text-neutral-500',
+            error ? 'border-red-500' : 'border-neutral-200',
           )}
         />
-        <div className="absolute inset-y-0 right-2 flex items-center gap-1 text-slate-400">
+        <div className="absolute inset-y-0 right-2 flex items-center gap-1 text-neutral-400">
           {value && !disabled && !clearOnSelect && (
             <button
               type="button"
               aria-label={`Clear ${label}`}
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => onChange(null)}
-              className="rounded p-0.5 hover:bg-slate-100 hover:text-slate-600"
+              className="rounded p-0.5 hover:bg-neutral-100 hover:text-neutral-600"
             >
               <X aria-hidden="true" className="size-3.5" />
             </button>
@@ -143,10 +143,10 @@ export function SearchSelect({
             id={listId}
             role="listbox"
             aria-label={label}
-            className="absolute z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-md border border-slate-200 bg-white py-1 text-sm shadow-lg"
+            className="absolute z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-neutral-200 bg-surface py-1 text-sm shadow-lg"
           >
             {options.length === 0 ? (
-              <li className="px-3 py-2 text-slate-500" role="presentation">
+              <li className="px-3 py-2 text-neutral-500" role="presentation">
                 {isFetching ? 'Searching…' : 'No matches'}
               </li>
             ) : (
@@ -161,8 +161,8 @@ export function SearchSelect({
                   onClick={() => choose(option)}
                   className={cn('cursor-pointer px-3 py-2', index === activeIndex && 'bg-brand-50')}
                 >
-                  <p className="font-medium text-slate-900">{option.label}</p>
-                  {option.description && <p className="text-xs text-slate-500">{option.description}</p>}
+                  <p className="font-medium text-neutral-900">{option.label}</p>
+                  {option.description && <p className="text-xs text-neutral-500">{option.description}</p>}
                 </li>
               ))
             )}
@@ -170,7 +170,7 @@ export function SearchSelect({
         )}
       </div>
       {hint && !error && (
-        <p id={`${id}-hint`} className="text-xs text-slate-500">
+        <p id={`${id}-hint`} className="text-xs text-neutral-500">
           {hint}
         </p>
       )}

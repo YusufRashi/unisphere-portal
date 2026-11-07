@@ -2,8 +2,8 @@ import { useId, type ComponentProps, type ReactNode } from 'react'
 import { cn } from '@/lib/cn'
 
 const controlBase =
-  'block w-full rounded-md border bg-white px-3 text-sm text-slate-900 shadow-xs placeholder:text-slate-400 ' +
-  'focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 focus:outline-none disabled:bg-slate-50 disabled:text-slate-500'
+  'block w-full rounded-lg border bg-surface px-3 text-sm text-neutral-900 shadow-xs placeholder:text-neutral-400 ' +
+  'focus:border-brand-500 focus:ring-3 focus:ring-brand-500/20 focus:outline-none disabled:bg-neutral-50 disabled:text-neutral-500'
 
 interface FieldShellProps {
   id: string
@@ -17,12 +17,12 @@ interface FieldShellProps {
 function FieldShell({ id, label, error, hint, children, hideLabel }: FieldShellProps) {
   return (
     <div className="space-y-1.5">
-      <label htmlFor={id} className={cn('block text-sm font-medium text-slate-700', hideLabel && 'sr-only')}>
+      <label htmlFor={id} className={cn('block text-sm font-medium text-neutral-700', hideLabel && 'sr-only')}>
         {label}
       </label>
       {children}
       {hint && !error && (
-        <div id={`${id}-hint`} className="text-xs text-slate-500">
+        <div id={`${id}-hint`} className="text-xs text-neutral-500">
           {hint}
         </div>
       )}
@@ -52,7 +52,7 @@ export function TextField({ label, error, hint, hideLabel, id, className, ...pro
         id={fieldId}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy}
-        className={cn(controlBase, 'h-9', error ? 'border-red-500' : 'border-slate-300', className)}
+        className={cn(controlBase, 'h-10', error ? 'border-red-500' : 'border-neutral-200', className)}
         {...props}
       />
     </FieldShell>
@@ -74,7 +74,7 @@ export function SelectField({ label, error, hideLabel, id, className, children, 
         id={fieldId}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${fieldId}-error` : undefined}
-        className={cn(controlBase, 'h-9 pr-8', error ? 'border-red-500' : 'border-slate-300', className)}
+        className={cn(controlBase, 'h-10 pr-8', error ? 'border-red-500' : 'border-neutral-200', className)}
         {...props}
       >
         {children}
@@ -100,7 +100,7 @@ export function TextAreaField({ label, error, hint, id, className, rows = 4, ...
         rows={rows}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy}
-        className={cn(controlBase, 'py-2', error ? 'border-red-500' : 'border-slate-300', className)}
+        className={cn(controlBase, 'py-2', error ? 'border-red-500' : 'border-neutral-200', className)}
         {...props}
       />
     </FieldShell>
@@ -121,15 +121,15 @@ export function CheckboxField({ label, description, id, ...props }: CheckboxFiel
         id={fieldId}
         type="checkbox"
         aria-describedby={description ? `${fieldId}-description` : undefined}
-        className="mt-0.5 size-4 rounded border-slate-300 text-brand-700 focus:ring-brand-600"
+        className="mt-0.5 size-4 rounded border-neutral-300 text-brand-700 focus:ring-brand-600"
         {...props}
       />
       <div className="text-sm">
-        <label htmlFor={fieldId} className="font-medium text-slate-700">
+        <label htmlFor={fieldId} className="font-medium text-neutral-700">
           {label}
         </label>
         {description && (
-          <p id={`${fieldId}-description`} className="text-slate-500">
+          <p id={`${fieldId}-description`} className="text-neutral-500">
             {description}
           </p>
         )}

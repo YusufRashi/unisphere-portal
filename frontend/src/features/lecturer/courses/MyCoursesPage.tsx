@@ -1,3 +1,4 @@
+import lectureHallTalk from '@/assets/photos/lecture-hall-talk.webp'
 import { useQuery } from '@tanstack/react-query'
 import { BookOpen } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
@@ -28,6 +29,8 @@ export function MyCoursesPage() {
   return (
     <>
       <PageHeader
+        image={lectureHallTalk}
+        imageClassName="object-[center_35%]"
         title="My courses"
         description="Class lists, marks entry and statistics for the courses you teach."
         actions={
@@ -63,19 +66,19 @@ export function MyCoursesPage() {
                 <div className="flex-1 space-y-3 px-5 py-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-slate-900">
+                      <p className="text-sm font-semibold text-neutral-900">
                         {o.course.code} · Section {o.section}
                       </p>
-                      <p className="truncate text-sm text-slate-600">{o.course.title}</p>
+                      <p className="truncate text-sm text-neutral-600">{o.course.title}</p>
                     </div>
                     <Badge tone={RESULTS_STATUS_TONES[o.resultsStatus]}>{RESULTS_STATUS_LABELS[o.resultsStatus]}</Badge>
                   </div>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-neutral-500">
                     {o.sessions.map((s) => `${DAY_SHORT[s.dayOfWeek]} ${shortTime(s.startTime)}–${shortTime(s.endTime)} ${s.venue}`).join(' · ') ||
                       'No sessions scheduled'}
                   </p>
                   <div>
-                    <div className="flex justify-between text-xs text-slate-600">
+                    <div className="flex justify-between text-xs text-neutral-600">
                       <span>
                         {classSize} {classSize === 1 ? 'student' : 'students'}
                       </span>
@@ -89,17 +92,17 @@ export function MyCoursesPage() {
                       aria-valuemin={0}
                       aria-valuemax={classSize}
                       aria-valuenow={marksComplete}
-                      className="mt-1 h-1.5 rounded-full bg-slate-100"
+                      className="mt-1 h-1.5 rounded-full bg-neutral-100"
                     >
                       <div className="h-full rounded-full bg-brand-600" style={{ width: `${classSize ? (marksComplete / classSize) * 100 : 0}%` }} />
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-slate-200 px-5 py-3">
+                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-neutral-200 px-5 py-3">
                   <Link to={`/lecturer/courses/${o.id}`} className="text-sm font-medium text-brand-700 hover:text-brand-900">
                     {o.resultsStatus === 'DRAFT' ? `Enter marks for ${o.course.code}` : `View results for ${o.course.code}`} →
                   </Link>
-                  <Link to={`/announcements?offeringId=${o.id}`} className="text-sm text-slate-600 hover:text-slate-900">
+                  <Link to={`/announcements?offeringId=${o.id}`} className="text-sm text-neutral-600 hover:text-neutral-900">
                     Announcements<span className="sr-only"> for {o.course.code}</span>
                   </Link>
                 </div>

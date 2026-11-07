@@ -176,13 +176,13 @@ export function ProgramsPage() {
           }
         >
           {rows.map((p) => (
-            <tr key={p.id} className="hover:bg-slate-50/60">
+            <tr key={p.id} className="hover:bg-neutral-50/60">
               <Td>
-                <p className="font-medium text-slate-900">{p.name}</p>
-                <p className="text-xs text-slate-500">{p.code}</p>
+                <p className="font-medium text-neutral-900">{p.name}</p>
+                <p className="text-xs text-neutral-500">{p.code}</p>
               </Td>
-              <Td className="hidden text-slate-600 md:table-cell">{p.department.name}</Td>
-              <Td className="whitespace-nowrap text-slate-600">
+              <Td className="hidden text-neutral-600 md:table-cell">{p.department.name}</Td>
+              <Td className="whitespace-nowrap text-neutral-600">
                 {AWARD_LABELS[p.awardLevel]} · {p.durationYears} yr
               </Td>
               <Td className="hidden text-right tabular-nums sm:table-cell">{p.studentCount}</Td>

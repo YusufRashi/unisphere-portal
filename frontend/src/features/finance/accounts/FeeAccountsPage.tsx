@@ -33,7 +33,7 @@ export function FeeAccountsPage() {
       <Card>
         <TableToolbar className="sm:grid-cols-[minmax(0,1fr)_16rem_12rem]">
           <div className="relative">
-            <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-slate-400" />
+            <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-neutral-400" />
             <TextField
               label="Search students"
               hideLabel
@@ -98,21 +98,21 @@ export function FeeAccountsPage() {
           {data?.content.map((a) => {
             const status = balanceStatus(a.balance)
             return (
-              <tr key={a.studentId} className="hover:bg-slate-50/60">
+              <tr key={a.studentId} className="hover:bg-neutral-50/60">
                 <Td>
                   <Link to={`/finance/accounts/${a.studentId}`} className="font-medium text-brand-800 hover:underline">
                     {a.name}
                   </Link>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-neutral-500">
                     {a.studentNumber} · {a.email}
                   </p>
                 </Td>
-                <Td className="hidden text-slate-600 md:table-cell">{a.programCode}</Td>
+                <Td className="hidden text-neutral-600 md:table-cell">{a.programCode}</Td>
                 <Td className="hidden text-right tabular-nums lg:table-cell">{formatMoney(a.totalCharged, a.currency)}</Td>
                 <Td className="hidden text-right tabular-nums lg:table-cell">{formatMoney(a.totalPaid, a.currency)}</Td>
                 <Td className="text-right whitespace-nowrap">
                   <p className={`font-medium tabular-nums ${status.tone}`}>{formatMoney(status.amount, a.currency)}</p>
-                  <p className="text-xs text-slate-500">{status.label}</p>
+                  <p className="text-xs text-neutral-500">{status.label}</p>
                 </Td>
               </tr>
             )

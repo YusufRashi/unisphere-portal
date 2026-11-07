@@ -95,7 +95,7 @@ export function Modal({
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
-      <div className="absolute inset-0 bg-slate-900/40" aria-hidden="true" onClick={busy ? undefined : onClose} />
+      <div className="absolute inset-0 bg-black/40" aria-hidden="true" onClick={busy ? undefined : onClose} />
       <div
         ref={panelRef}
         role={role}
@@ -103,18 +103,18 @@ export function Modal({
         aria-labelledby={titleId}
         aria-describedby={description ? descriptionId : undefined}
         className={cn(
-          'relative flex max-h-[92dvh] w-full flex-col rounded-t-lg bg-white shadow-xl sm:rounded-lg',
+          'relative flex max-h-[92dvh] w-full flex-col rounded-t-2xl border border-neutral-200 bg-surface shadow-xl sm:rounded-2xl',
           sizes[size],
         )}
       >
         <div className="flex items-start gap-4 px-5 pt-5">
           {icon}
           <div className="min-w-0 flex-1">
-            <h2 id={titleId} className="text-base font-semibold text-slate-900">
+            <h2 id={titleId} className="text-base font-semibold text-neutral-900">
               {title}
             </h2>
             {description && (
-              <div id={descriptionId} className="mt-1.5 text-sm text-slate-600">
+              <div id={descriptionId} className="mt-1.5 text-sm text-neutral-600">
                 {description}
               </div>
             )}
@@ -124,7 +124,7 @@ export function Modal({
               type="button"
               onClick={onClose}
               disabled={busy}
-              className="-mt-1 -mr-1 rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+              className="-mt-1 -mr-1 rounded-lg p-1.5 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600"
               aria-label="Close"
             >
               <X aria-hidden="true" className="size-4" />

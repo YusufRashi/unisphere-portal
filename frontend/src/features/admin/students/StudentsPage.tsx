@@ -175,7 +175,7 @@ function EditStudentModal({ student, onClose }: { student: Student; onClose: () 
             ))}
           </SelectField>
         </div>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-neutral-500">
           Academic status is separate from the login account. To block sign-in, deactivate the account on the Users page.
         </p>
       </form>
@@ -211,7 +211,7 @@ export function StudentsPage() {
       <Card>
         <TableToolbar className="sm:grid-cols-[minmax(0,1fr)_16rem_10rem_8rem]">
           <div className="relative">
-            <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-slate-400" />
+            <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-neutral-400" />
             <TextField
               label="Search students"
               hideLabel
@@ -287,18 +287,18 @@ export function StudentsPage() {
           }
         >
           {data?.content.map((s) => (
-            <tr key={s.id} className="hover:bg-slate-50/60">
+            <tr key={s.id} className="hover:bg-neutral-50/60">
               <Td>
-                <p className="font-medium text-slate-900">
+                <p className="font-medium text-neutral-900">
                   {s.lastName}, {s.firstName}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-neutral-500">
                   {s.studentNumber} · {s.email}
                 </p>
               </Td>
-              <Td className="hidden text-slate-600 md:table-cell">
+              <Td className="hidden text-neutral-600 md:table-cell">
                 <p>{s.program.name}</p>
-                <p className="text-xs text-slate-500">{s.department.name}</p>
+                <p className="text-xs text-neutral-500">{s.department.name}</p>
               </Td>
               <Td className="hidden tabular-nums sm:table-cell">{s.yearOfStudy}</Td>
               <Td>
@@ -318,7 +318,7 @@ export function StudentsPage() {
                 <Link
                   to={`/admin/students/${s.id}/transcript`}
                   aria-label={`Transcript of ${s.firstName} ${s.lastName}`}
-                  className="inline-flex h-8 items-center rounded-md px-3 text-slate-700 hover:bg-slate-100"
+                  className="inline-flex h-8 items-center rounded-lg px-3 text-neutral-700 hover:bg-neutral-100"
                 >
                   <FileText aria-hidden="true" className="size-4" />
                 </Link>

@@ -2,6 +2,7 @@ import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import * as dashboardsApi from '@/api/dashboards'
 import * as notificationsApi from '@/api/notifications'
+import * as registrationApi from '@/api/registration'
 import { makeAuth, makeUser, renderWithProviders } from '@/test/utils'
 import type { AdminDashboardData, FinanceDashboardData, LecturerDashboardData, Role, StudentDashboardData } from '@/types/api'
 // HomePage loads these on demand. Loading them up front keeps a slow import from timing out a test's first query.
@@ -13,6 +14,7 @@ import { HomePage } from './HomePage'
 
 vi.mock('@/api/dashboards')
 vi.mock('@/api/notifications')
+vi.mock('@/api/registration')
 
 const semester = { id: 1, code: '2026-S1', name: 'Semester 1' }
 
@@ -86,6 +88,8 @@ function tile(summary: HTMLElement, label: string) {
 
 beforeEach(() => {
   vi.mocked(notificationsApi.getNotifications).mockResolvedValue({ content: [], page: 0, size: 5, totalElements: 0, totalPages: 0 })
+  vi.mocked(notificationsApi.getAnnouncements).mockResolvedValue({ content: [], page: 0, size: 3, totalElements: 0, totalPages: 0 })
+  vi.mocked(registrationApi.getMyTimetable).mockResolvedValue({ semester: { id: 1, code: '2026-S1', name: 'Semester 1' }, status: 'APPROVED', entries: [] })
 })
 
 describe('HomePage', () => {
@@ -168,15 +172,44 @@ describe('HomePage', () => {
     expect(within(screen.getByRole('list', { name: 'Largest balances' })).getByRole('link', { name: /Amina Otieno/ })).toHaveAttribute('href', '/finance/accounts/4')
   })
 
-  it('gives someone with several roles each dashboard, with headings', async () => {
+  it('gives someone with several roles a tab per dashboard', async () => {
+    const user = userEvent.setup()
     vi.mocked(dashboardsApi.getLecturerDashboard).mockResolvedValue(lecturer)
     vi.mocked(dashboardsApi.getAdminDashboard).mockResolvedValue(admin)
     renderPage(['LECTURER', 'ADMIN'])
 
+    const tabs = screen.getByRole('group', { name: 'Dashboard' })
+    expect(within(tabs).getByRole('button', { name: 'Lecturer' })).toHaveAttribute('aria-pressed', 'true')
     expect(await screen.findByLabelText('Your teaching')).toBeInTheDocument()
+    expect(screen.queryByLabelText('University summary')).not.toBeInTheDocument()
+
+    await user.click(within(tabs).getByRole('button', { name: 'Registrar / Admin' }))
     expect(await screen.findByLabelText('University summary')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Lecturer' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Registrar / Admin' })).toBeInTheDocument()
+    expect(screen.queryByLabelText('Your teaching')).not.toBeInTheDocument()
+  })
+
+  it('shows a student their next classes, soonest first, and the latest announcements', async () => {
+    vi.mocked(dashboardsApi.getStudentDashboard).mockResolvedValue(student)
+    const today = (['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'] as const)[new Date().getDay()] ?? 'MONDAY'
+    vi.mocked(registrationApi.getMyTimetable).mockResolvedValue({
+      semester: { id: 1, code: '2026-S1', name: 'Semester 1' },
+      status: 'APPROVED',
+      entries: [
+        { offeringId: 7, courseCode: 'CS101', courseTitle: 'Programming I', section: 'A', lecturer: null, dayOfWeek: today, startTime: '23:59:00', endTime: '23:59:59', venue: 'LT1' },
+      ],
+    })
+    vi.mocked(notificationsApi.getAnnouncements).mockResolvedValue({
+      content: [{ id: 5, offeringId: 7, courseCode: 'CS101', courseTitle: 'Programming I', section: 'A', semester: { id: 1, code: '2026-S1', name: 'Semester 1' }, title: 'Room change', body: 'We meet in LT2.', authorName: 'Dr. Grace Wanjiru', createdAt: new Date().toISOString() }],
+      page: 0, size: 3, totalElements: 1, totalPages: 1,
+    })
+    renderPage(['STUDENT'])
+
+    const classes = await screen.findByRole('list', { name: 'Upcoming classes' })
+    expect(within(classes).getByText('Programming I')).toBeInTheDocument()
+    expect(within(classes).getByText('Today')).toBeInTheDocument()
+    const announcements = await screen.findByRole('list', { name: 'Latest announcements' })
+    expect(within(announcements).getByText('Room change')).toBeInTheDocument()
+    expect(within(announcements).getByRole('link', { name: /Read more/ })).toHaveAttribute('href', '/announcements?offeringId=7')
   })
 
   it('shows an error instead of an endless spinner', async () => {

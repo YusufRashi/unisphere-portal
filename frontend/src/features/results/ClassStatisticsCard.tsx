@@ -27,21 +27,21 @@ export function ClassStatisticsCard({ stats }: { stats: ClassStatistics | undefi
               ] as const
             ).map(([label, value]) => (
               <div key={label}>
-                <dt className="text-xs text-slate-500">{label}</dt>
-                <dd className="text-lg font-semibold text-slate-900 tabular-nums">{value}</dd>
+                <dt className="text-xs text-neutral-500">{label}</dt>
+                <dd className="text-lg font-semibold text-neutral-900 tabular-nums">{value}</dd>
               </div>
             ))}
           </dl>
           <div>
-            <h3 className="mb-2 text-xs font-semibold tracking-wide text-slate-600 uppercase">Grade distribution</h3>
+            <h3 className="mb-2 text-xs font-semibold tracking-wide text-neutral-600 uppercase">Grade distribution</h3>
             <ul className="space-y-1.5" aria-label="Grade distribution">
               {stats.distribution.map((d) => (
                 <li key={d.letter} className="flex items-center gap-3 text-sm">
-                  <span className="w-8 font-medium text-slate-700">{d.letter}</span>
-                  <span aria-hidden="true" className="h-2.5 flex-1 rounded-full bg-slate-100">
+                  <span className="w-8 font-medium text-neutral-700">{d.letter}</span>
+                  <span aria-hidden="true" className="h-2.5 flex-1 rounded-full bg-neutral-100">
                     <span className="block h-full rounded-full bg-brand-600" style={{ width: `${(d.count / max) * 100}%` }} />
                   </span>
-                  <span className="w-20 text-right text-slate-600 tabular-nums">
+                  <span className="w-20 text-right text-neutral-600 tabular-nums">
                     {d.count} {d.count === 1 ? 'student' : 'students'}
                   </span>
                 </li>

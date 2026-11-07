@@ -21,10 +21,10 @@ export function TranscriptDocument({ transcript: t }: { transcript: Transcript }
   return (
     <article
       aria-label={`${t.title} for ${t.student.name}`}
-      className="relative overflow-hidden rounded-lg border border-slate-200 bg-white px-6 py-8 shadow-xs sm:px-10 print:overflow-visible print:rounded-none print:border-0 print:p-0 print:shadow-none"
+      className="relative overflow-hidden rounded-lg border border-neutral-200 bg-surface px-6 py-8 shadow-xs sm:px-10 print:overflow-visible print:rounded-none print:border-0 print:p-0 print:shadow-none"
     >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden select-none print:fixed">
-        <div className="-rotate-[35deg] text-center text-slate-900/[0.06] print:text-slate-900/10">
+        <div className="-rotate-[35deg] text-center text-neutral-900/[0.06] print:text-neutral-900/10">
           <p className="text-2xl font-bold tracking-wider whitespace-nowrap sm:text-3xl print:text-xl">{t.watermark}</p>
           <p className="mt-2 text-sm font-semibold whitespace-nowrap print:text-xs">
             Generated {generated} · Reference {t.reference}
@@ -34,20 +34,20 @@ export function TranscriptDocument({ transcript: t }: { transcript: Transcript }
 
       <header className="relative border-b-2 border-brand-900 pb-4">
         <h2 className="text-2xl font-bold text-brand-900">{t.universityName}</h2>
-        <p className="text-sm text-slate-600">{t.title}</p>
+        <p className="text-sm text-neutral-600">{t.title}</p>
       </header>
 
       <dl className="relative mt-5 grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-3">
         {fields.map(([label, value]) => (
           <div key={label}>
-            <dt className="text-[11px] font-medium tracking-wide text-slate-500 uppercase">{label}</dt>
-            <dd className="text-sm font-semibold text-slate-900">{value}</dd>
+            <dt className="text-[11px] font-medium tracking-wide text-neutral-500 uppercase">{label}</dt>
+            <dd className="text-sm font-semibold text-neutral-900">{value}</dd>
           </div>
         ))}
       </dl>
 
       {t.semesters.length === 0 ? (
-        <p className="relative mt-8 text-sm text-slate-600 italic">No finalized results yet.</p>
+        <p className="relative mt-8 text-sm text-neutral-600 italic">No finalized results yet.</p>
       ) : (
         t.semesters.map((s) => (
           <section key={s.semester.id} className="relative mt-7 break-inside-avoid-page">
@@ -56,7 +56,7 @@ export function TranscriptDocument({ transcript: t }: { transcript: Transcript }
               <table className="w-full min-w-[30rem] text-sm">
                 <caption className="sr-only">Results for {s.semester.name}</caption>
                 <thead>
-                  <tr className="border-b border-slate-300 text-[11px] tracking-wide text-slate-500 uppercase">
+                  <tr className="border-b border-neutral-300 text-[11px] tracking-wide text-neutral-500 uppercase">
                     <th scope="col" className="py-1.5 pr-3 text-left font-semibold">Code</th>
                     <th scope="col" className="py-1.5 pr-3 text-left font-semibold">Course title</th>
                     <th scope="col" className="py-1.5 pr-3 text-right font-semibold">Credits</th>
@@ -65,14 +65,14 @@ export function TranscriptDocument({ transcript: t }: { transcript: Transcript }
                     <th scope="col" className="py-1.5 text-right font-semibold">Points</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-neutral-100">
                   {s.courses.map((c) => (
                     <tr key={c.resultId}>
-                      <td className="py-1.5 pr-3 font-medium whitespace-nowrap text-slate-900">
+                      <td className="py-1.5 pr-3 font-medium whitespace-nowrap text-neutral-900">
                         {c.courseCode}
                         {!c.countsTowardCgpa && <span title="Earlier attempt, not counted in the CGPA"> *</span>}
                       </td>
-                      <td className="py-1.5 pr-3 text-slate-700">{c.courseTitle}</td>
+                      <td className="py-1.5 pr-3 text-neutral-700">{c.courseTitle}</td>
                       <td className="py-1.5 pr-3 text-right tabular-nums">{c.credits}</td>
                       <td className="py-1.5 pr-3 text-right tabular-nums">{formatNumber(c.totalMark)}</td>
                       <td className={c.passed ? 'py-1.5 pr-3 text-right font-semibold' : 'py-1.5 pr-3 text-right font-semibold text-red-700'}>
@@ -84,10 +84,10 @@ export function TranscriptDocument({ transcript: t }: { transcript: Transcript }
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="border-t border-slate-300">
-                    <td colSpan={6} className="py-1.5 text-right text-sm font-semibold text-slate-900">
+                  <tr className="border-t border-neutral-300">
+                    <td colSpan={6} className="py-1.5 text-right text-sm font-semibold text-neutral-900">
                       Semester GPA {formatGpa(s.gpa)}
-                      <span className="ml-4 font-normal text-slate-600">
+                      <span className="ml-4 font-normal text-neutral-600">
                         Credits earned {s.creditsEarned} of {s.creditsAttempted}
                       </span>
                     </td>
@@ -108,20 +108,20 @@ export function TranscriptDocument({ transcript: t }: { transcript: Transcript }
           ] as const
         ).map(([label, value]) => (
           <div key={label}>
-            <dt className="text-[11px] font-medium tracking-wide text-slate-500 uppercase">{label}</dt>
-            <dd className="text-lg font-bold text-slate-900 tabular-nums">{value}</dd>
+            <dt className="text-[11px] font-medium tracking-wide text-neutral-500 uppercase">{label}</dt>
+            <dd className="text-lg font-bold text-neutral-900 tabular-nums">{value}</dd>
           </div>
         ))}
       </dl>
 
-      <footer className="relative mt-6 space-y-1 text-xs text-slate-500">
+      <footer className="relative mt-6 space-y-1 text-xs text-neutral-500">
         <p>
           GPA = total of (credits × grade points) ÷ total credits, rounded half-up to two decimals. Only finalized results are listed.
           {anyRepeated && ' * Earlier attempt of a repeated course: shown for completeness, excluded from the CGPA.'}
         </p>
-        <p className="font-semibold text-slate-700">{t.watermark}</p>
+        <p className="font-semibold text-neutral-700">{t.watermark}</p>
         <p>
-          Generated {generated} · Verification reference <span className="font-mono font-semibold text-slate-700">{t.reference}</span>
+          Generated {generated} · Verification reference <span className="font-mono font-semibold text-neutral-700">{t.reference}</span>
         </p>
       </footer>
     </article>

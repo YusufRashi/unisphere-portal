@@ -126,12 +126,12 @@ function ScaleEditor({ scale }: { scale: GradingScale }) {
         </div>
       )}
       <div className="overflow-x-auto">
-        <table className="min-w-[40rem] divide-y divide-slate-200 text-sm sm:min-w-full">
+        <table className="min-w-[40rem] divide-y divide-neutral-200 text-sm sm:min-w-full">
           <caption className="sr-only">Grade bands</caption>
-          <thead className="bg-slate-50">
+          <thead className="bg-neutral-50">
             <tr>
               {['Grade', 'Minimum mark', 'Covers', 'Grade points', 'Pass'].map((h) => (
-                <th key={h} scope="col" className="px-4 py-2.5 text-left text-xs font-semibold text-slate-600 uppercase">
+                <th key={h} scope="col" className="px-4 py-2.5 text-left text-xs font-semibold text-neutral-600 uppercase">
                   {h}
                 </th>
               ))}
@@ -140,7 +140,7 @@ function ScaleEditor({ scale }: { scale: GradingScale }) {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-neutral-100">
             {bands.map((b, index) => {
               const errors = showErrors ? bandErrors(b) : {}
               const input = (field: 'letter' | 'minMark' | 'gradePoints', label: string, width: string) => (
@@ -152,9 +152,9 @@ function ScaleEditor({ scale }: { scale: GradingScale }) {
                     inputMode={field === 'letter' ? 'text' : 'decimal'}
                     onChange={(e) => update(b.key, { [field]: e.target.value })}
                     className={cn(
-                      'h-8 rounded-md border px-2 text-sm focus:ring-2 focus:outline-none',
+                      'h-8 rounded-lg border px-2 text-sm focus:ring-2 focus:outline-none',
                       width,
-                      errors[field] ? 'border-red-500 focus:ring-red-500/20' : 'border-slate-300 focus:border-brand-600 focus:ring-brand-600/20',
+                      errors[field] ? 'border-red-500 focus:ring-red-500/20' : 'border-neutral-300 focus:border-brand-600 focus:ring-brand-600/20',
                     )}
                   />
                   {errors[field] && <p className="mt-1 text-xs text-red-700">{errors[field]}</p>}
@@ -164,7 +164,7 @@ function ScaleEditor({ scale }: { scale: GradingScale }) {
                 <tr key={b.key}>
                   <td className="px-4 py-2 align-top">{input('letter', 'Grade', 'w-16 uppercase')}</td>
                   <td className="px-4 py-2 align-top">{input('minMark', 'Minimum mark', 'w-24 text-right tabular-nums')}</td>
-                  <td className="px-4 py-2 align-top whitespace-nowrap text-slate-600 tabular-nums">{range.get(b.key) ?? '—'}</td>
+                  <td className="px-4 py-2 align-top whitespace-nowrap text-neutral-600 tabular-nums">{range.get(b.key) ?? '—'}</td>
                   <td className="px-4 py-2 align-top">{input('gradePoints', 'Grade points', 'w-20 text-right tabular-nums')}</td>
                   <td className="px-4 py-2 align-top">
                     <input
@@ -172,7 +172,7 @@ function ScaleEditor({ scale }: { scale: GradingScale }) {
                       aria-label={`Row ${index + 1} is a pass`}
                       checked={b.passing}
                       onChange={(e) => update(b.key, { passing: e.target.checked })}
-                      className="mt-2 size-4 rounded border-slate-300 text-brand-700 focus:ring-brand-600"
+                      className="mt-2 size-4 rounded border-neutral-300 text-brand-700 focus:ring-brand-600"
                     />
                   </td>
                   <td className="px-4 py-2 text-right align-top">

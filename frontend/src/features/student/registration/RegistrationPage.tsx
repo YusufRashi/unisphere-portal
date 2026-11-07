@@ -1,3 +1,4 @@
+import studentsLaptop from '@/assets/photos/students-laptop.webp'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { BookOpen, CalendarX, Check, Clock, MapPin, Plus, Search, User, X } from 'lucide-react'
 import { useState } from 'react'
@@ -67,17 +68,17 @@ function CatalogueRow({ entry, canAdd, adding, onAdd }: {
 }) {
   const o = entry.offering
   const available = entry.availability === 'AVAILABLE'
-  const seatsTone = o.seatsLeft === 0 ? 'text-red-700' : o.seatsLeft <= 5 ? 'text-amber-700' : 'text-slate-600'
+  const seatsTone = o.seatsLeft === 0 ? 'text-red-700' : o.seatsLeft <= 5 ? 'text-amber-700' : 'text-neutral-600'
   return (
     <li className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-start">
       <div className="min-w-0 flex-1 space-y-1.5">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="font-semibold text-slate-900">{o.course.code}</p>
+          <p className="font-semibold text-neutral-900">{o.course.code}</p>
           <Badge>Section {o.section}</Badge>
           <Badge tone="brand">{o.course.credits} credits</Badge>
         </div>
-        <p className="text-sm text-slate-700">{o.course.title}</p>
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
+        <p className="text-sm text-neutral-700">{o.course.title}</p>
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500">
           <span className="inline-flex items-center gap-1">
             <User aria-hidden="true" className="size-3.5" />
             {o.lecturer?.displayName ?? 'Lecturer to be announced'}
@@ -89,7 +90,7 @@ function CatalogueRow({ entry, canAdd, adding, onAdd }: {
         </div>
         {entry.prerequisites.length > 0 && (
           <ul className="flex flex-wrap items-center gap-1.5 text-xs" aria-label={`Prerequisites for ${o.course.code}`}>
-            <li className="text-slate-500">Requires</li>
+            <li className="text-neutral-500">Requires</li>
             {entry.prerequisites.map((p) => (
               <li
                 key={p.courseId}
@@ -139,9 +140,9 @@ function CataloguePanel({ canAdd }: { canAdd: boolean }) {
   return (
     <Card>
       <CardHeader title="Available courses" description="Courses offered this semester. Add the ones you want to take." />
-      <div className="grid gap-3 border-b border-slate-200 p-4 sm:grid-cols-[minmax(0,1fr)_12rem_9rem]">
+      <div className="grid gap-3 border-b border-neutral-200 p-4 sm:grid-cols-[minmax(0,1fr)_12rem_9rem]">
         <div className="relative">
-          <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-slate-400" />
+          <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-neutral-400" />
           <TextField
             label="Search courses"
             hideLabel
@@ -185,7 +186,7 @@ function CataloguePanel({ canAdd }: { canAdd: boolean }) {
         />
       ) : (
         <>
-          <ul className="divide-y divide-slate-100" aria-busy={catalogue.isFetching || undefined}>
+          <ul className="divide-y divide-neutral-100" aria-busy={catalogue.isFetching || undefined}>
             {data.content.map((entry) => (
               <CatalogueRow
                 key={entry.offering.id}
@@ -249,27 +250,27 @@ function MyRegistrationPanel({ view }: { view: RegistrationView }) {
         {permissions.lockedReason && view.status !== 'APPROVED' && <Alert tone="info">{permissions.lockedReason}</Alert>}
 
         {view.items.length === 0 ? (
-          <p className="text-sm text-slate-500">No courses yet. Add courses from the list.</p>
+          <p className="text-sm text-neutral-500">No courses yet. Add courses from the list.</p>
         ) : (
-          <ul className="divide-y divide-slate-100 rounded-md border border-slate-200" aria-label="Courses in my registration">
+          <ul className="divide-y divide-neutral-100 rounded-lg border border-neutral-200" aria-label="Courses in my registration">
             {view.items.map((item) => (
               <li key={item.id} className="flex items-start gap-3 p-3">
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-slate-900">
-                    {item.courseCode} <span className="font-normal text-slate-500">· {item.section}</span>
+                  <p className="text-sm font-medium text-neutral-900">
+                    {item.courseCode} <span className="font-normal text-neutral-500">· {item.section}</span>
                   </p>
-                  <p className="truncate text-sm text-slate-600">{item.courseTitle}</p>
-                  <p className="mt-1 flex flex-wrap gap-x-3 text-xs text-slate-500">
+                  <p className="truncate text-sm text-neutral-600">{item.courseTitle}</p>
+                  <p className="mt-1 flex flex-wrap gap-x-3 text-xs text-neutral-500">
                     <Sessions sessions={item.sessions} />
                   </p>
                 </div>
-                <span className="text-sm font-medium text-slate-700 tabular-nums">{item.credits} cr</span>
+                <span className="text-sm font-medium text-neutral-700 tabular-nums">{item.credits} cr</span>
                 {permissions.canRemove && (
                   <button
                     type="button"
                     onClick={() => (permissions.removeMeansDrop ? setDropping(item) : remove.mutate(item))}
                     disabled={remove.isPending}
-                    className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-700"
+                    className="rounded p-1 text-neutral-400 hover:bg-red-50 hover:text-red-700"
                     aria-label={`${permissions.removeMeansDrop ? 'Drop' : 'Remove'} ${item.courseCode}`}
                   >
                     <X aria-hidden="true" className="size-4" />
@@ -282,8 +283,8 @@ function MyRegistrationPanel({ view }: { view: RegistrationView }) {
 
         {view.droppedItems.length > 0 && (
           <div>
-            <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">Dropped</p>
-            <ul className="mt-1 space-y-0.5 text-sm text-slate-500">
+            <p className="text-xs font-semibold tracking-wide text-neutral-500 uppercase">Dropped</p>
+            <ul className="mt-1 space-y-0.5 text-sm text-neutral-500">
               {view.droppedItems.map((d) => (
                 <li key={d.id}>
                   <span className="line-through">{d.courseCode}</span> · {formatDateTime(d.droppedAt)}
@@ -299,14 +300,14 @@ function MyRegistrationPanel({ view }: { view: RegistrationView }) {
           </Button>
         )}
 
-        <dl className="space-y-1 border-t border-slate-100 pt-4 text-xs text-slate-500">
+        <dl className="space-y-1 border-t border-neutral-100 pt-4 text-xs text-neutral-500">
           <div className="flex justify-between gap-2">
             <dt>Registration closes</dt>
-            <dd className="text-right text-slate-700">{formatDateTime(semester.registrationClosesAt)}</dd>
+            <dd className="text-right text-neutral-700">{formatDateTime(semester.registrationClosesAt)}</dd>
           </div>
           <div className="flex justify-between gap-2">
             <dt>Add/drop deadline</dt>
-            <dd className="text-right text-slate-700">{formatDateTime(semester.addDropDeadline)}</dd>
+            <dd className="text-right text-neutral-700">{formatDateTime(semester.addDropDeadline)}</dd>
           </div>
         </dl>
       </CardBody>
@@ -347,7 +348,7 @@ export function RegistrationPage() {
     const error = toApiError(registration.error)
     return (
       <>
-        <PageHeader title="Course registration" />
+        <PageHeader image={studentsLaptop} imageClassName="object-[center_30%]" title="Course registration" />
         <Card>
           {error.status === 404 ? (
             <EmptyState icon={CalendarX} title="Registration is not open" description={error.message} />
@@ -370,7 +371,7 @@ export function RegistrationPage() {
   const view = registration.data
   return (
     <>
-      <PageHeader title="Course registration" description={view.semester.name} />
+      <PageHeader image={studentsLaptop} imageClassName="object-[center_30%]" title="Course registration" description={view.semester.name} />
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_24rem]">
         <div className="order-2 lg:order-1">
           <CataloguePanel canAdd={view.permissions.canAdd} />

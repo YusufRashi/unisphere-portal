@@ -97,13 +97,13 @@ export function FinanceDashboard() {
         {d.largestBalances.length === 0 ? (
           <EmptyState icon={Wallet} title="Nobody owes anything" />
         ) : (
-          <ul aria-label="Largest balances" className="divide-y divide-slate-100">
+          <ul aria-label="Largest balances" className="divide-y divide-neutral-100">
             {d.largestBalances.map((a) => (
               <li key={a.studentId} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 px-5 py-3 text-sm">
-                <Link to={`/finance/accounts/${a.studentId}`} className="min-w-0 font-medium text-slate-900 hover:text-brand-800">
-                  {a.name} <span className="font-normal text-slate-500">{a.studentNumber} · {a.programCode}</span>
+                <Link to={`/finance/accounts/${a.studentId}`} className="min-w-0 font-medium text-neutral-900 hover:text-brand-800">
+                  {a.name} <span className="font-normal text-neutral-500">{a.studentNumber} · {a.programCode}</span>
                 </Link>
-                <span className="font-medium text-slate-900 tabular-nums">{formatMoney(a.balance, a.currency)}</span>
+                <span className="font-medium text-neutral-900 tabular-nums">{formatMoney(a.balance, a.currency)}</span>
               </li>
             ))}
           </ul>

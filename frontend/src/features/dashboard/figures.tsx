@@ -18,10 +18,10 @@ export function StatTile({ label, value, hint, link }: {
   link?: { to: string; label: string }
 }) {
   return (
-    <div className="flex flex-col rounded-lg border border-slate-200 bg-white px-5 py-4 shadow-xs">
-      <dt className="text-sm text-slate-500">{label}</dt>
-      <dd className="mt-1 text-xl font-semibold tracking-tight break-words text-slate-900">{value}</dd>
-      {hint && <dd className="mt-1 text-xs text-slate-500">{hint}</dd>}
+    <div className="flex flex-col rounded-card border border-neutral-200 bg-surface px-5 py-4 shadow-xs">
+      <dt className="text-xs font-medium text-neutral-500">{label}</dt>
+      <dd className="mt-1.5 text-xl font-semibold tracking-tight break-words text-neutral-900">{value}</dd>
+      {hint && <dd className="mt-1 text-xs text-neutral-500">{hint}</dd>}
       {link && (
         <dd className="mt-auto pt-2 text-xs">
           <Link to={link.to} className="font-medium text-brand-700 hover:text-brand-900">
@@ -49,7 +49,7 @@ export function Meter({ label, value, max, text }: { label: string; value: numbe
       >
         <div className="h-full rounded-full bg-brand-600" style={{ width: `${percent}%` }} />
       </div>
-      <p className="mt-1.5 text-xs text-slate-600">{text}</p>
+      <p className="mt-1.5 text-xs text-neutral-600">{text}</p>
     </div>
   )
 }
@@ -62,10 +62,10 @@ export function BarList({ label, rows }: { label: string; rows: { key: string; l
       {rows.map((r) => (
         <li key={r.key} className="text-sm">
           <div className="flex items-baseline justify-between gap-3">
-            <span className="text-slate-700">{r.label}</span>
-            <span className="text-right font-medium text-slate-900 tabular-nums">{r.text}</span>
+            <span className="text-neutral-700">{r.label}</span>
+            <span className="text-right font-medium text-neutral-900 tabular-nums">{r.text}</span>
           </div>
-          <div aria-hidden="true" className="mt-1 h-2 rounded-r bg-slate-100">
+          <div aria-hidden="true" className="mt-1 h-2 rounded-r bg-neutral-100">
             <div className="h-full rounded-r bg-brand-600" style={{ width: `${(r.value / max) * 100}%` }} />
           </div>
         </li>

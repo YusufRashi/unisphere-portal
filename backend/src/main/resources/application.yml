@@ -98,6 +98,8 @@ unisphere:
     reminder-cron: ${NOTIFICATION_REMINDER_CRON:0 0 6 * * *}
     registration-deadline-lead: 48h
     fee-reminder-interval: 14d
+    # Notifications older than this are deleted by the same daily job.
+    retention: ${NOTIFICATION_RETENTION:180d}
 
 logging:
   pattern:

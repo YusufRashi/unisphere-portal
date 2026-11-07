@@ -236,6 +236,7 @@ the failure path can be demonstrated. Online payments get a `UNI-yyyyMMdd-XXXXXX
 |--------|------|--------|-------------|
 | GET | `/api/notifications` | any | Own notifications, newest first, `?unreadOnly=true`, paginated |
 | GET | `/api/notifications/unread-count` | any | `{count}` for the bell badge |
+| GET | `/api/notifications/stream` | any | Server-Sent Events: an `unread` event with `{count}` straight away and on every change. Ends when the access token expires (at most 10 minutes); reconnect with a fresh token. Comment heartbeats every 25 s |
 | POST | `/api/notifications/{id}/read` | any own | Mark read → `204` (again: no-op; someone else's: `404`) |
 | POST | `/api/notifications/read-all` | any | Mark all read → `204` |
 | GET | `/api/announcements` | S, L, A | Announcements of offerings the caller is enrolled in (approved registration) or teaches; all for A. `?offeringId`, paginated, newest first |

@@ -76,7 +76,10 @@ PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · T
 | | Content-derived **verification reference** the registrar can check (genuine / superseded / never issued) | ✅ |
 | Finance | Fee structures and semester billing, ledger with voids and reversals, office payments, repeat-safe online payments through a simulated gateway, outstanding and payment reports with CSV | ✅ |
 | Engagement | In-app notifications for registration, results and fees (sent after commit, never duplicated), bell with unread badge and inbox | ✅ |
-| | Course announcements from lecturers to their enrolled students | ✅ |
+| | **Live** unread badge: the server pushes changes the moment they happen (Server-Sent Events), with slow polling as a fallback | ✅ |
+| | Course announcements from lecturers, and from the registrar to any course | ✅ |
+| | Old notifications cleaned up automatically after a retention period (180 days by default) | ✅ |
+| Interface | Light and dark themes (following the system or the user's choice; printing is always light), page search with Ctrl/⌘ K | ✅ |
 | | Scheduled reminders: registration deadline for students who have not submitted, outstanding fee balances | ✅ |
 | | Dashboards for each role: student standing and GPA trend, lecturer marks progress, registrar overview and registration activity, finance collections; every chart also reads as a table | ✅ |
 
@@ -193,7 +196,8 @@ every variable with a description.
 | `APP_BASE_URL` | no | Public web-app URL used in activation / reset links |
 | `UNIVERSITY_NAME` | no | Name printed on transcripts (default `UniSphere University`) |
 | `FEE_CURRENCY` | no | ISO 4217 currency for fee accounts (default `KES`) |
-| `NOTIFICATION_REMINDER_CRON` | no | When reminders are sent (Spring cron, UTC; default `0 0 6 * * *`, `-` turns them off) |
+| `NOTIFICATION_REMINDER_CRON` | no | When reminders are sent and old notifications cleaned up (Spring cron, UTC; default `0 0 6 * * *`, `-` turns both off) |
+| `NOTIFICATION_RETENTION` | no | How long notifications are kept before the daily clean-up deletes them (default `180d`) |
 | `AUTH_RATE_LIMIT_PER_MINUTE` | no | Per-IP limit on login, activation and password-reset requests (default 20; token refresh is not limited) |
 | `BOOTSTRAP_ADMIN_EMAIL` / `BOOTSTRAP_ADMIN_PASSWORD` | first run | Creates the first admin if none exists |
 | `MAIL_HOST` / `MAIL_PORT` | production | SMTP server for activation and password-reset emails (port default `587`). Empty: nothing is sent. See [Email](#email) |

@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import com.unisphere.support.AcademicIntegrationTest;
 import com.unisphere.user.Role;
 import com.unisphere.user.User;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
@@ -24,16 +25,24 @@ class AuditLogViewerIT extends AcademicIntegrationTest {
     void showsWhoDidWhatWithDetailsNewestFirst() throws Exception {
         as(admin, post("/api/admin/semesters/" + semesterId + "/registration/close"), 200);
 
-        JsonNode entry = as(admin, get(URL).param("action", "REGISTRATION_CLOSED"), 200).get("content").get(0);
+        // Other tests share the database and move the clock, so this test's entry is not necessarily the newest one.
+        JsonNode entry = as(admin, get(URL).param("action", "REGISTRATION_CLOSED").param("entityType", "Semester").param("size", "100"), 200)
+                .get("content").valueStream()
+                .filter(e -> e.get("entityId").asLong() == semesterId)
+                .findFirst().orElseThrow();
 
-        assertThat(entry.get("entityType").asString()).isEqualTo("Semester");
-        assertThat(entry.get("entityId").asLong()).isEqualTo(semesterId);
         assertThat(entry.get("actor").get("email").asString()).isEqualTo(ADMIN_EMAIL);
         assertThat(entry.get("details").get("code").asString()).startsWith("S");
 
-        JsonNode all = as(admin, get(URL).param("size", "50"), 200).get("content");
+        // Newest first means by time; the id only breaks ties (entries can be written with a clock set ahead).
+        JsonNode all = as(admin, get(URL).param("size", "100"), 200).get("content");
         for (int i = 1; i < all.size(); i++) {
-            assertThat(all.get(i - 1).get("id").asLong()).isGreaterThan(all.get(i).get("id").asLong());
+            Instant newer = Instant.parse(all.get(i - 1).get("createdAt").asString());
+            Instant older = Instant.parse(all.get(i).get("createdAt").asString());
+            assertThat(newer).isAfterOrEqualTo(older);
+            if (newer.equals(older)) {
+                assertThat(all.get(i - 1).get("id").asLong()).isGreaterThan(all.get(i).get("id").asLong());
+            }
         }
     }
 

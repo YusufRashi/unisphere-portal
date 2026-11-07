@@ -22,6 +22,10 @@ updates:
     directories: [/backend, /frontend]
     schedule:
       interval: weekly
+    # Java and Node.js stay on their LTS lines; moving to the next one is a deliberate change, not a bot's.
+    ignore:
+      - dependency-name: "*"
+        update-types: [version-update:semver-major]
 
   - package-ecosystem: github-actions
     directory: /

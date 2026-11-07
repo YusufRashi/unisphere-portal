@@ -7,6 +7,7 @@ import { Link, useSearchParams } from 'react-router'
 import { z } from 'zod'
 import { errorMessage } from '@/api/errors'
 import { applyServerErrors } from '@/api/formErrors'
+import { getOffering, searchOfferings } from '@/api/calendar'
 import { getAnnouncements, publishAnnouncement } from '@/api/notifications'
 import { getMyTeaching } from '@/api/results'
 import { useAuth } from '@/auth/authContext'
@@ -18,10 +19,18 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { SelectField, TextAreaField, TextField } from '@/components/ui/fields'
 import { Modal } from '@/components/ui/Modal'
 import { Pagination } from '@/components/ui/Pagination'
+import { SearchSelect, type SelectOption } from '@/components/ui/SearchSelect'
 import { Spinner } from '@/components/ui/Spinner'
 import { useToast } from '@/components/ui/toastContext'
 import { formatDateTime, timeAgo } from '@/lib/format'
-import type { TeachingOffering } from '@/types/api'
+import type { Offering, TeachingOffering } from '@/types/api'
+
+/** Lecturers choose from the courses they teach; the registrar may post to any course. */
+type CourseChoice = { kind: 'lecturer'; teaching: TeachingOffering[] } | { kind: 'registrar' }
+
+function offeringOption(o: Offering): SelectOption {
+  return { value: o.id, label: `${o.course.code} · Section ${o.section}`, description: `${o.course.title} · ${o.semester.name}` }
+}
 
 const PAGE_SIZE = 10
 
@@ -31,17 +40,26 @@ const announcementSchema = z.object({
   body: z.string().trim().min(1, 'Write the announcement.').max(5000, 'At most 5000 characters.'),
 })
 
-function ComposeModal({ teaching, initialOfferingId, onClose }: { teaching: TeachingOffering[]; initialOfferingId?: number; onClose: () => void }) {
+function ComposeModal({ courses, initialOfferingId, onClose }: { courses: CourseChoice; initialOfferingId?: number; onClose: () => void }) {
+  const teaching = courses.kind === 'lecturer' ? courses.teaching : []
   const toast = useToast()
   const queryClient = useQueryClient()
   const [formError, setFormError] = useState<string | null>(null)
   // The course the page is filtered to, or the lecturer's only course.
   const preselected = initialOfferingId ?? (teaching.length === 1 ? teaching[0]?.offering.id : undefined)
-  const { register, handleSubmit, setError, formState } = useForm<z.input<typeof announcementSchema>, unknown, z.output<typeof announcementSchema>>({
+  const { register, handleSubmit, setError, setValue, formState } = useForm<z.input<typeof announcementSchema>, unknown, z.output<typeof announcementSchema>>({
     resolver: zodResolver(announcementSchema),
     defaultValues: { offeringId: preselected ? String(preselected) : '', title: '', body: '' },
   })
   const errors = formState.errors
+  const [chosen, setChosen] = useState<SelectOption | null>(null)
+  // The registrar arriving from a course's announcements: show that course as already chosen.
+  const initialCourse = useQuery({
+    queryKey: ['offering', initialOfferingId],
+    queryFn: () => getOffering(initialOfferingId!),
+    enabled: courses.kind === 'registrar' && initialOfferingId !== undefined,
+  })
+  const registrarChoice = chosen ?? (initialCourse.data ? offeringOption(initialCourse.data) : null)
 
   const mutation = useMutation({
     mutationFn: ({ offeringId, title, body }: z.output<typeof announcementSchema>) => publishAnnouncement(Number(offeringId), { title, body }),
@@ -73,14 +91,30 @@ function ComposeModal({ teaching, initialOfferingId, onClose }: { teaching: Teac
     >
       <form id="announcement" noValidate onSubmit={handleSubmit((v) => mutation.mutate(v))} className="space-y-4">
         {formError && <Alert tone="error">{formError}</Alert>}
-        <SelectField label="Course" error={errors.offeringId?.message} {...register('offeringId')}>
-          <option value="">Choose a course…</option>
-          {teaching.map(({ offering: o }) => (
-            <option key={o.id} value={o.id}>
-              {o.course.code} · Section {o.section} — {o.course.title}
-            </option>
-          ))}
-        </SelectField>
+        {courses.kind === 'lecturer' ? (
+          <SelectField label="Course" error={errors.offeringId?.message} {...register('offeringId')}>
+            <option value="">Choose a course…</option>
+            {teaching.map(({ offering: o }) => (
+              <option key={o.id} value={o.id}>
+                {o.course.code} · Section {o.section} — {o.course.title}
+              </option>
+            ))}
+          </SelectField>
+        ) : (
+          <SearchSelect
+            label="Course"
+            queryKey="announcement-offerings"
+            placeholder="Search by course code or title"
+            loadOptions={async (q) => (await searchOfferings({ q, size: 10 })).content.map(offeringOption)}
+            value={registrarChoice}
+            onChange={(option) => {
+              setChosen(option)
+              setValue('offeringId', option ? String(option.value) : '', { shouldValidate: formState.isSubmitted })
+            }}
+            error={errors.offeringId?.message}
+            hint="Any course, in any semester. Everyone enrolled in it is notified."
+          />
+        )}
         <TextField label="Title" maxLength={200} error={errors.title?.message} {...register('title')} />
         <TextAreaField label="Message" rows={6} maxLength={5000} error={errors.body?.message} {...register('body')} />
       </form>
@@ -88,10 +122,12 @@ function ComposeModal({ teaching, initialOfferingId, onClose }: { teaching: Teac
   )
 }
 
-/** Announcements for the courses the user is enrolled in or teaches. Lecturers post new ones here. */
+/** Announcements for the courses the user is enrolled in or teaches. Lecturers and the registrar post new ones here. */
 export function AnnouncementsPage() {
   const { hasRole } = useAuth()
   const isLecturer = hasRole('LECTURER')
+  const isRegistrar = hasRole('ADMIN')
+  const canPost = isLecturer || isRegistrar
   const [params, setParams] = useSearchParams()
   const offeringId = Number(params.get('offeringId')) || undefined
   const page = Math.max(Number(params.get('page')) || 0, 0)
@@ -103,15 +139,20 @@ export function AnnouncementsPage() {
   })
   const teaching = useQuery({ queryKey: ['lecturer', 'teaching', undefined], queryFn: () => getMyTeaching(), enabled: isLecturer })
   const course = query.data?.content[0]
+  const composeCourses: CourseChoice | null = isRegistrar
+    ? { kind: 'registrar' }
+    : teaching.data
+      ? { kind: 'lecturer', teaching: teaching.data }
+      : null
 
   return (
     <>
       <PageHeader
         title="Announcements"
-        description={isLecturer ? 'Messages to the students in your courses.' : 'Messages from the lecturers of your courses.'}
+        description={isRegistrar ? 'Messages to the students of any course.' : isLecturer ? 'Messages to the students in your courses.' : 'Messages from the lecturers of your courses.'}
         actions={
-          isLecturer ? (
-            <Button onClick={() => setComposing(true)} disabled={!teaching.data?.length}>
+          canPost ? (
+            <Button onClick={() => setComposing(true)} disabled={!isRegistrar && !teaching.data?.length}>
               <Megaphone aria-hidden="true" className="size-4" /> New announcement
             </Button>
           ) : undefined
@@ -137,7 +178,7 @@ export function AnnouncementsPage() {
           <EmptyState
             icon={Megaphone}
             title="No announcements yet"
-            description={isLecturer ? 'Post one to reach every student in a course at once.' : 'Announcements from your lecturers will appear here.'}
+            description={canPost ? 'Post one to reach every student in a course at once.' : 'Announcements from your lecturers will appear here.'}
           />
         </Card>
       ) : (
@@ -180,7 +221,7 @@ export function AnnouncementsPage() {
         </>
       )}
 
-      {composing && teaching.data && <ComposeModal teaching={teaching.data} initialOfferingId={offeringId} onClose={() => setComposing(false)} />}
+      {composing && composeCourses && <ComposeModal courses={composeCourses} initialOfferingId={offeringId} onClose={() => setComposing(false)} />}
     </>
   )
 }

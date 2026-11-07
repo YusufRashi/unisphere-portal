@@ -8,9 +8,10 @@ import { Spinner } from '@/components/ui/Spinner'
 import type { AppNotification } from '@/types/api'
 import { NotificationContent } from './NotificationContent'
 import { NOTIFICATIONS_KEY, useMarkAllRead, useMarkRead } from './useNotificationActions'
+import { useLiveNotifications } from './useLiveNotifications'
 
-/** How often the unread badge is refreshed while the app is open. */
-const POLL_MS = 60_000
+/** Only a safety net now: the live stream (useLiveNotifications) updates the badge as soon as anything changes. */
+const POLL_MS = 5 * 60_000
 const PREVIEW_SIZE = 6
 
 /** Header bell: unread badge, and a panel with the latest notifications. */
@@ -20,6 +21,7 @@ export function NotificationBell() {
   const containerRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const navigate = useNavigate()
+  useLiveNotifications()
   const unread = useQuery({ queryKey: [...NOTIFICATIONS_KEY, 'unread-count'], queryFn: getUnreadCount, refetchInterval: POLL_MS })
   const latest = useQuery({
     queryKey: [...NOTIFICATIONS_KEY, 'list', { size: PREVIEW_SIZE }],

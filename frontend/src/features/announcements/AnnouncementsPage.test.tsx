@@ -1,11 +1,13 @@
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import * as calendarApi from '@/api/calendar'
 import * as notificationsApi from '@/api/notifications'
 import * as resultsApi from '@/api/results'
 import { makeAuth, makeUser, renderWithProviders } from '@/test/utils'
 import type { Announcement, Offering, PageResponse, Role, TeachingOffering } from '@/types/api'
 import { AnnouncementsPage } from './AnnouncementsPage'
 
+vi.mock('@/api/calendar')
 vi.mock('@/api/notifications')
 vi.mock('@/api/results')
 
@@ -85,5 +87,29 @@ describe('AnnouncementsPage', () => {
     expect(await screen.findByText('Announcement posted to CS101. 28 students were notified.')).toBeInTheDocument()
     expect(notificationsApi.publishAnnouncement).toHaveBeenCalledWith(11, { title: 'Room change', body: 'From Monday we meet in LT2.' })
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('lets the registrar post to any course found by search', async () => {
+    const user = userEvent.setup()
+    vi.mocked(notificationsApi.getAnnouncements).mockResolvedValue(page([]))
+    const bus201 = { id: 42, section: 'A', course: { id: 9, code: 'BUS201', title: 'Marketing' }, semester: { id: 1, code: '2026-S1', name: 'Semester 1' } } as unknown as Offering
+    vi.mocked(calendarApi.searchOfferings).mockResolvedValue({ content: [bus201], page: 0, size: 10, totalElements: 1, totalPages: 1 })
+    vi.mocked(notificationsApi.publishAnnouncement).mockResolvedValue({ announcement: { ...announcement, offeringId: 42, courseCode: 'BUS201' }, notified: 7 })
+    renderPage(['ADMIN'])
+
+    await user.click(await screen.findByRole('button', { name: 'New announcement' }))
+    const dialog = screen.getByRole('dialog', { name: 'New announcement' })
+    await user.click(within(dialog).getByRole('button', { name: 'Post announcement' }))
+    expect(await within(dialog).findByText('Choose a course.')).toBeInTheDocument()
+
+    await user.type(within(dialog).getByRole('combobox', { name: 'Course' }), 'BUS')
+    await user.click(await within(dialog).findByRole('option', { name: /BUS201 · Section A/ }))
+    await user.type(within(dialog).getByLabelText('Title'), 'Guest lecture')
+    await user.type(within(dialog).getByLabelText('Message'), 'Friday at 10:00 in LT1.')
+    await user.click(within(dialog).getByRole('button', { name: 'Post announcement' }))
+
+    expect(await screen.findByText('Announcement posted to BUS201. 7 students were notified.')).toBeInTheDocument()
+    expect(notificationsApi.publishAnnouncement).toHaveBeenCalledWith(42, { title: 'Guest lecture', body: 'Friday at 10:00 in LT1.' })
+    expect(resultsApi.getMyTeaching).not.toHaveBeenCalled()
   })
 })

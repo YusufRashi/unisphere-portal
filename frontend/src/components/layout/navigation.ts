@@ -77,6 +77,7 @@ export const NAVIGATION: NavSection[] = [
       { label: 'Registrations', to: '/admin/registrations', icon: ClipboardCheck, roles: ['ADMIN'] },
       { label: 'Results', to: '/admin/results', icon: FileCheck2, roles: ['ADMIN'] },
       { label: 'Grading scale', to: '/admin/grading-scale', icon: Scale, roles: ['ADMIN'] },
+      { label: 'Course announcements', to: '/announcements', icon: Megaphone, roles: ['ADMIN'] },
       { label: 'Verify transcript', to: '/admin/transcripts/verify', icon: ShieldCheck, roles: ['ADMIN'] },
     ],
   },

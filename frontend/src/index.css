@@ -1,29 +1,195 @@
-@import '@fontsource-variable/inter';
+@import '@fontsource-variable/plus-jakarta-sans';
+@import '@fontsource-variable/jetbrains-mono';
 @import 'tailwindcss';
 
 /*
- * Design tokens. "brand" is a deep academic blue; neutrals come from Tailwind's slate scale.
- * Components use semantic utility classes built on these tokens rather than raw hex values.
+ * Design tokens, light and dark.
+ *
+ * The colour scales are theme-aware: in dark mode each scale is mirrored (50 <-> 950, 100 <-> 900, ...), so the
+ * same class keeps its role in both themes. text-neutral-900 is always the strongest ink, bg-neutral-50 always a
+ * subtle panel, bg-brand-50 always a soft accent tint. Anything that must NOT mirror (solid buttons, cards, the
+ * page) uses a semantic token instead: canvas, surface, accent, danger.
+ *
+ * Utilities reference these variables at run time, so switching the theme is one class on <html>.
  */
-@theme {
-  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+@custom-variant dark (&:where(.dark, .dark *));
 
-  --color-brand-50: #eff4ff;
-  --color-brand-100: #dbe6fe;
-  --color-brand-200: #bfd3fe;
-  --color-brand-300: #93b4fd;
-  --color-brand-400: #6090fa;
-  --color-brand-500: #3b6cf6;
-  --color-brand-600: #2550eb;
-  --color-brand-700: #1d3fd8;
-  --color-brand-800: #1e35af;
-  --color-brand-900: #1e3a8a;
-  --color-brand-950: #172554;
+@theme {
+  --font-sans: 'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'Cascadia Code', Menlo, monospace;
+
+  /* Page, cards and solid controls. */
+  --color-canvas: #ededf0;
+  --color-surface: #ffffff;
+  --color-accent: #6d47e8;
+  --color-accent-hover: #5c37cf;
+  --color-on-accent: #ffffff;
+  --color-danger: #dc2626;
+  --color-danger-hover: #b91c1c;
+
+  /* Course identity in lists (always shown with the course code beside it). Checked for colour-blind separation. */
+  --color-course-1: #6d47e8;
+  --color-course-2: #10b981;
+  --color-course-3: #f59e0b;
+
+  --color-neutral-50: #f7f7f8;
+  --color-neutral-100: #f0f0f2;
+  --color-neutral-200: #e4e4e7;
+  --color-neutral-300: #d4d4d8;
+  --color-neutral-400: #a1a1aa;
+  --color-neutral-500: #71717a;
+  --color-neutral-600: #52525b;
+  --color-neutral-700: #3f3f46;
+  --color-neutral-800: #27272a;
+  --color-neutral-900: #18181b;
+  --color-neutral-950: #09090b;
+
+  --color-brand-50: #f4f2ff;
+  --color-brand-100: #ebe7ff;
+  --color-brand-200: #d8d1ff;
+  --color-brand-300: #bbaeff;
+  --color-brand-400: #9b85fb;
+  --color-brand-500: #7f61f4;
+  --color-brand-600: #6d47e8;
+  --color-brand-700: #5c37cf;
+  --color-brand-800: #4c2eaa;
+  --color-brand-900: #3f2a88;
+  --color-brand-950: #261a54;
+
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-100: #d1fae5;
+  --color-emerald-200: #a7f3d0;
+  --color-emerald-300: #6ee7b7;
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  --color-emerald-800: #065f46;
+  --color-emerald-900: #064e3b;
+  --color-emerald-950: #022c22;
+
+  --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c7;
+  --color-amber-200: #fde68a;
+  --color-amber-300: #fcd34d;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+  --color-amber-700: #b45309;
+  --color-amber-800: #92400e;
+  --color-amber-900: #78350f;
+  --color-amber-950: #451a03;
+
+  --color-red-50: #fef2f2;
+  --color-red-100: #fee2e2;
+  --color-red-200: #fecaca;
+  --color-red-300: #fca5a5;
+  --color-red-400: #f87171;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-red-700: #b91c1c;
+  --color-red-800: #991b1b;
+  --color-red-900: #7f1d1d;
+  --color-red-950: #450a0a;
+
+  --color-cyan-50: #ecfeff;
+  --color-cyan-300: #67e8f9;
+  --color-cyan-900: #164e63;
+  --color-rose-50: #fff1f2;
+  --color-rose-300: #fda4af;
+  --color-rose-900: #881337;
+
+  /* The sign-in panel: deep violet in both themes (never mirrored). */
+  --color-hero: #241a52;
+
+  --radius-card: 1rem;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --color-canvas: #0c0c0e;
+  --color-surface: #17171b;
+  --color-accent: #7f61f4;
+  --color-accent-hover: #8f76f7;
+  --color-danger: #dc2626;
+  --color-danger-hover: #ef4444;
+
+  --color-course-1: #8f76f7;
+  --color-course-2: #199e70;
+  --color-course-3: #c98500;
+
+  --color-neutral-50: #1e1e23;
+  --color-neutral-100: #26262c;
+  --color-neutral-200: #303037;
+  --color-neutral-300: #3e3e46;
+  --color-neutral-400: #6c6c76;
+  --color-neutral-500: #8e8e99;
+  --color-neutral-600: #a9a9b3;
+  --color-neutral-700: #c6c6ce;
+  --color-neutral-800: #dcdce2;
+  --color-neutral-900: #f0f0f3;
+  --color-neutral-950: #fafafa;
+
+  --color-brand-50: #1f1a3b;
+  --color-brand-100: #271f4d;
+  --color-brand-200: #382c6e;
+  --color-brand-300: #4c3a96;
+  --color-brand-400: #6a52d4;
+  --color-brand-500: #8f76f7;
+  --color-brand-600: #a490fa;
+  --color-brand-700: #b8a9fc;
+  --color-brand-800: #cdc2fd;
+  --color-brand-900: #e1dafe;
+  --color-brand-950: #f1edff;
+
+  --color-emerald-50: #052a20;
+  --color-emerald-100: #06392c;
+  --color-emerald-200: #0b5340;
+  --color-emerald-300: #0f7357;
+  --color-emerald-400: #13946f;
+  --color-emerald-500: #18b585;
+  --color-emerald-600: #34d399;
+  --color-emerald-700: #6ee7b7;
+  --color-emerald-800: #a7f3d0;
+  --color-emerald-900: #d1fae5;
+  --color-emerald-950: #ecfdf5;
+
+  --color-amber-50: #33200a;
+  --color-amber-100: #45290a;
+  --color-amber-200: #6b3f0b;
+  --color-amber-300: #94590d;
+  --color-amber-400: #c27a10;
+  --color-amber-500: #e09a1a;
+  --color-amber-600: #fbbf24;
+  --color-amber-700: #fcd34d;
+  --color-amber-800: #fde68a;
+  --color-amber-900: #fef3c7;
+  --color-amber-950: #fffbeb;
+
+  --color-red-50: #3a1111;
+  --color-red-100: #4c1414;
+  --color-red-200: #6e1b1b;
+  --color-red-300: #962424;
+  --color-red-400: #c53131;
+  --color-red-500: #e24848;
+  --color-red-600: #f87171;
+  --color-red-700: #fca5a5;
+  --color-red-800: #fecaca;
+  --color-red-900: #fee2e2;
+  --color-red-950: #fef2f2;
+
+  --color-cyan-50: #082f39;
+  --color-cyan-300: #0e7490;
+  --color-cyan-900: #cffafe;
+  --color-rose-50: #3b0d18;
+  --color-rose-300: #9f1239;
+  --color-rose-900: #ffe4e6;
 }
 
 @layer base {
   html {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply bg-canvas text-neutral-900 antialiased;
   }
 
   body {
@@ -36,7 +202,7 @@
   }
 }
 
-/* Printed documents (transcripts): A4 with margins so nothing runs to the paper edge. */
+/* Printed documents (transcripts) are always light: A4 with margins so nothing runs to the paper edge. */
 @page {
   size: A4;
   margin: 16mm 14mm;

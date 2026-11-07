@@ -159,8 +159,8 @@ function BillingCard({ semesterId }: { semesterId: number }) {
                 ] as const
               ).map(([label, value]) => (
                 <div key={label}>
-                  <dt className="text-slate-500">{label}</dt>
-                  <dd className="mt-0.5 text-lg font-semibold text-slate-900 tabular-nums">{value}</dd>
+                  <dt className="text-neutral-500">{label}</dt>
+                  <dd className="mt-0.5 text-lg font-semibold text-neutral-900 tabular-nums">{value}</dd>
                 </div>
               ))}
             </dl>
@@ -270,15 +270,15 @@ export function FeeStructuresPage() {
               }
             >
               {data?.rows.map((row) => (
-                <tr key={row.program.id} className="hover:bg-slate-50/60">
+                <tr key={row.program.id} className="hover:bg-neutral-50/60">
                   <Td>
-                    <p className="font-medium text-slate-900">{row.program.code}</p>
-                    <p className="text-xs text-slate-500">{row.program.name}</p>
+                    <p className="font-medium text-neutral-900">{row.program.code}</p>
+                    <p className="text-xs text-neutral-500">{row.program.name}</p>
                   </Td>
                   <Td className="text-right whitespace-nowrap tabular-nums">
-                    {row.structure ? formatMoney(row.structure.amount, data.currency) : <span className="text-slate-400">Not set</span>}
+                    {row.structure ? formatMoney(row.structure.amount, data.currency) : <span className="text-neutral-400">Not set</span>}
                   </Td>
-                  <Td className="hidden text-slate-600 sm:table-cell">{row.structure?.description ?? '—'}</Td>
+                  <Td className="hidden text-neutral-600 sm:table-cell">{row.structure?.description ?? '—'}</Td>
                   <Td className="hidden text-right tabular-nums md:table-cell">{row.chargedCount}</Td>
                   {canEdit && (
                     <Td className="text-right whitespace-nowrap">

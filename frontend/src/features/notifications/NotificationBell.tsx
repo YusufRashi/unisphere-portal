@@ -66,7 +66,7 @@ export function NotificationBell() {
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
         aria-label={count > 0 ? `Notifications, ${count} unread` : 'Notifications'}
-        className="relative rounded-md p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+        className="relative rounded-md p-2 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
       >
         <Bell aria-hidden="true" className="size-5" />
         {count > 0 && (
@@ -84,15 +84,15 @@ export function NotificationBell() {
           id={panelId}
           role="region"
           aria-label="Recent notifications"
-          className="absolute right-0 z-40 mt-2 w-96 max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg"
+          className="absolute right-0 z-40 mt-2 w-96 max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg border border-neutral-200 bg-surface shadow-lg"
         >
-          <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-            <p className="text-sm font-semibold text-slate-900">Notifications</p>
+          <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3">
+            <p className="text-sm font-semibold text-neutral-900">Notifications</p>
             <button
               type="button"
               onClick={() => markAllRead.mutate()}
               disabled={count === 0 || markAllRead.isPending}
-              className="text-xs font-medium text-brand-700 hover:text-brand-900 disabled:text-slate-400"
+              className="text-xs font-medium text-brand-700 hover:text-brand-900 disabled:text-neutral-400"
             >
               Mark all as read
             </button>
@@ -105,15 +105,15 @@ export function NotificationBell() {
                 <Spinner label="Loading notifications…" />
               </div>
             ) : latest.data.content.length === 0 ? (
-              <p className="px-4 py-8 text-center text-sm text-slate-500">You have no notifications yet.</p>
+              <p className="px-4 py-8 text-center text-sm text-neutral-500">You have no notifications yet.</p>
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-neutral-100">
                 {latest.data.content.map((n) => (
                   <li key={n.id}>
                     <button
                       type="button"
                       onClick={() => openNotification(n)}
-                      className="block w-full px-4 py-3 text-left hover:bg-slate-50 focus-visible:bg-slate-50"
+                      className="block w-full px-4 py-3 text-left hover:bg-neutral-50 focus-visible:bg-neutral-50"
                     >
                       <NotificationContent notification={n} clampMessage />
                     </button>
@@ -122,7 +122,7 @@ export function NotificationBell() {
               </ul>
             )}
           </div>
-          <div className="border-t border-slate-200 px-4 py-2.5 text-center">
+          <div className="border-t border-neutral-200 px-4 py-2.5 text-center">
             <Link to="/notifications" onClick={() => setOpen(false)} className="text-sm font-medium text-brand-700 hover:text-brand-900">
               View all notifications
             </Link>

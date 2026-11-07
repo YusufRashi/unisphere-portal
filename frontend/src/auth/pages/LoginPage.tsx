@@ -73,7 +73,7 @@ export function LoginPage() {
           Sign in
         </Button>
       </form>
-      <p className="mt-8 text-xs text-slate-500">
+      <p className="mt-8 text-xs text-neutral-500">
         New students and staff receive an activation email from the registrar's office. Contact the registrar if you
         have not received yours.
       </p>

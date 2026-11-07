@@ -50,7 +50,7 @@ export function CoursesPage() {
       <Card>
         <TableToolbar className="sm:grid-cols-[minmax(0,1fr)_14rem_9rem_10rem]">
           <div className="relative">
-            <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-slate-400" />
+            <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-neutral-400" />
             <TextField
               label="Search courses"
               hideLabel
@@ -122,17 +122,17 @@ export function CoursesPage() {
           }
         >
           {data?.content.map((c) => (
-            <tr key={c.id} className="hover:bg-slate-50/60">
+            <tr key={c.id} className="hover:bg-neutral-50/60">
               <Td>
                 <Link to={`/admin/courses/${c.id}`} className="font-medium text-brand-800 hover:underline">
                   {c.code}
                 </Link>
-                <p className="text-sm text-slate-600">{c.title}</p>
+                <p className="text-sm text-neutral-600">{c.title}</p>
               </Td>
-              <Td className="hidden text-slate-600 md:table-cell">{c.department.name}</Td>
+              <Td className="hidden text-neutral-600 md:table-cell">{c.department.name}</Td>
               <Td className="text-right tabular-nums">{c.credits}</Td>
               <Td className="hidden tabular-nums sm:table-cell">{c.level}</Td>
-              <Td className="hidden text-slate-600 lg:table-cell">{c.prerequisiteCount || '—'}</Td>
+              <Td className="hidden text-neutral-600 lg:table-cell">{c.prerequisiteCount || '—'}</Td>
               <Td>{c.active ? <Badge tone="success">Active</Badge> : <Badge>Inactive</Badge>}</Td>
             </tr>
           ))}

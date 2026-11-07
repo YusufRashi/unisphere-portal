@@ -141,7 +141,7 @@ function SemesterFormModal({ semester, onClose }: { semester: Semester | 'new'; 
           <TextField label="Ends" type="date" error={errors.endDate?.message} {...register('endDate')} />
         </div>
         <fieldset className="space-y-4">
-          <legend className="text-sm font-semibold text-slate-900">Registration</legend>
+          <legend className="text-sm font-semibold text-neutral-900">Registration</legend>
           <div className="grid gap-4 sm:grid-cols-3">
             <TextField label="Opens" type="datetime-local" error={errors.registrationOpensAt?.message} {...register('registrationOpensAt')} />
             <TextField label="Closes" type="datetime-local" error={errors.registrationClosesAt?.message} {...register('registrationClosesAt')} />
@@ -248,27 +248,27 @@ export function SemestersPage() {
           {semesters.map((s) => {
             const completed = s.status === 'COMPLETED'
             return (
-              <tr key={s.id} className="hover:bg-slate-50/60">
+              <tr key={s.id} className="hover:bg-neutral-50/60">
                 <Td>
-                  <p className="flex items-center gap-2 font-medium text-slate-900">
+                  <p className="flex items-center gap-2 font-medium text-neutral-900">
                     {s.name}
                     {s.current && <Badge tone="brand">Current</Badge>}
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-neutral-500">
                     {s.code} · {s.minCredits}–{s.maxCredits} credits{s.requiresApproval ? ' · approval required' : ''}
                   </p>
                 </Td>
-                <Td className="hidden whitespace-nowrap text-slate-600 md:table-cell">
+                <Td className="hidden whitespace-nowrap text-neutral-600 md:table-cell">
                   {formatDate(s.startDate)} – {formatDate(s.endDate)}
                 </Td>
-                <Td className="hidden text-slate-600 lg:table-cell">
+                <Td className="hidden text-neutral-600 lg:table-cell">
                   <p className="whitespace-nowrap">{formatDateTime(s.registrationOpensAt)}</p>
                   <p className="whitespace-nowrap">to {formatDateTime(s.registrationClosesAt)}</p>
                 </Td>
                 <Td>
                   <Badge tone={STATUS_TONES[s.status]}>{SEMESTER_STATUS_LABELS[s.status]}</Badge>
                   {s.registrationOpenFlag && !s.registrationOpen && !completed && (
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="mt-1 text-xs text-neutral-500">
                       {new Date(s.registrationOpensAt).getTime() > now
                         ? `Registration starts ${formatDateTime(s.registrationOpensAt)}`
                         : 'Registration window has ended'}

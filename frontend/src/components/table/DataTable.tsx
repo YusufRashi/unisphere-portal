@@ -7,7 +7,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { Spinner } from '@/components/ui/Spinner'
 import { cn } from '@/lib/cn'
 
-const headerClass = 'px-5 py-3 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-slate-600 uppercase'
+const headerClass = 'px-5 py-3 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-neutral-600 uppercase'
 
 export function Th({ children, className }: { children?: ReactNode; className?: string }) {
   return (
@@ -35,9 +35,9 @@ export function SortTh({ field, label, sort, onSort, className }: {
       aria-sort={active ? (direction === 'asc' ? 'ascending' : 'descending') : 'none'}
       className={cn(headerClass, className)}
     >
-      <button type="button" onClick={() => onSort(next)} className="inline-flex items-center gap-1 tracking-wide uppercase hover:text-slate-900">
+      <button type="button" onClick={() => onSort(next)} className="inline-flex items-center gap-1 tracking-wide uppercase hover:text-neutral-900">
         {label}
-        <Icon aria-hidden="true" className={active ? 'size-3.5 text-slate-900' : 'size-3.5 text-slate-400'} />
+        <Icon aria-hidden="true" className={active ? 'size-3.5 text-neutral-900' : 'size-3.5 text-neutral-400'} />
       </button>
     </th>
   )
@@ -107,12 +107,12 @@ export function DataTable({
   return (
     <>
       <div className="relative overflow-x-auto" aria-busy={isFetching || undefined}>
-        <table className="min-w-full divide-y divide-slate-200">
+        <table className="min-w-full divide-y divide-neutral-200">
           <caption className="sr-only">{caption}</caption>
-          <thead className="bg-slate-50">
+          <thead className="bg-neutral-50">
             <tr>{head}</tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 bg-white">{children}</tbody>
+          <tbody className="divide-y divide-neutral-100 bg-surface">{children}</tbody>
         </table>
       </div>
       {footer}
@@ -122,5 +122,5 @@ export function DataTable({
 
 /** Toolbar row above a table holding search and filter controls. */
 export function TableToolbar({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn('grid gap-3 border-b border-slate-200 p-4', className)}>{children}</div>
+  return <div className={cn('grid gap-3 border-b border-neutral-200 p-4', className)}>{children}</div>
 }

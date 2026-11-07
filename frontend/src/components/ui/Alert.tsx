@@ -18,7 +18,7 @@ export function Alert({ tone = 'info', title, children, className }: {
 }) {
   const { box, icon: Icon } = tones[tone]
   return (
-    <div role={tone === 'error' ? 'alert' : 'status'} className={cn('flex gap-3 rounded-md border p-3', box, className)}>
+    <div role={tone === 'error' ? 'alert' : 'status'} className={cn('flex gap-3 rounded-xl border p-3', box, className)}>
       <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
       <div className="space-y-1 text-sm">
         {title && <p className="font-medium">{title}</p>}

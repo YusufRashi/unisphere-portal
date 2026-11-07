@@ -36,7 +36,7 @@ export function toAmount(input: string): string {
 export function balanceStatus(balance: number): { label: string; amount: number; tone: string } {
   if (balance > 0) return { label: 'Balance due', amount: balance, tone: 'text-red-700' }
   if (balance < 0) return { label: 'In credit', amount: -balance, tone: 'text-emerald-700' }
-  return { label: 'Settled', amount: 0, tone: 'text-slate-900' }
+  return { label: 'Settled', amount: 0, tone: 'text-neutral-900' }
 }
 
 export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {

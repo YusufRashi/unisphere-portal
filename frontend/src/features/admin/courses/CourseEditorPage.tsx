@@ -139,7 +139,7 @@ function PrerequisitesCard({ course }: { course: CourseDetail }) {
       <CardBody className="space-y-4">
         {error && <Alert tone="error">{error}</Alert>}
         {selected.length === 0 ? (
-          <p className="text-sm text-slate-500">No prerequisites.</p>
+          <p className="text-sm text-neutral-500">No prerequisites.</p>
         ) : (
           <ul className="flex flex-wrap gap-2" aria-label="Selected prerequisites">
             {selected.map((p) => (
@@ -190,7 +190,7 @@ export function CourseEditorPage() {
   const query = useQuery({ queryKey: ['course', id], queryFn: () => getCourse(id), enabled: !isNew && Number.isInteger(id) })
 
   const back = (
-    <Link to="/admin/courses" className="mb-2 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-slate-900">
+    <Link to="/admin/courses" className="mb-2 inline-flex items-center gap-1 text-sm text-neutral-600 hover:text-neutral-900">
       <ArrowLeft aria-hidden="true" className="size-4" /> Courses
     </Link>
   )

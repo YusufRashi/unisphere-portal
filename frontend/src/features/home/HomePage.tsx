@@ -1,6 +1,7 @@
-import { lazy, Suspense, type ComponentType } from 'react'
+import { lazy, Suspense, useState, type ComponentType } from 'react'
 import { useAuth } from '@/auth/authContext'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { PillTabs } from '@/components/ui/PillTabs'
 import { DashboardLoading } from '@/features/dashboard/figures'
 import { ROLE_LABELS } from '@/lib/format'
 import type { Role } from '@/types/api'
@@ -21,25 +22,33 @@ function greeting(): string {
   return 'Good evening'
 }
 
-/** The page after signing in: the dashboard of each role the user holds. */
+/** The page after signing in: the dashboard of the user's role, with a tab per role for people who have several. */
 export function HomePage() {
   const { user } = useAuth()
+  const mine = DASHBOARDS.filter((d) => user?.roles.includes(d.role))
+  const [selected, setSelected] = useState<Role | undefined>(mine[0]?.role)
   if (!user) return null
-  const mine = DASHBOARDS.filter((d) => user.roles.includes(d.role))
+  const current = mine.find((d) => d.role === selected) ?? mine[0]
 
   return (
     <>
-      <PageHeader title={`${greeting()}, ${user.firstName}`} description="Here is where things stand." />
-      <div className="space-y-10">
-        {mine.map(({ role, Dashboard }) => (
-          <section key={role} aria-label={`${ROLE_LABELS[role]} dashboard`}>
-            {mine.length > 1 && <h2 className="mb-3 text-base font-semibold text-slate-900">{ROLE_LABELS[role]}</h2>}
-            <Suspense fallback={<DashboardLoading label="Loading your dashboard…" />}>
-              <Dashboard />
-            </Suspense>
-          </section>
-        ))}
-      </div>
+      <PageHeader title={`${greeting()}, ${user.firstName}!`} description="Here is where things stand." />
+      {mine.length > 1 && (
+        <PillTabs
+          label="Dashboard"
+          className="-mt-2 mb-5"
+          options={mine.map((d) => ({ value: d.role, label: ROLE_LABELS[d.role] }))}
+          value={current?.role ?? mine[0]!.role}
+          onChange={setSelected}
+        />
+      )}
+      {current && (
+        <section aria-label={`${ROLE_LABELS[current.role]} dashboard`}>
+          <Suspense fallback={<DashboardLoading label="Loading your dashboard…" />}>
+            <current.Dashboard />
+          </Suspense>
+        </section>
+      )}
     </>
   )
 }

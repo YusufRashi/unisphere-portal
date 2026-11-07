@@ -25,10 +25,10 @@ function SeatsMeter({ enrolled, capacity }: { enrolled: number; capacity: number
   const ratio = capacity === 0 ? 0 : enrolled / capacity
   return (
     <div className="min-w-24">
-      <p className="text-sm tabular-nums text-slate-700">
+      <p className="text-sm tabular-nums text-neutral-700">
         {enrolled} / {capacity}
       </p>
-      <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-slate-100" aria-hidden="true">
+      <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-neutral-100" aria-hidden="true">
         <div
           className={cn('h-full rounded-full', ratio >= 1 ? 'bg-red-500' : ratio >= 0.85 ? 'bg-amber-500' : 'bg-emerald-500')}
           style={{ width: `${Math.min(ratio, 1) * 100}%` }}
@@ -110,7 +110,7 @@ export function OfferingsPage() {
                 ))}
               </SelectField>
               <div className="relative">
-                <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-slate-400" />
+                <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-neutral-400" />
                 <TextField
                   label="Search offerings"
                   hideLabel
@@ -163,20 +163,20 @@ export function OfferingsPage() {
               }
             >
               {data?.content.map((o) => (
-                <tr key={o.id} className="hover:bg-slate-50/60">
+                <tr key={o.id} className="hover:bg-neutral-50/60">
                   <Td>
                     <Link to={`/admin/offerings/${o.id}`} className="font-medium text-brand-800 hover:underline">
                       {o.course.code} · Section {o.section}
                     </Link>
-                    <p className="text-sm text-slate-600">{o.course.title}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-sm text-neutral-600">{o.course.title}</p>
+                    <p className="text-xs text-neutral-500">
                       {o.course.credits} credits · {o.course.departmentCode}
                     </p>
                   </Td>
-                  <Td className="hidden text-slate-600 md:table-cell">
+                  <Td className="hidden text-neutral-600 md:table-cell">
                     {o.lecturer?.displayName ?? <span className="text-amber-700">Not assigned</span>}
                   </Td>
-                  <Td className="hidden text-slate-600 lg:table-cell">
+                  <Td className="hidden text-neutral-600 lg:table-cell">
                     {o.sessions.length === 0 ? (
                       '—'
                     ) : (

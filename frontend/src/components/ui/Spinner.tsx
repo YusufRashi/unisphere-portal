@@ -7,7 +7,7 @@ export function Spinner({ className, label }: { className?: string; label?: stri
         aria-hidden="true"
         className={cn('size-4 animate-spin rounded-full border-2 border-current border-r-transparent', className)}
       />
-      <span className={label ? 'text-slate-600' : 'sr-only'}>{label ?? 'Loading'}</span>
+      <span className={label ? 'text-neutral-600' : 'sr-only'}>{label ?? 'Loading'}</span>
     </span>
   )
 }

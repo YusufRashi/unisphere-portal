@@ -82,24 +82,24 @@ export function TimetablePage() {
           {/* Week grid on larger screens */}
           <Card className="hidden overflow-hidden md:block">
             <div className="grid" style={{ gridTemplateColumns: `4rem repeat(${layout.days.length}, minmax(0, 1fr))` }}>
-              <div className="border-b border-slate-200 bg-slate-50" />
+              <div className="border-b border-neutral-200 bg-neutral-50" />
               {layout.days.map((d) => (
-                <div key={d} className="border-b border-l border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold tracking-wide text-slate-600 uppercase">
+                <div key={d} className="border-b border-l border-neutral-200 bg-neutral-50 px-3 py-2 text-xs font-semibold tracking-wide text-neutral-600 uppercase">
                   {DAY_SHORT[d]}
                 </div>
               ))}
               <div className="relative" style={{ height: `${layout.hours.length * HOUR_HEIGHT_REM}rem` }}>
                 {layout.hours.map((h, i) => (
                   // The first label sits below the header line instead of being centred on it (and clipped).
-                  <div key={h} className={`absolute right-2 text-xs text-slate-400 tabular-nums ${i === 0 ? 'translate-y-0.5' : '-translate-y-1/2'}`} style={{ top: `${i * HOUR_HEIGHT_REM}rem` }}>
+                  <div key={h} className={`absolute right-2 text-xs text-neutral-400 tabular-nums ${i === 0 ? 'translate-y-0.5' : '-translate-y-1/2'}`} style={{ top: `${i * HOUR_HEIGHT_REM}rem` }}>
                     {String(h).padStart(2, '0')}:00
                   </div>
                 ))}
               </div>
               {layout.days.map((d) => (
-                <div key={d} className="relative border-l border-slate-200" style={{ height: `${layout.hours.length * HOUR_HEIGHT_REM}rem` }}>
+                <div key={d} className="relative border-l border-neutral-200" style={{ height: `${layout.hours.length * HOUR_HEIGHT_REM}rem` }}>
                   {layout.hours.map((h, i) => (
-                    <div key={h} aria-hidden="true" className="absolute inset-x-0 border-t border-slate-100" style={{ top: `${i * HOUR_HEIGHT_REM}rem` }} />
+                    <div key={h} aria-hidden="true" className="absolute inset-x-0 border-t border-neutral-100" style={{ top: `${i * HOUR_HEIGHT_REM}rem` }} />
                   ))}
                   {layout.byDay[d].map((e, i) => (
                     <div
@@ -125,18 +125,18 @@ export function TimetablePage() {
           <div className="space-y-4 md:hidden">
             {layout.days.filter((d) => layout.byDay[d].length > 0).map((d) => (
               <Card key={d}>
-                <h2 className="border-b border-slate-200 px-4 py-2 text-sm font-semibold text-slate-900">{DAY_LONG[d]}</h2>
-                <ul className="divide-y divide-slate-100">
+                <h2 className="border-b border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-900">{DAY_LONG[d]}</h2>
+                <ul className="divide-y divide-neutral-100">
                   {layout.byDay[d].map((e, i) => (
                     <li key={i} className="flex gap-3 px-4 py-3">
-                      <p className="w-24 shrink-0 text-sm text-slate-600 tabular-nums">
+                      <p className="w-24 shrink-0 text-sm text-neutral-600 tabular-nums">
                         {shortTime(e.startTime)}–{shortTime(e.endTime)}
                       </p>
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-slate-900">
+                        <p className="text-sm font-medium text-neutral-900">
                           {e.courseCode} · {e.courseTitle}
                         </p>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-neutral-500">
                           {e.venue}
                           {e.lecturer ? ` · ${e.lecturer}` : ''}
                         </p>

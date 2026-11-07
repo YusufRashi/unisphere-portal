@@ -185,7 +185,7 @@ export function LecturersPage() {
       <Card>
         <TableToolbar className="sm:grid-cols-[minmax(0,1fr)_16rem]">
           <div className="relative">
-            <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-slate-400" />
+            <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-neutral-400" />
             <TextField
               label="Search lecturers"
               hideLabel
@@ -238,15 +238,15 @@ export function LecturersPage() {
           }
         >
           {data?.content.map((l) => (
-            <tr key={l.id} className="hover:bg-slate-50/60">
+            <tr key={l.id} className="hover:bg-neutral-50/60">
               <Td>
-                <p className="font-medium text-slate-900">{l.displayName}</p>
-                <p className="text-xs text-slate-500">
+                <p className="font-medium text-neutral-900">{l.displayName}</p>
+                <p className="text-xs text-neutral-500">
                   {l.staffNumber} · {l.email}
                 </p>
               </Td>
-              <Td className="hidden text-slate-600 md:table-cell">{l.department.name}</Td>
-              <Td className="hidden text-slate-600 lg:table-cell">{l.office ?? '—'}</Td>
+              <Td className="hidden text-neutral-600 md:table-cell">{l.department.name}</Td>
+              <Td className="hidden text-neutral-600 lg:table-cell">{l.office ?? '—'}</Td>
               <Td>
                 <Badge tone={l.accountStatus === 'ACTIVE' ? 'success' : l.accountStatus === 'PENDING_ACTIVATION' ? 'warning' : 'neutral'}>
                   {STATUS_LABELS[l.accountStatus]}

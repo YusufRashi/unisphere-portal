@@ -43,13 +43,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               key={t.id}
               role="status"
               className={cn(
-                'pointer-events-auto flex items-start gap-3 rounded-md border bg-white p-3 shadow-lg',
+                'pointer-events-auto flex items-start gap-3 rounded-xl border bg-surface p-3 shadow-lg',
                 t.tone === 'success' ? 'border-emerald-200' : 'border-red-200',
               )}
             >
               <Icon aria-hidden="true" className={cn('mt-0.5 size-4 shrink-0', t.tone === 'success' ? 'text-emerald-600' : 'text-red-600')} />
-              <p className="flex-1 text-sm text-slate-800">{t.message}</p>
-              <button type="button" onClick={() => dismiss(t.id)} className="rounded text-slate-400 hover:text-slate-600" aria-label="Dismiss">
+              <p className="flex-1 text-sm text-neutral-800">{t.message}</p>
+              <button type="button" onClick={() => dismiss(t.id)} className="rounded text-neutral-400 hover:text-neutral-600" aria-label="Dismiss">
                 <X aria-hidden="true" className="size-4" />
               </button>
             </div>

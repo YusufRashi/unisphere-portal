@@ -31,12 +31,12 @@ export function LecturerDashboard() {
         {d.offerings.length === 0 ? (
           <EmptyState icon={BookOpen} title="No courses this semester" description="Courses assigned to you by the registrar appear here." />
         ) : (
-          <ul aria-label="Marks by course" className="divide-y divide-slate-100">
+          <ul aria-label="Marks by course" className="divide-y divide-neutral-100">
             {d.offerings.map((o) => (
               <li key={o.offeringId} className="px-5 py-4">
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                  <Link to={`/lecturer/courses/${o.offeringId}`} className="min-w-0 text-sm font-medium text-slate-900 hover:text-brand-800">
-                    {o.courseCode} · Section {o.section} <span className="font-normal text-slate-600">{o.courseTitle}</span>
+                  <Link to={`/lecturer/courses/${o.offeringId}`} className="min-w-0 text-sm font-medium text-neutral-900 hover:text-brand-800">
+                    {o.courseCode} · Section {o.section} <span className="font-normal text-neutral-600">{o.courseTitle}</span>
                   </Link>
                   <Badge tone={RESULTS_STATUS_TONES[o.resultsStatus]}>{RESULTS_STATUS_LABELS[o.resultsStatus]}</Badge>
                 </div>

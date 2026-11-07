@@ -19,40 +19,40 @@ function SemesterCard({ record }: { record: SemesterRecord }) {
         description={`${record.creditsEarned} of ${record.creditsAttempted} credits earned`}
         actions={
           <p className="text-right">
-            <span className="block text-xs text-slate-500">Semester GPA</span>
-            <span className="text-lg font-semibold text-slate-900 tabular-nums">{formatGpa(record.gpa)}</span>
+            <span className="block text-xs text-neutral-500">Semester GPA</span>
+            <span className="text-lg font-semibold text-neutral-900 tabular-nums">{formatGpa(record.gpa)}</span>
           </p>
         }
       />
       <div className="overflow-x-auto">
-        <table className="min-w-[36rem] divide-y divide-slate-200 text-sm sm:min-w-full">
+        <table className="min-w-[36rem] divide-y divide-neutral-200 text-sm sm:min-w-full">
           <caption className="sr-only">Results for {record.semester.name}</caption>
-          <thead className="bg-slate-50">
+          <thead className="bg-neutral-50">
             <tr>
-              <th scope="col" className="px-5 py-2.5 text-left text-xs font-semibold text-slate-600 uppercase">Course</th>
-              <th scope="col" className="px-3 py-2.5 text-right text-xs font-semibold text-slate-600 uppercase">Credits</th>
-              <th scope="col" className="hidden px-3 py-2.5 text-right text-xs font-semibold text-slate-600 uppercase sm:table-cell">CAT</th>
-              <th scope="col" className="hidden px-3 py-2.5 text-right text-xs font-semibold text-slate-600 uppercase sm:table-cell">Exam</th>
-              <th scope="col" className="px-3 py-2.5 text-right text-xs font-semibold text-slate-600 uppercase">Total</th>
-              <th scope="col" className="px-3 py-2.5 text-left text-xs font-semibold text-slate-600 uppercase">Grade</th>
-              <th scope="col" className="px-5 py-2.5 text-right text-xs font-semibold text-slate-600 uppercase">Points</th>
+              <th scope="col" className="px-5 py-2.5 text-left text-xs font-semibold text-neutral-600 uppercase">Course</th>
+              <th scope="col" className="px-3 py-2.5 text-right text-xs font-semibold text-neutral-600 uppercase">Credits</th>
+              <th scope="col" className="hidden px-3 py-2.5 text-right text-xs font-semibold text-neutral-600 uppercase sm:table-cell">CAT</th>
+              <th scope="col" className="hidden px-3 py-2.5 text-right text-xs font-semibold text-neutral-600 uppercase sm:table-cell">Exam</th>
+              <th scope="col" className="px-3 py-2.5 text-right text-xs font-semibold text-neutral-600 uppercase">Total</th>
+              <th scope="col" className="px-3 py-2.5 text-left text-xs font-semibold text-neutral-600 uppercase">Grade</th>
+              <th scope="col" className="px-5 py-2.5 text-right text-xs font-semibold text-neutral-600 uppercase">Points</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-neutral-100">
             {record.courses.map((c) => (
               <tr key={c.resultId}>
                 <td className="px-5 py-2.5">
-                  <p className="font-medium text-slate-900">{c.courseCode}</p>
-                  <p className="text-slate-600">{c.courseTitle}</p>
+                  <p className="font-medium text-neutral-900">{c.courseCode}</p>
+                  <p className="text-neutral-600">{c.courseTitle}</p>
                   {!c.countsTowardCgpa && <p className="text-xs text-amber-700">Repeated later — not counted in CGPA</p>}
                 </td>
                 <td className="px-3 py-2.5 text-right tabular-nums">{c.credits}</td>
-                <td className="hidden px-3 py-2.5 text-right text-slate-600 tabular-nums sm:table-cell">{formatNumber(c.catMark)}</td>
-                <td className="hidden px-3 py-2.5 text-right text-slate-600 tabular-nums sm:table-cell">{formatNumber(c.examMark)}</td>
+                <td className="hidden px-3 py-2.5 text-right text-neutral-600 tabular-nums sm:table-cell">{formatNumber(c.catMark)}</td>
+                <td className="hidden px-3 py-2.5 text-right text-neutral-600 tabular-nums sm:table-cell">{formatNumber(c.examMark)}</td>
                 <td className="px-3 py-2.5 text-right tabular-nums">{formatNumber(c.totalMark)}</td>
                 <td className="px-3 py-2.5">
                   <span className="inline-flex items-center gap-2">
-                    <span className={c.passed ? 'font-semibold text-slate-900' : 'font-semibold text-red-700'}>{c.grade}</span>
+                    <span className={c.passed ? 'font-semibold text-neutral-900' : 'font-semibold text-red-700'}>{c.grade}</span>
                     {!c.passed && <Badge tone="danger">Fail</Badge>}
                   </span>
                 </td>
@@ -108,16 +108,16 @@ export function ResultsPage() {
                 ['Semesters with results', String(record.semesters.length)],
               ] as const
             ).map(([label, value]) => (
-              <div key={label} className="rounded-lg border border-slate-200 bg-white px-5 py-4 shadow-xs">
-                <dt className="text-sm text-slate-500">{label}</dt>
-                <dd className="mt-1 text-2xl font-semibold text-slate-900 tabular-nums">{value}</dd>
+              <div key={label} className="rounded-lg border border-neutral-200 bg-surface px-5 py-4 shadow-xs">
+                <dt className="text-sm text-neutral-500">{label}</dt>
+                <dd className="mt-1 text-2xl font-semibold text-neutral-900 tabular-nums">{value}</dd>
               </div>
             ))}
           </dl>
           {record.semesters.map((s) => (
             <SemesterCard key={s.semester.id} record={s} />
           ))}
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-neutral-500">
             GPA is the credit-weighted average of grade points, rounded to two decimals. When a course is repeated, only the latest
             attempt counts towards the cumulative GPA.
           </p>

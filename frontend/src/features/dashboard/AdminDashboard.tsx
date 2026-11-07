@@ -87,14 +87,14 @@ export function AdminDashboard() {
           {d.recentResults.length === 0 ? (
             <EmptyState icon={FileCheck2} title="Nothing finalized yet" description="Results appear here once you finalize them." />
           ) : (
-            <ul aria-label="Recently finalized results" className="divide-y divide-slate-100">
+            <ul aria-label="Recently finalized results" className="divide-y divide-neutral-100">
               {d.recentResults.map((r) => (
                 <li key={r.offeringId} className="px-5 py-3 text-sm">
-                  <Link to={`/admin/results/${r.offeringId}`} className="font-medium text-slate-900 hover:text-brand-800">
+                  <Link to={`/admin/results/${r.offeringId}`} className="font-medium text-neutral-900 hover:text-brand-800">
                     {r.courseCode} · Section {r.section}
                   </Link>
-                  <p className="truncate text-slate-600">{r.courseTitle}</p>
-                  <p className="mt-0.5 text-xs text-slate-500">
+                  <p className="truncate text-neutral-600">{r.courseTitle}</p>
+                  <p className="mt-0.5 text-xs text-neutral-500">
                     {r.passed} of {r.students} passed · {formatDateTime(r.finalizedAt)}
                   </p>
                 </li>

@@ -33,12 +33,12 @@ export function NotificationContent({ notification: n, clampMessage = false }: {
         <Icon className="size-4" />
       </span>
       <div className="min-w-0 flex-1">
-        <p className={cn('text-sm text-slate-900', !n.read && 'font-semibold')}>
+        <p className={cn('text-sm text-neutral-900', !n.read && 'font-semibold')}>
           {!n.read && <span className="sr-only">Unread: </span>}
           {n.title}
         </p>
-        <p className={cn('mt-0.5 text-sm break-words text-slate-600', clampMessage && 'line-clamp-2')}>{n.message}</p>
-        <p className="mt-1 text-xs text-slate-500">
+        <p className={cn('mt-0.5 text-sm break-words text-neutral-600', clampMessage && 'line-clamp-2')}>{n.message}</p>
+        <p className="mt-1 text-xs text-neutral-500">
           <time dateTime={n.createdAt} title={formatDateTime(n.createdAt)}>
             {timeAgo(n.createdAt)}
           </time>

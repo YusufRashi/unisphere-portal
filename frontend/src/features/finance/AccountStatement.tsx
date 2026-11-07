@@ -9,7 +9,7 @@ import { formatDate, formatDateTime } from '@/lib/format'
 import { balanceStatus, formatMoney, PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS, PAYMENT_STATUS_TONES } from '@/lib/money'
 import type { FeeAccount, FeeCharge, FeePayment, FeeSummary } from '@/types/api'
 
-const headClass = 'px-5 py-2.5 text-left text-xs font-semibold tracking-wide text-slate-600 uppercase'
+const headClass = 'px-5 py-2.5 text-left text-xs font-semibold tracking-wide text-neutral-600 uppercase'
 
 export function SummaryTiles({ summary, currency }: { summary: FeeSummary; currency: string }) {
   const status = balanceStatus(summary.balance)
@@ -21,9 +21,9 @@ export function SummaryTiles({ summary, currency }: { summary: FeeSummary; curre
   return (
     <dl className="grid gap-4 sm:grid-cols-3">
       {tiles.map(([label, value, tone]) => (
-        <div key={label} className="rounded-lg border border-slate-200 bg-white px-5 py-4 shadow-xs">
-          <dt className="text-sm text-slate-500">{label}</dt>
-          <dd className={cn('mt-1 text-2xl font-semibold tabular-nums', tone ?? 'text-slate-900')}>{value}</dd>
+        <div key={label} className="rounded-lg border border-neutral-200 bg-surface px-5 py-4 shadow-xs">
+          <dt className="text-sm text-neutral-500">{label}</dt>
+          <dd className={cn('mt-1 text-2xl font-semibold tabular-nums', tone ?? 'text-neutral-900')}>{value}</dd>
         </div>
       ))}
     </dl>
@@ -42,9 +42,9 @@ function ChargesTable({ charges, currency, onVoid }: {
         <EmptyState icon={Receipt} title="No charges yet" description="Tuition is charged once the student is registered for a semester." />
       ) : (
         <div className="relative overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
+          <table className="min-w-full divide-y divide-neutral-200 text-sm">
             <caption className="sr-only">Charges</caption>
-            <thead className="bg-slate-50">
+            <thead className="bg-neutral-50">
               <tr>
                 <th scope="col" className={headClass}>Date</th>
                 <th scope="col" className={headClass}>Description</th>
@@ -57,25 +57,25 @@ function ChargesTable({ charges, currency, onVoid }: {
                 )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-neutral-100">
               {charges.map((c) => {
                 const voided = c.status === 'VOIDED'
                 return (
                   <tr key={c.id}>
-                    <td className="px-5 py-3 align-top whitespace-nowrap text-slate-600">{formatDate(c.createdAt)}</td>
+                    <td className="px-5 py-3 align-top whitespace-nowrap text-neutral-600">{formatDate(c.createdAt)}</td>
                     <td className="px-5 py-3 align-top">
-                      <p className={cn('font-medium text-slate-900', voided && 'text-slate-500 line-through')}>{c.description}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className={cn('font-medium text-neutral-900', voided && 'text-neutral-500 line-through')}>{c.description}</p>
+                      <p className="text-xs text-neutral-500">
                         {c.kind === 'TUITION' ? 'Tuition' : 'Manual charge'}
                         {c.semester && ` · ${c.semester.name}`}
                       </p>
                       {voided && (
-                        <p className="mt-1 text-xs text-slate-600">
+                        <p className="mt-1 text-xs text-neutral-600">
                           Voided {formatDate(c.voidedAt)}: {c.voidReason}
                         </p>
                       )}
                     </td>
-                    <td className={cn('px-5 py-3 text-right align-top whitespace-nowrap tabular-nums', voided && 'text-slate-500 line-through')}>
+                    <td className={cn('px-5 py-3 text-right align-top whitespace-nowrap tabular-nums', voided && 'text-neutral-500 line-through')}>
                       {formatMoney(c.amount, currency)}
                     </td>
                     <td className="px-5 py-3 align-top">
@@ -113,9 +113,9 @@ function PaymentsTable({ payments, currency, onReverse }: {
         <EmptyState icon={Wallet} title="No payments yet" />
       ) : (
         <div className="relative overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
+          <table className="min-w-full divide-y divide-neutral-200 text-sm">
             <caption className="sr-only">Payments</caption>
-            <thead className="bg-slate-50">
+            <thead className="bg-neutral-50">
               <tr>
                 <th scope="col" className={headClass}>Paid</th>
                 <th scope="col" className={headClass}>Reference</th>
@@ -128,26 +128,26 @@ function PaymentsTable({ payments, currency, onReverse }: {
                 )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-neutral-100">
               {payments.map((p) => {
                 const counted = p.status === 'COMPLETED'
                 return (
                   <tr key={p.id}>
-                    <td className="px-5 py-3 align-top whitespace-nowrap text-slate-600">{formatDateTime(p.paidAt)}</td>
+                    <td className="px-5 py-3 align-top whitespace-nowrap text-neutral-600">{formatDateTime(p.paidAt)}</td>
                     <td className="px-5 py-3 align-top">
-                      <p className="font-mono text-xs font-medium text-slate-900">{p.reference}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="font-mono text-xs font-medium text-neutral-900">{p.reference}</p>
+                      <p className="text-xs text-neutral-500">
                         {PAYMENT_METHOD_LABELS[p.method]} · {p.channel === 'ONLINE' ? 'Online' : 'Finance office'}
                       </p>
-                      {p.note && <p className="mt-1 text-xs text-slate-600">{p.note}</p>}
+                      {p.note && <p className="mt-1 text-xs text-neutral-600">{p.note}</p>}
                       {p.failureReason && <p className="mt-1 text-xs text-red-700">{p.failureReason}</p>}
                       {p.status === 'REVERSED' && (
-                        <p className="mt-1 text-xs text-slate-600">
+                        <p className="mt-1 text-xs text-neutral-600">
                           Reversed {formatDate(p.reversedAt)}: {p.reversalReason}
                         </p>
                       )}
                     </td>
-                    <td className={cn('px-5 py-3 text-right align-top whitespace-nowrap tabular-nums', !counted && 'text-slate-500 line-through')}>
+                    <td className={cn('px-5 py-3 text-right align-top whitespace-nowrap tabular-nums', !counted && 'text-neutral-500 line-through')}>
                       {formatMoney(p.amount, currency)}
                     </td>
                     <td className="px-5 py-3 align-top">

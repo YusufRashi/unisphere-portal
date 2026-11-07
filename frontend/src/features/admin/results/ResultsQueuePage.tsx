@@ -47,7 +47,7 @@ export function ResultsQueuePage() {
             ))}
           </SelectField>
           <div className="relative">
-            <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-slate-400" />
+            <Search aria-hidden="true" className="pointer-events-none absolute top-2.5 left-3 size-4 text-neutral-400" />
             <TextField
               label="Search courses"
               hideLabel
@@ -97,28 +97,28 @@ export function ResultsQueuePage() {
           {data?.content.map((r) => {
             const pending = r.resultsStatus === 'SUBMITTED'
             return (
-              <tr key={r.offeringId} className="hover:bg-slate-50/60">
+              <tr key={r.offeringId} className="hover:bg-neutral-50/60">
                 <Td>
-                  <p className="font-medium text-slate-900">
+                  <p className="font-medium text-neutral-900">
                     {r.courseCode} · {r.section}
                   </p>
-                  <p className="text-xs text-slate-500">{r.courseTitle}</p>
+                  <p className="text-xs text-neutral-500">{r.courseTitle}</p>
                 </Td>
-                <Td className="hidden text-slate-600 md:table-cell">{r.lecturer ?? 'Unassigned'}</Td>
+                <Td className="hidden text-neutral-600 md:table-cell">{r.lecturer ?? 'Unassigned'}</Td>
                 <Td className="text-right whitespace-nowrap tabular-nums">
                   {r.marksComplete} / {r.classSize}
                 </Td>
                 <Td>
                   <Badge tone={RESULTS_STATUS_TONES[r.resultsStatus]}>{RESULTS_STATUS_LABELS[r.resultsStatus]}</Badge>
                 </Td>
-                <Td className="hidden whitespace-nowrap text-slate-600 lg:table-cell">{formatDateTime(r.submittedAt)}</Td>
+                <Td className="hidden whitespace-nowrap text-neutral-600 lg:table-cell">{formatDateTime(r.submittedAt)}</Td>
                 <Td className="text-right">
                   <Link
                     to={`/admin/results/${r.offeringId}`}
                     aria-label={`${pending ? 'Review' : 'View'} results for ${r.courseCode} section ${r.section}`}
                     className={cn(
                       'inline-flex h-8 items-center rounded-md px-3 text-xs font-medium',
-                      pending ? 'bg-brand-800 text-white hover:bg-brand-900' : 'border border-slate-300 bg-white text-slate-800 hover:bg-slate-50',
+                      pending ? 'bg-brand-800 text-white hover:bg-brand-900' : 'border border-neutral-300 bg-surface text-neutral-800 hover:bg-neutral-50',
                     )}
                   >
                     {pending ? 'Review' : 'View'}

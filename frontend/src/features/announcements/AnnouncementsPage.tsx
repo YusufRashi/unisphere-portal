@@ -118,7 +118,7 @@ export function AnnouncementsPage() {
         }
       />
       {offeringId && (
-        <p className="mb-4 text-sm text-slate-600">
+        <p className="mb-4 text-sm text-neutral-600">
           Showing announcements for {course ? `${course.courseCode} · Section ${course.section}` : 'one course'}.{' '}
           <Link to="/announcements" className="font-medium text-brand-700 hover:text-brand-900">
             Show all courses
@@ -151,13 +151,13 @@ export function AnnouncementsPage() {
                       <Link to={`/announcements?offeringId=${a.offeringId}`} className="hover:text-brand-900">
                         {a.courseCode} · Section {a.section}
                       </Link>{' '}
-                      <span className="text-slate-500">— {a.courseTitle}</span>
+                      <span className="text-neutral-500">— {a.courseTitle}</span>
                     </p>
-                    <h2 id={`announcement-${a.id}`} className="mt-1 text-base font-semibold text-slate-900">
+                    <h2 id={`announcement-${a.id}`} className="mt-1 text-base font-semibold text-neutral-900">
                       {a.title}
                     </h2>
-                    <p className="mt-2 text-sm whitespace-pre-line break-words text-slate-700">{a.body}</p>
-                    <p className="mt-3 text-xs text-slate-500">
+                    <p className="mt-2 text-sm whitespace-pre-line break-words text-neutral-700">{a.body}</p>
+                    <p className="mt-3 text-xs text-neutral-500">
                       {a.authorName} ·{' '}
                       <time dateTime={a.createdAt} title={formatDateTime(a.createdAt)}>
                         {timeAgo(a.createdAt)}

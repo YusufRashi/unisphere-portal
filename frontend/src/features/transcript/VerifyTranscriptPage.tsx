@@ -78,7 +78,7 @@ export function VerifyTranscriptPage() {
               }
             />
             <CardBody className="space-y-4">
-              <div className="flex items-start gap-3 text-sm text-slate-700">
+              <div className="flex items-start gap-3 text-sm text-neutral-700">
                 {v.current ? (
                   <ShieldCheck aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-emerald-600" />
                 ) : (
@@ -102,8 +102,8 @@ export function VerifyTranscriptPage() {
                   ] as const
                 ).map(([label, value]) => (
                   <div key={label}>
-                    <dt className="text-xs text-slate-500">{label}</dt>
-                    <dd className="font-semibold text-slate-900 tabular-nums">{value}</dd>
+                    <dt className="text-xs text-neutral-500">{label}</dt>
+                    <dd className="font-semibold text-neutral-900 tabular-nums">{value}</dd>
                   </div>
                 ))}
               </dl>

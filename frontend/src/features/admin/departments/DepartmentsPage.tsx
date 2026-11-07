@@ -140,12 +140,12 @@ export function DepartmentsPage() {
           {departments.map((d) => {
             const inUse = d.programCount + d.courseCount + d.lecturerCount > 0
             return (
-              <tr key={d.id} className="hover:bg-slate-50/60">
+              <tr key={d.id} className="hover:bg-neutral-50/60">
                 <Td>
-                  <p className="font-medium text-slate-900">{d.name}</p>
-                  <p className="text-xs text-slate-500">{d.code}</p>
+                  <p className="font-medium text-neutral-900">{d.name}</p>
+                  <p className="text-xs text-neutral-500">{d.code}</p>
                 </Td>
-                <Td className="hidden text-slate-600 md:table-cell">{d.faculty ?? '—'}</Td>
+                <Td className="hidden text-neutral-600 md:table-cell">{d.faculty ?? '—'}</Td>
                 <Td className="text-right tabular-nums">{d.programCount}</Td>
                 <Td className="text-right tabular-nums">{d.courseCount}</Td>
                 <Td className="hidden text-right tabular-nums sm:table-cell">{d.lecturerCount}</Td>

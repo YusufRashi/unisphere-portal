@@ -158,11 +158,11 @@ function OfferingForm({ offering, defaultSemesterId }: { offering: Offering | nu
       <Card>
         <CardHeader title="Weekly timetable" description="Venue and lecturer clashes with other offerings are checked when you save." />
         <CardBody className="space-y-3">
-          {fields.length === 0 && <p className="text-sm text-slate-500">No weekly sessions (e.g. a project or self-study course).</p>}
+          {fields.length === 0 && <p className="text-sm text-neutral-500">No weekly sessions (e.g. a project or self-study course).</p>}
           {fields.map((f, i) => {
             const e = errors.sessions?.[i]
             return (
-              <fieldset key={f.id} className="grid items-start gap-3 rounded-md border border-slate-200 p-3 sm:grid-cols-[10rem_7rem_7rem_minmax(0,1fr)_auto]">
+              <fieldset key={f.id} className="grid items-start gap-3 rounded-md border border-neutral-200 p-3 sm:grid-cols-[10rem_7rem_7rem_minmax(0,1fr)_auto]">
                 <legend className="sr-only">Session {i + 1}</legend>
                 <SelectField label="Day" error={e?.dayOfWeek?.message} {...register(`sessions.${i}.dayOfWeek`)}>
                   {DAYS_OF_WEEK.map((d) => (
@@ -233,7 +233,7 @@ export function OfferingEditorPage() {
   const query = useQuery({ queryKey: ['offering', id], queryFn: () => getOffering(id), enabled: !isNew && Number.isInteger(id) })
 
   const back = (
-    <Link to="/admin/offerings" className="mb-2 inline-flex items-center gap-1 text-sm text-slate-600 hover:text-slate-900">
+    <Link to="/admin/offerings" className="mb-2 inline-flex items-center gap-1 text-sm text-neutral-600 hover:text-neutral-900">
       <ArrowLeft aria-hidden="true" className="size-4" /> Course offerings
     </Link>
   )

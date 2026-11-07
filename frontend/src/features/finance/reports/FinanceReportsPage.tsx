@@ -82,14 +82,14 @@ function OutstandingCard() {
         }
       >
         {rows?.map((r) => (
-          <tr key={r.studentId} className="hover:bg-slate-50/60">
+          <tr key={r.studentId} className="hover:bg-neutral-50/60">
             <Td>
               <Link to={`/finance/accounts/${r.studentId}`} className="font-medium text-brand-800 hover:underline">
                 {r.name}
               </Link>
-              <p className="text-xs text-slate-500">{r.studentNumber}</p>
+              <p className="text-xs text-neutral-500">{r.studentNumber}</p>
             </Td>
-            <Td className="hidden text-slate-600 sm:table-cell">{r.programCode}</Td>
+            <Td className="hidden text-neutral-600 sm:table-cell">{r.programCode}</Td>
             <Td className="hidden text-right tabular-nums md:table-cell">{formatMoney(r.totalCharged, r.currency)}</Td>
             <Td className="hidden text-right tabular-nums md:table-cell">{formatMoney(r.totalPaid, r.currency)}</Td>
             <Td className="text-right font-medium whitespace-nowrap text-red-700 tabular-nums">{formatMoney(r.balance, r.currency)}</Td>
@@ -150,15 +150,15 @@ function PaymentsCard() {
         }
       >
         {report?.rows.map((r) => (
-          <tr key={r.paymentId} className="hover:bg-slate-50/60">
-            <Td className="whitespace-nowrap text-slate-600">{formatDateTime(r.paidAt)}</Td>
+          <tr key={r.paymentId} className="hover:bg-neutral-50/60">
+            <Td className="whitespace-nowrap text-neutral-600">{formatDateTime(r.paidAt)}</Td>
             <Td>
-              <p className="font-medium text-slate-900">{r.name}</p>
-              <p className="text-xs text-slate-500">{r.studentNumber}</p>
+              <p className="font-medium text-neutral-900">{r.name}</p>
+              <p className="text-xs text-neutral-500">{r.studentNumber}</p>
             </Td>
             <Td className="hidden md:table-cell">
-              <p className="font-mono text-xs text-slate-900">{r.reference}</p>
-              <p className="text-xs text-slate-500">
+              <p className="font-mono text-xs text-neutral-900">{r.reference}</p>
+              <p className="text-xs text-neutral-500">
                 {PAYMENT_METHOD_LABELS[r.method]} · {r.channel === 'ONLINE' ? 'Online' : 'Office'}
               </p>
             </Td>

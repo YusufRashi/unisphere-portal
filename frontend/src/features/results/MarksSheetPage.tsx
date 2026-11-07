@@ -239,24 +239,24 @@ export function MarksSheetPage({ mode }: { mode: Mode }) {
               }
             />
             {editable && submitBlockedReason && (
-              <p className="border-b border-slate-200 bg-slate-50 px-5 py-2 text-xs text-slate-600">{submitBlockedReason}</p>
+              <p className="border-b border-neutral-200 bg-neutral-50 px-5 py-2 text-xs text-neutral-600">{submitBlockedReason}</p>
             )}
             {rows.length === 0 ? (
               <EmptyState icon={Users} title="No students yet" description="Students appear here once their registration for this course is approved." />
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-[36rem] divide-y divide-slate-200 text-sm sm:min-w-full">
+                <table className="min-w-[36rem] divide-y divide-neutral-200 text-sm sm:min-w-full">
                   <caption className="sr-only">Marks for {label}</caption>
-                  <thead className="bg-slate-50">
+                  <thead className="bg-neutral-50">
                     <tr>
-                      <th scope="col" className="px-4 py-2.5 text-left text-xs font-semibold text-slate-600 uppercase">Student</th>
-                      <th scope="col" className="px-2 py-2.5 text-left text-xs font-semibold text-slate-600 uppercase">CAT / {formatNumber(offering.catWeight)}</th>
-                      <th scope="col" className="px-2 py-2.5 text-left text-xs font-semibold text-slate-600 uppercase">Exam / {formatNumber(offering.examWeight)}</th>
-                      <th scope="col" className="px-2 py-2.5 text-right text-xs font-semibold text-slate-600 uppercase">Total</th>
-                      <th scope="col" className="px-4 py-2.5 text-left text-xs font-semibold text-slate-600 uppercase">Grade</th>
+                      <th scope="col" className="px-4 py-2.5 text-left text-xs font-semibold text-neutral-600 uppercase">Student</th>
+                      <th scope="col" className="px-2 py-2.5 text-left text-xs font-semibold text-neutral-600 uppercase">CAT / {formatNumber(offering.catWeight)}</th>
+                      <th scope="col" className="px-2 py-2.5 text-left text-xs font-semibold text-neutral-600 uppercase">Exam / {formatNumber(offering.examWeight)}</th>
+                      <th scope="col" className="px-2 py-2.5 text-right text-xs font-semibold text-neutral-600 uppercase">Total</th>
+                      <th scope="col" className="px-4 py-2.5 text-left text-xs font-semibold text-neutral-600 uppercase">Grade</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-neutral-100">
                     {rows.map((row, index) => {
                       const cat = parseMark(valueOf(row, 'cat'))
                       const exam = parseMark(valueOf(row, 'exam'))
@@ -268,8 +268,8 @@ export function MarksSheetPage({ mode }: { mode: Mode }) {
                       return (
                         <tr key={row.registrationItemId}>
                           <td className="px-4 py-2">
-                            <p className="font-medium text-slate-900">{row.name}</p>
-                            <p className="text-xs text-slate-500">{row.studentNumber}</p>
+                            <p className="font-medium text-neutral-900">{row.name}</p>
+                            <p className="text-xs text-neutral-500">{row.studentNumber}</p>
                           </td>
                           {(['cat', 'exam'] as const).map((column) => {
                             const error = errorOf(row, column)
@@ -290,7 +290,7 @@ export function MarksSheetPage({ mode }: { mode: Mode }) {
                                       onKeyDown={(e) => onCellKeyDown(e, column, index)}
                                       className={cn(
                                         'h-8 w-20 rounded-md border px-2 text-right text-sm tabular-nums focus:ring-2 focus:outline-none',
-                                        error ? 'border-red-500 focus:ring-red-500/20' : 'border-slate-300 focus:border-brand-600 focus:ring-brand-600/20',
+                                        error ? 'border-red-500 focus:ring-red-500/20' : 'border-neutral-300 focus:border-brand-600 focus:ring-brand-600/20',
                                       )}
                                     />
                                     {error && (
@@ -305,15 +305,15 @@ export function MarksSheetPage({ mode }: { mode: Mode }) {
                               </td>
                             )
                           })}
-                          <td className="px-2 py-2 text-right font-medium text-slate-900 tabular-nums">{formatNumber(total)}</td>
+                          <td className="px-2 py-2 text-right font-medium text-neutral-900 tabular-nums">{formatNumber(total)}</td>
                           <td className="px-4 py-2">
                             {grade ? (
                               <span className="inline-flex items-center gap-2">
-                                <span className={cn('font-semibold', passed === false ? 'text-red-700' : 'text-slate-900')}>{grade}</span>
+                                <span className={cn('font-semibold', passed === false ? 'text-red-700' : 'text-neutral-900')}>{grade}</span>
                                 {passed === false && <Badge tone="danger">Fail</Badge>}
                               </span>
                             ) : (
-                              <span className="text-slate-400">—</span>
+                              <span className="text-neutral-400">—</span>
                             )}
                           </td>
                         </tr>

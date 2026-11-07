@@ -108,7 +108,7 @@ function PayOnlineModal({ account, onClose }: { account: FeeAccount; onClose: ()
             ))}
           </SelectField>
         </div>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-neutral-500">
           This is a simulated payment provider for demonstration: no real money moves. Amounts ending in .13 are declined so the
           failure case can be tried.
         </p>
@@ -156,7 +156,7 @@ export function FeesPage() {
       <AccountStatement account={account}>
         {!owing && account.charges.length > 0 && (
           <Card>
-            <CardBody className="text-sm text-slate-600">
+            <CardBody className="text-sm text-neutral-600">
               {account.summary.balance < 0
                 ? 'You have paid more than you were charged. The credit is applied to your next fees.'
                 : 'Your account is fully paid. Thank you.'}

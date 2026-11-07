@@ -17,11 +17,11 @@ PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · T
 >
 | Student dashboard | Registrar dashboard |
 |---|---|
-| ![Student dashboard with a welcome banner, CGPA, fees, upcoming classes and the GPA trend](docs/screenshots/student-dashboard.png) | ![Registrar dashboard with university figures and registration activity](docs/screenshots/registrar-dashboard.png) |
+| ![Student dashboard with a welcome banner, CGPA, fees, upcoming classes and the GPA trend](docs/screenshots/student-dashboard-2026.png) | ![Registrar dashboard with university figures and registration activity](docs/screenshots/registrar-dashboard-2026.png) |
 | **Course registration** | **Marks entry** |
-| ![Course catalogue with prerequisite checks beside the registration cart](docs/screenshots/course-registration.png) | ![Marks sheet with live class statistics](docs/screenshots/marks-entry.png) |
+| ![Course catalogue with prerequisite checks beside the registration cart](docs/screenshots/course-registration-2026.png) | ![Marks sheet with live class statistics](docs/screenshots/marks-entry-2026.png) |
 | **Finance dashboard** | **Audit log** |
-| ![Finance dashboard with collections by week and largest balances](docs/screenshots/finance-dashboard.png) | ![Audit log with filters by person, action, record and date](docs/screenshots/audit-log.png) |
+| ![Finance dashboard with collections by week and largest balances](docs/screenshots/finance-dashboard-2026.png) | ![Audit log with filters by person, action, record and date](docs/screenshots/audit-log-2026.png) |
 | **Sign in** | **Dark mode** |
 | ![Sign-in page over a full-screen campus photo](docs/screenshots/sign-in.png) | ![Student dashboard in the dark theme](docs/screenshots/dark-mode.png) |
 

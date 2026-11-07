@@ -6,8 +6,17 @@ notifications, with separate workspaces for students, lecturers, the registrar a
 **Stack:** Java 25 LTS · Spring Boot 4.1 · Spring Security (JWT + rotating refresh tokens) · Spring Data JPA ·
 PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · TanStack Query · Docker · GitHub Actions
 
-> **Status: Phase 8 of 9 complete — foundation, authentication, academic structure, accounts, course registration, results & GPA, transcripts, finance, notifications, and dashboards.** See the [roadmap](docs/05-roadmap.md)
-> for what each phase delivers. Features listed below are marked ✅ when implemented.
+> **Status: all nine roadmap phases are complete.** See the [roadmap](docs/05-roadmap.md) for what each one delivers.
+>
+> **Before real use:** no email provider is integrated yet, so activation and password-reset emails are not actually sent. See [Email](#email).
+
+| Student dashboard | Registrar dashboard |
+|---|---|
+| ![Student dashboard with CGPA, GPA trend, credit load, exams and notifications](docs/screenshots/student-dashboard.png) | ![Registrar dashboard with university figures and registration activity](docs/screenshots/registrar-dashboard.png) |
+| **Course registration** | **Marks entry** |
+| ![Course catalogue with prerequisite checks beside the registration cart](docs/screenshots/course-registration.png) | ![Marks sheet with live class statistics](docs/screenshots/marks-entry.png) |
+| **Finance dashboard** | **Audit log** |
+| ![Finance dashboard with collections by week and largest balances](docs/screenshots/finance-dashboard.png) | ![Audit log with filters by person, action, record and date](docs/screenshots/audit-log.png) |
 
 ---
 
@@ -17,6 +26,7 @@ PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · T
 2. [Architecture](#architecture)
 3. [Prerequisites](#prerequisites)
 4. [Quick start with Docker](#quick-start-with-docker)
+   - [Try it with demo data](#try-it-with-demo-data)
 5. [Environment variables](#environment-variables)
 6. [Running locally (without Docker for the app)](#running-locally)
 7. [Running tests](#running-tests)
@@ -40,7 +50,9 @@ PostgreSQL 16 · Flyway · React 19 · TypeScript · Vite · Tailwind CSS 4 · T
 | | Account activation & password reset with single-use, hashed, expiring tokens | ✅ |
 | | Role-based access control enforced on the server *and* reflected in the UI | ✅ |
 | Platform | RFC 9457 Problem Details for every error, with request IDs | ✅ |
-| | Audit log of security-relevant actions | ✅ |
+| | Audit log of security-relevant actions, with a viewer filtered by person, action, record and date | ✅ |
+| | One-switch demo university for trying the system (never touches a database with data in it) | ✅ |
+| | Production Compose stack with automatic TLS, release workflow publishing images to GHCR, Postman collection | ✅ |
 | | Admin user directory: search, filter, sort, paginate, deactivate (with confirmation) | ✅ |
 | | Docker Compose stack, least-privilege DB role, CI pipeline | ✅ |
 | Academic | Departments, programs and courses with prerequisite **cycle detection** | ✅ |
@@ -124,6 +136,28 @@ docker compose up --build
 
 Stop with `docker compose down` (add `-v` to also delete the database volume).
 
+### Try it with demo data
+
+To explore the system with a populated university instead of an empty one, add this to `.env` **before the first
+start** (the loader only runs on a database with no academic data; to reset an existing one, `docker compose down -v`):
+
+```bash
+SPRING_PROFILES_ACTIVE=demo
+DEMO_PASSWORD=<10+ chars, letter + digit>     # there is no default; the API will not start without it
+```
+
+You get 24 students with three finished terms of results and fees, plus a term in progress with work left to do.
+Dates are relative to today, so the dashboards always look current. Sign in with `DEMO_PASSWORD` as:
+
+| Email | Role | Try |
+|-------|------|-----|
+| `student@demo.unisphere.test` | Student | Pay the fee balance, see a prerequisite block in course registration, download the transcript |
+| `lecturer@demo.unisphere.test` | Lecturer | Submit CS302, finish marking CS301, post an announcement |
+| `registrar@demo.unisphere.test` | Registrar | Approve registrations, finalize BUS201, browse the audit log |
+| `finance@demo.unisphere.test` | Finance | Record or reverse a payment, export the outstanding report |
+
+Never enable this profile in production.
+
 ### Database setup
 
 There is nothing to run by hand:
@@ -159,6 +193,8 @@ every variable with a description.
 | `BOOTSTRAP_ADMIN_EMAIL` / `BOOTSTRAP_ADMIN_PASSWORD` | first run | Creates the first admin if none exists |
 | `MAIL_LOG_LINKS` | no | `true` prints activation/reset links to the log (development only) |
 | `API_DOCS_ENABLED` | no | Swagger UI / OpenAPI JSON (default `true`; set `false` in production) |
+| `SPRING_PROFILES_ACTIVE` / `DEMO_PASSWORD` | demo only | `demo` loads the [demo university](#try-it-with-demo-data) into an empty database, with this password on every account |
+| `TRUSTED_PROXY_CIDR` | behind a proxy | Web container: the proxy allowed to report the client's address and scheme (default: none) |
 
 ## Running locally
 
@@ -233,8 +269,11 @@ retried with a new idempotency key, amounts above the balance blocked) with the 
 
 ### API testing collection
 
-A Postman collection is delivered in Phase 9 (`postman/`). Until then, use Swagger UI at
-`/swagger-ui.html`: call `POST /api/auth/login`, copy `accessToken`, and click **Authorize**.
+Import [`postman/UniSphere.postman_collection.json`](postman/UniSphere.postman_collection.json): every endpoint,
+generated from the API's OpenAPI document. Set the `baseUrl`, `email` and `password` collection variables, then send
+**Authentication → Sign in with email and password**; it stores the access token for every other request.
+
+Swagger UI at `/swagger-ui.html` works too: call `POST /api/auth/login`, copy `accessToken`, and click **Authorize**.
 
 ## Building for production
 
@@ -252,18 +291,45 @@ docker build -t unisphere-web ./frontend
 
 ## Deployment
 
-The images are platform-neutral. The reference setup is:
+### On a single server
 
-1. **Database:** a managed PostgreSQL 16 instance. Create the application role with the same privileges as
-   the init script (no superuser) and point `DB_URL`/`DB_USERNAME`/`DB_PASSWORD` at it.
-2. **API container:** `unisphere-api` with all required variables, `COOKIE_SECURE=true`,
-   `API_DOCS_ENABLED=false`, `MAIL_LOG_LINKS=false`. Readiness probe: `/actuator/health/readiness`.
-3. **Web container:** `unisphere-web` (Nginx), which serves the SPA and proxies `/api` to the API
-   (service name `backend`). Terminate TLS in front of it (platform edge, load balancer, or Caddy/Traefik).
-4. **CI:** every push runs [`.github/workflows/ci.yml`](.github/workflows/ci.yml) — backend tests with
-   Testcontainers, frontend type-check/lint/tests/build, and both Docker image builds.
+[`deploy/docker-compose.prod.yml`](deploy/docker-compose.prod.yml) runs Caddy (automatic TLS) → Nginx (SPA and `/api`
+proxy) → API → PostgreSQL. Only Caddy is reachable from outside.
 
-A production Compose file and a release workflow that publishes images to GHCR arrive in Phase 9.
+```bash
+cp deploy/.env.prod.example deploy/.env.prod     # set DOMAIN, the secrets and IMAGE_PREFIX
+docker compose --env-file deploy/.env.prod -f deploy/docker-compose.prod.yml up -d
+# Add --build to build the images on the server instead of pulling them.
+```
+
+The domain's DNS must point at the server, with ports 80 and 443 open, so Caddy can obtain a certificate. For a managed
+PostgreSQL, remove the `db` service and set `DB_URL`; create the application role with the same privileges as the
+[init script](docker/postgres/init/01-create-app-role.sh) (no superuser).
+
+### On another platform
+
+The images are platform-neutral:
+
+- **API container:** all required variables, `COOKIE_SECURE=true`, `API_DOCS_ENABLED=false`, `MAIL_LOG_LINKS=false`.
+  Readiness probe: `/actuator/health/readiness`. Never publish its port: it trusts `X-Forwarded-*` headers.
+- **Web container:** serves the SPA and proxies `/api` to the API (service name `backend`). Terminate TLS in front of it
+  and set `TRUSTED_PROXY_CIDR` to your proxy's address range. Without it, every user appears to come from the proxy
+  and they all share one sign-in rate limit.
+
+### Releases
+
+Every push runs [`ci.yml`](.github/workflows/ci.yml): backend tests with Testcontainers, frontend
+type-check/lint/tests/build, and both Docker image builds. Pushing a version tag
+(`git tag v1.0.0 && git push origin v1.0.0`) runs [`release.yml`](.github/workflows/release.yml), which repeats those
+checks and publishes `ghcr.io/<owner>/unisphere-api` and `-web`, tagged `1.0.0`, `1.0` and `latest`.
+
+### Email
+
+**No email provider is integrated yet.** `LoggingAccountMailer` stands behind the `AccountMailer` interface, so
+activation and password-reset emails are not sent. In production, the first administrator comes from
+`BOOTSTRAP_ADMIN_*`, but anyone else you create cannot activate their account until you either implement
+`AccountMailer` for your provider (recommended) or temporarily set `MAIL_LOG_LINKS=true` and pass on the links from the
+log. Those links are secrets, so treat the log accordingly and turn the setting back off.
 
 ## API documentation
 
@@ -294,8 +360,10 @@ unisphere/
 ├── frontend/                React + TypeScript SPA (app, api, auth, components, features, …)
 │   └── nginx/               Production Nginx config + security headers
 ├── docker/postgres/init/    Least-privilege database role setup
-├── docs/                    Requirements, architecture, ERD, API spec, roadmap
-├── .github/workflows/       CI
+├── deploy/                  Production Compose stack with Caddy
+├── postman/                 API collection
+├── docs/                    Requirements, architecture, ERD, API spec, roadmap, screenshots
+├── .github/workflows/       CI and release
 ├── docker-compose.yml       Local full stack
 └── .env.example             Configuration template (placeholders only)
 ```
@@ -309,12 +377,15 @@ unisphere/
 - Authorization: URL rules + `@PreAuthorize` on every controller; route guards in the UI are UX only.
 - Input: Bean Validation on every request body; JPA parameter binding (no string-built SQL);
   sort fields whitelisted; LIKE wildcards escaped.
-- Output: Problem Details without stack traces or framework messages; CSP, `X-Frame-Options: DENY`,
-  `nosniff`, `Referrer-Policy`, HSTS.
+- Output: Problem Details without stack traces or framework messages; a strict CSP with no inline scripts or styles,
+  `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, cross-origin isolation headers, and HSTS
+  over HTTPS.
+- Proxying: forwarded client addresses and schemes are believed only from the configured proxy, so they cannot be
+  spoofed to dodge rate limits; Actuator and Swagger are not reachable through the web container.
 - Abuse: per-IP rate limit on auth endpoints + per-account lockout; generic login errors and
   always-`202` password reset requests prevent account enumeration.
-- Operations: secrets only from the environment; app DB role is not a superuser; containers run as
-  non-root.
+- Operations: secrets only from the environment, with no default credentials; app DB role is not a superuser; the API
+  container runs as non-root.
 
 ## License
 

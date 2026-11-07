@@ -168,13 +168,13 @@ unisphere/
 └── README.md
 ```
 
-## 8. Deployment strategy (summary — detailed in Phase 9)
+## 8. Deployment strategy (details in the README)
 
 - **Images:** multi-stage builds — `maven` → `eclipse-temurin:25-jre-alpine`
   for the API (non-root user); `node` → `nginx:alpine` for the SPA.
-- **Target:** any container host. Reference deployment: a single VM (or
-  Render / Railway / Fly.io) running `deploy/docker-compose.prod.yml` behind
-  TLS, with managed PostgreSQL in production.
+- **Target:** any container host. Reference deployment: a single VM running
+  `deploy/docker-compose.prod.yml`, with Caddy terminating TLS in front of
+  Nginx; PostgreSQL runs alongside or as a managed service.
 - **Config:** 12-factor; every secret via environment variables; JWT secret
   ≥ 256 bits; Postgres app user without superuser.
 - **CI/CD:** GitHub Actions runs backend tests (with Testcontainers), frontend

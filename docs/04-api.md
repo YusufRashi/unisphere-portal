@@ -264,7 +264,8 @@ key with a unique index, so extra runs, or runs on several instances at once, ne
 | GET | `/api/admin/dashboard` | A | Student, lecturer and active course counts, registrations of the current semester by status, results awaiting review, outstanding fees, `registrationActivity` (submissions per UTC day, last 30 days), `recentResults` (last 5 finalized, with pass counts) |
 | GET | `/api/lecturer/dashboard` | L | Current semester: `courses`, `students`, `marksMissing` (in draft courses), `awaitingReview`, marks progress per offering |
 | GET | `/api/fees/dashboard` | F, A | `totalCharged`, `totalCollected`, `outstanding`, `studentsOwing`, `collectionRate` (null before anything is charged), `collectedLast30Days`, `weeklyCollections` (12 weeks from Monday, UTC), `methodsLast30Days`, `largestBalances` (top 5). Only completed payments count; a student in credit does not reduce `outstanding` |
-| GET | `/api/admin/audit-logs` | A | `actorId`, `action`, `entityType`, `from`, `to`; paginated |
+| GET | `/api/admin/audit-logs` | A | Newest first, paginated. Filters: `actorId`, `actor` (part of a name or email), `action`, `entityType`, `from` and `to` (ISO dates, inclusive, UTC) |
+| GET | `/api/admin/audit-logs/filters` | A | `{actions, entityTypes}`: every action, and the entity types in use |
 
 ### 2.13 Operational
 | Method | Path | Access | Description |

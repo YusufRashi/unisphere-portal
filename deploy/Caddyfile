@@ -1,0 +1,5 @@
+# Obtains and renews a TLS certificate for {$DOMAIN} and redirects HTTP to HTTPS automatically.
+{$DOMAIN} {
+	encode gzip
+	reverse_proxy frontend:80
+}

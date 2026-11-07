@@ -1,0 +1,102 @@
+# Reference production deployment on a single host: Caddy (TLS) → Nginx (SPA + /api proxy) → API → PostgreSQL.
+#
+#   cp deploy/.env.prod.example deploy/.env.prod   # then fill it in
+#   docker compose --env-file deploy/.env.prod -f deploy/docker-compose.prod.yml up -d
+#
+# Only Caddy is reachable from outside. The API trusts X-Forwarded-* headers, so it must never be published directly.
+# To use a managed PostgreSQL instead, remove the db service and the depends_on below, and point DB_URL at it.
+name: unisphere-prod
+
+services:
+  proxy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      frontend:
+        condition: service_healthy
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN in .env.prod}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    networks:
+      edge:
+        ipv4_address: 172.30.0.2
+
+  frontend:
+    image: ${IMAGE_PREFIX:-ghcr.io/your-org/unisphere}-web:${IMAGE_TAG:-latest}
+    build: ../frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      # Caddy, and nothing else, may report the client's address and scheme.
+      TRUSTED_PROXY_CIDR: 172.30.0.2/32
+    networks:
+      - edge
+      - internal
+
+  backend:
+    image: ${IMAGE_PREFIX:-ghcr.io/your-org/unisphere}-api:${IMAGE_TAG:-latest}
+    build: ../backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: ${DB_URL:-jdbc:postgresql://db:5432/unisphere}
+      DB_USERNAME: ${DB_USERNAME:?Set DB_USERNAME in .env.prod}
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env.prod}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env.prod (openssl rand -base64 48)}
+      COOKIE_SECURE: "true"
+      API_DOCS_ENABLED: "false"
+      APP_BASE_URL: https://${DOMAIN}
+      UNIVERSITY_NAME: ${UNIVERSITY_NAME:-UniSphere University}
+      FEE_CURRENCY: ${FEE_CURRENCY:-KES}
+      NOTIFICATION_REMINDER_CRON: ${NOTIFICATION_REMINDER_CRON:-0 0 6 * * *}
+      BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-}
+      # Links contain secrets, so they stay out of the logs. See "Email" in the README.
+      MAIL_LOG_LINKS: ${MAIL_LOG_LINKS:-false}
+    networks:
+      - internal
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: unisphere
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_SUPERUSER_PASSWORD:?Set POSTGRES_SUPERUSER_PASSWORD in .env.prod}
+      APP_DB_USER: ${DB_USERNAME}
+      APP_DB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ../docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d unisphere"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - internal
+
+networks:
+  edge:
+    ipam:
+      config:
+        # Fixed so Caddy's address can be named as the one trusted proxy. Other containers get addresses from the
+        # upper half, or one that starts first could take Caddy's.
+        - subnet: 172.30.0.0/24
+          ip_range: 172.30.0.128/25
+  internal:
+
+volumes:
+  db-data:
+  caddy-data:
+  caddy-config:

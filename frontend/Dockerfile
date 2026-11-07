@@ -11,9 +11,12 @@ COPY . .
 RUN npm run build
 
 # ---- Runtime stage: static files + reverse proxy to the API -----------------
-FROM nginx:1.27-alpine
+FROM nginx:stable-alpine
 
-COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+# Which proxy may report the client's address and scheme. The default trusts nothing but the container itself.
+ENV TRUSTED_PROXY_CIDR=127.0.0.1/32
+
+COPY nginx/default.conf.template /etc/nginx/templates/default.conf.template
 COPY nginx/security-headers.conf /etc/nginx/snippets/security-headers.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 

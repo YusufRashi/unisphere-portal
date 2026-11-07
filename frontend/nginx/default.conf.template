@@ -1,0 +1,70 @@
+# Serves the SPA and proxies /api to the Spring Boot backend so the browser sees one origin.
+# The image's entrypoint fills in ${TRUSTED_PROXY_CIDR} when the container starts; Nginx's own variables are untouched.
+#
+# TLS is terminated in front of this container in production, so the connection it sees comes from that proxy.
+# Forwarded client details are believed only from TRUSTED_PROXY_CIDR. By default nothing qualifies, so a client
+# cannot spoof its address to dodge per-IP rate limiting or claim HTTPS it does not have.
+
+set_real_ip_from ${TRUSTED_PROXY_CIDR};
+real_ip_header X-Forwarded-For;
+real_ip_recursive on;
+
+geo $realip_remote_addr $from_trusted_proxy {
+    default 0;
+    ${TRUSTED_PROXY_CIDR} 1;
+}
+
+map "$from_trusted_proxy:$http_x_forwarded_proto" $client_proto {
+    default $scheme;
+    "1:https" https;
+}
+
+# Browsers ignore HSTS over plain HTTP, but there is no reason to send it there. An empty value sends no header.
+map $client_proto $hsts_header {
+    default "";
+    https "max-age=31536000";
+}
+
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    server_tokens off;
+    client_max_body_size 5m;
+
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok";
+    }
+
+    # API responses carry their own security headers (set by Spring Security).
+    location /api/ {
+        proxy_pass http://backend:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        # $remote_addr is the real client here. Overwrite (not append) so clients cannot spoof their IP.
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Proto $client_proto;
+        proxy_set_header X-Request-Id $request_id;
+        proxy_read_timeout 60s;
+    }
+
+    # Fingerprinted build assets can be cached forever.
+    location /assets/ {
+        include /etc/nginx/snippets/security-headers.conf;
+        add_header Cache-Control "public, immutable";
+        expires 1y;
+        try_files $uri =404;
+    }
+
+    # Client-side routing: unknown paths return the SPA shell, which must never be cached.
+    location / {
+        include /etc/nginx/snippets/security-headers.conf;
+        add_header Cache-Control "no-cache";
+        try_files $uri $uri/ /index.html;
+    }
+}

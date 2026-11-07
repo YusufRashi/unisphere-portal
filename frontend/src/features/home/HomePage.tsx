@@ -1,8 +1,8 @@
 import { lazy, Suspense, useState, type ComponentType } from 'react'
 import { useAuth } from '@/auth/authContext'
-import { PageHeader } from '@/components/layout/PageHeader'
 import { PillTabs } from '@/components/ui/PillTabs'
 import { DashboardLoading } from '@/features/dashboard/figures'
+import { WelcomeBanner } from '@/features/home/WelcomeBanner'
 import { ROLE_LABELS } from '@/lib/format'
 import type { Role } from '@/types/api'
 
@@ -15,13 +15,6 @@ const DASHBOARDS: { role: Role; Dashboard: ComponentType }[] = [
   { role: 'FINANCE', Dashboard: lazy(async () => ({ default: (await import('@/features/dashboard/FinanceDashboard')).FinanceDashboard })) },
 ]
 
-function greeting(): string {
-  const hour = new Date().getHours()
-  if (hour < 12) return 'Good morning'
-  if (hour < 18) return 'Good afternoon'
-  return 'Good evening'
-}
-
 /** The page after signing in: the dashboard of the user's role, with a tab per role for people who have several. */
 export function HomePage() {
   const { user } = useAuth()
@@ -32,11 +25,11 @@ export function HomePage() {
 
   return (
     <>
-      <PageHeader title={`${greeting()}, ${user.firstName}!`} description="Here is where things stand." />
+      <WelcomeBanner firstName={user.firstName} />
       {mine.length > 1 && (
         <PillTabs
           label="Dashboard"
-          className="-mt-2 mb-5"
+          className="mb-5"
           options={mine.map((d) => ({ value: d.role, label: ROLE_LABELS[d.role] }))}
           value={current?.role ?? mine[0]!.role}
           onChange={setSelected}

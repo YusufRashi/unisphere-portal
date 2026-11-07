@@ -318,7 +318,7 @@ export function StudentsPage() {
                 <Link
                   to={`/admin/students/${s.id}/transcript`}
                   aria-label={`Transcript of ${s.firstName} ${s.lastName}`}
-                  className="inline-flex h-8 items-center rounded-md px-3 text-neutral-700 hover:bg-neutral-100"
+                  className="inline-flex h-8 items-center rounded-lg px-3 text-neutral-700 hover:bg-neutral-100"
                 >
                   <FileText aria-hidden="true" className="size-4" />
                 </Link>

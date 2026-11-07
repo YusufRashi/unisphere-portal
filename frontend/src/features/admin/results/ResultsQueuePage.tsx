@@ -117,8 +117,8 @@ export function ResultsQueuePage() {
                     to={`/admin/results/${r.offeringId}`}
                     aria-label={`${pending ? 'Review' : 'View'} results for ${r.courseCode} section ${r.section}`}
                     className={cn(
-                      'inline-flex h-8 items-center rounded-md px-3 text-xs font-medium',
-                      pending ? 'bg-brand-800 text-white hover:bg-brand-900' : 'border border-neutral-300 bg-surface text-neutral-800 hover:bg-neutral-50',
+                      'inline-flex h-8 items-center rounded-lg px-3 text-xs font-medium',
+                      pending ? 'bg-accent text-on-accent hover:bg-accent-hover' : 'border border-neutral-300 bg-surface text-neutral-800 hover:bg-neutral-50',
                     )}
                   >
                     {pending ? 'Review' : 'View'}

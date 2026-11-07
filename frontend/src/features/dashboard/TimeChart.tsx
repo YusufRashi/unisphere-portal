@@ -36,7 +36,7 @@ function PointTooltip({ active, payload }: { active?: boolean; payload?: readonl
   const point = payload?.[0]?.payload
   if (!active || !point) return null
   return (
-    <div className="rounded-md border border-neutral-200 bg-surface px-3 py-2 text-xs shadow-md">
+    <div className="rounded-lg border border-neutral-200 bg-surface px-3 py-2 text-xs shadow-md">
       <p className="text-sm font-semibold text-neutral-900">{point.text}</p>
       <p className="mt-0.5 text-neutral-500">{point.period}</p>
     </div>

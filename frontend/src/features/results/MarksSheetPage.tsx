@@ -289,7 +289,7 @@ export function MarksSheetPage({ mode }: { mode: Mode }) {
                                       onChange={(e) => edit(row, column, e.target.value)}
                                       onKeyDown={(e) => onCellKeyDown(e, column, index)}
                                       className={cn(
-                                        'h-8 w-20 rounded-md border px-2 text-right text-sm tabular-nums focus:ring-2 focus:outline-none',
+                                        'h-8 w-20 rounded-lg border px-2 text-right text-sm tabular-nums focus:ring-2 focus:outline-none',
                                         error ? 'border-red-500 focus:ring-red-500/20' : 'border-neutral-300 focus:border-brand-600 focus:ring-brand-600/20',
                                       )}
                                     />

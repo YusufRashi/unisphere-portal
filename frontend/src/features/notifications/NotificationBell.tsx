@@ -66,13 +66,13 @@ export function NotificationBell() {
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
         aria-label={count > 0 ? `Notifications, ${count} unread` : 'Notifications'}
-        className="relative rounded-md p-2 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
+        className="relative rounded-lg p-2 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
       >
         <Bell aria-hidden="true" className="size-5" />
         {count > 0 && (
           <span
             aria-hidden="true"
-            className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] leading-none font-semibold text-white"
+            className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] leading-none font-semibold text-white"
           >
             {count > 9 ? '9+' : count}
           </span>

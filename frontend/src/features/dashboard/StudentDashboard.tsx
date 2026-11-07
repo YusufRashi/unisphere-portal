@@ -32,7 +32,7 @@ const COURSE_BAR = ['bg-course-1', 'bg-course-2', 'bg-course-3']
 const linkAction = 'inline-flex h-8 items-center gap-1.5 rounded-lg border border-neutral-200 bg-surface px-2.5 text-xs font-medium text-neutral-700 hover:bg-neutral-50'
 
 function CodeChip({ children }: { children: string }) {
-  return <span className="rounded-md border border-neutral-200 bg-surface px-1.5 py-0.5 font-mono text-[10px] font-medium text-neutral-600">{children}</span>
+  return <span className="rounded-lg border border-neutral-200 bg-surface px-1.5 py-0.5 font-mono text-[10px] font-medium text-neutral-600">{children}</span>
 }
 
 function UpcomingClassesCard() {

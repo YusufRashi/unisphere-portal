@@ -65,7 +65,7 @@ export function QuickSearch() {
       >
         <Search aria-hidden="true" className="size-4" />
         <span className="flex-1 text-left">Search pages…</span>
-        <kbd className="rounded-md border border-neutral-200 bg-neutral-50 px-1.5 py-0.5 font-mono text-[10px] text-neutral-500">
+        <kbd className="rounded-lg border border-neutral-200 bg-neutral-50 px-1.5 py-0.5 font-mono text-[10px] text-neutral-500">
           {isMac ? '⌘K' : 'Ctrl K'}
         </kbd>
       </button>

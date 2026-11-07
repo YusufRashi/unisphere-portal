@@ -233,7 +233,7 @@ export function RegistrationsPage() {
               </Td>
               <Td className="text-right tabular-nums">
                 {r.totalCredits}
-                <p className="text-xs text-neutral-500">{r.courseCount} courses</p>
+                <p className="text-xs text-neutral-500">{r.courseCount} {r.courseCount === 1 ? 'course' : 'courses'}</p>
               </Td>
               <Td>
                 <Badge tone={REGISTRATION_STATUS_TONES[r.status]}>{REGISTRATION_STATUS_LABELS[r.status]}</Badge>

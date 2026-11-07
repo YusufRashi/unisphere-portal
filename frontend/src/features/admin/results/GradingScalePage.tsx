@@ -152,7 +152,7 @@ function ScaleEditor({ scale }: { scale: GradingScale }) {
                     inputMode={field === 'letter' ? 'text' : 'decimal'}
                     onChange={(e) => update(b.key, { [field]: e.target.value })}
                     className={cn(
-                      'h-8 rounded-md border px-2 text-sm focus:ring-2 focus:outline-none',
+                      'h-8 rounded-lg border px-2 text-sm focus:ring-2 focus:outline-none',
                       width,
                       errors[field] ? 'border-red-500 focus:ring-red-500/20' : 'border-neutral-300 focus:border-brand-600 focus:ring-brand-600/20',
                     )}

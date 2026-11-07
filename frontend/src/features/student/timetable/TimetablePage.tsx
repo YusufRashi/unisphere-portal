@@ -104,7 +104,7 @@ export function TimetablePage() {
                   {layout.byDay[d].map((e, i) => (
                     <div
                       key={i}
-                      className={`absolute inset-x-1 overflow-hidden rounded-md border-l-4 px-2 py-1 text-xs ${colourOf.get(e.offeringId)}`}
+                      className={`absolute inset-x-1 overflow-hidden rounded-lg border-l-4 px-2 py-1 text-xs ${colourOf.get(e.offeringId)}`}
                       style={{ top: `${e.topPercent}%`, height: `${e.heightPercent}%` }}
                     >
                       <p className="font-semibold">

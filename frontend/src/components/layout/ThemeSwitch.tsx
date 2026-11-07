@@ -21,7 +21,7 @@ export function ThemeSwitch() {
           title={label}
           onClick={() => setPreference(value)}
           className={cn(
-            'rounded-md p-1.5 transition-colors',
+            'rounded-lg p-1.5 transition-colors',
             preference === value ? 'bg-neutral-100 text-neutral-900' : 'text-neutral-400 hover:text-neutral-700',
           )}
         >

@@ -162,7 +162,7 @@ function OfferingForm({ offering, defaultSemesterId }: { offering: Offering | nu
           {fields.map((f, i) => {
             const e = errors.sessions?.[i]
             return (
-              <fieldset key={f.id} className="grid items-start gap-3 rounded-md border border-neutral-200 p-3 sm:grid-cols-[10rem_7rem_7rem_minmax(0,1fr)_auto]">
+              <fieldset key={f.id} className="grid items-start gap-3 rounded-lg border border-neutral-200 p-3 sm:grid-cols-[10rem_7rem_7rem_minmax(0,1fr)_auto]">
                 <legend className="sr-only">Session {i + 1}</legend>
                 <SelectField label="Day" error={e?.dayOfWeek?.message} {...register(`sessions.${i}.dayOfWeek`)}>
                   {DAYS_OF_WEEK.map((d) => (

@@ -25,7 +25,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const resolved = preference === 'system' ? (systemDark ? 'dark' : 'light') : preference
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', resolved === 'dark')
+    const root = document.documentElement
+    root.classList.toggle('dark', resolved === 'dark')
+    // Paper is white: printing (a transcript, say) always uses the light theme, then the screen goes back.
+    const beforePrint = () => root.classList.remove('dark')
+    const afterPrint = () => root.classList.toggle('dark', resolved === 'dark')
+    window.addEventListener('beforeprint', beforePrint)
+    window.addEventListener('afterprint', afterPrint)
+    return () => {
+      window.removeEventListener('beforeprint', beforePrint)
+      window.removeEventListener('afterprint', afterPrint)
+    }
   }, [resolved])
 
   const setPreference = useCallback((next: ThemePreference) => {

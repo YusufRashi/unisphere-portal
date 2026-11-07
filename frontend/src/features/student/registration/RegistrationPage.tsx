@@ -251,7 +251,7 @@ function MyRegistrationPanel({ view }: { view: RegistrationView }) {
         {view.items.length === 0 ? (
           <p className="text-sm text-neutral-500">No courses yet. Add courses from the list.</p>
         ) : (
-          <ul className="divide-y divide-neutral-100 rounded-md border border-neutral-200" aria-label="Courses in my registration">
+          <ul className="divide-y divide-neutral-100 rounded-lg border border-neutral-200" aria-label="Courses in my registration">
             {view.items.map((item) => (
               <li key={item.id} className="flex items-start gap-3 p-3">
                 <div className="min-w-0 flex-1">

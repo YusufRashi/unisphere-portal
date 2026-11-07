@@ -52,8 +52,25 @@ public record UniSphereProperties(
     public record RateLimit(@Min(1) int authRequestsPerMinute) {
     }
 
-    public record Mail(boolean logLinks) {
+    /**
+     * Account emails. With {@code host} blank they are not sent and {@link com.unisphere.auth.mail.LoggingAccountMailer} only logs
+     * them; with it set they go out through that SMTP server, and {@code from} is required.
+     *
+     * @param logLinks development only: print the links in the log when no SMTP server is configured
+     */
+    public record Mail(boolean logLinks, String host, int port, String username, String password, MailSecurity security, String from) {
+
+        public Mail {
+            security = security == null ? MailSecurity.STARTTLS : security;
+        }
+
+        public boolean smtpEnabled() {
+            return host != null && !host.isBlank();
+        }
     }
+
+    /** STARTTLS upgrades a plain connection (usually port 587); TLS connects encrypted (usually 465); NONE is for local test servers. */
+    public enum MailSecurity { STARTTLS, TLS, NONE }
 
     /** {@code currency} is an ISO 4217 code used for every fee account (one currency per installation). */
     public record Finance(@NotBlank @Pattern(regexp = "^[A-Z]{3}$", message = "must be an ISO 4217 code such as KES") String currency) {

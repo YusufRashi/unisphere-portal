@@ -4,13 +4,15 @@ import com.unisphere.common.config.UniSphereProperties;
 import com.unisphere.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 
 /**
- * Development stand-in for an email service. Links contain secrets, so they are only written to the
+ * Used when no SMTP server is configured: nothing is sent. Links contain secrets, so they are only written to the
  * log when {@code MAIL_LOG_LINKS=true} (local development); otherwise only the event is logged.
  */
 @Component
+@ConditionalOnExpression(MailConfig.SMTP_DISABLED)
 public class LoggingAccountMailer implements AccountMailer {
 
     private static final Logger log = LoggerFactory.getLogger(LoggingAccountMailer.class);

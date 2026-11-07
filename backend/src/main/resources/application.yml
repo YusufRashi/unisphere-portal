@@ -76,8 +76,16 @@ unisphere:
     activation-token-ttl: 72h
     password-reset-token-ttl: 30m
   mail:
-    # Development only: print activation / reset links to the log instead of emailing them.
+    # Development only, and only while no SMTP server is set: print activation / reset links to the log.
     log-links: ${MAIL_LOG_LINKS:false}
+    # SMTP server for account emails. Leave MAIL_HOST empty to not send email at all.
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    security: ${MAIL_SECURITY:STARTTLS}
+    # Sender, e.g. "UniSphere <no-reply@university.edu>". Required when MAIL_HOST is set.
+    from: ${MAIL_FROM:}
   bootstrap-admin:
     email: ${BOOTSTRAP_ADMIN_EMAIL:}
     password: ${BOOTSTRAP_ADMIN_PASSWORD:}

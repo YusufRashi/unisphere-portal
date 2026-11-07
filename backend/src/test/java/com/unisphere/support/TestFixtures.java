@@ -27,7 +27,7 @@ public final class TestFixtures {
                         new UniSphereProperties.RateLimit(10),
                         Duration.ofHours(72),
                         Duration.ofMinutes(30)),
-                new UniSphereProperties.Mail(false),
+                new UniSphereProperties.Mail(false, null, 587, null, null, UniSphereProperties.MailSecurity.STARTTLS, null),
                 new UniSphereProperties.BootstrapAdmin(null, null, null, null),
                 new UniSphereProperties.Finance("KES"),
                 new UniSphereProperties.Notifications("-", Duration.ofHours(48), Duration.ofDays(14)));

@@ -1,3 +1,4 @@
+import studentsLaptop from '@/assets/photos/students-laptop.webp'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { BookOpen, CalendarX, Check, Clock, MapPin, Plus, Search, User, X } from 'lucide-react'
 import { useState } from 'react'
@@ -347,7 +348,7 @@ export function RegistrationPage() {
     const error = toApiError(registration.error)
     return (
       <>
-        <PageHeader title="Course registration" />
+        <PageHeader image={studentsLaptop} imageClassName="object-[center_30%]" title="Course registration" />
         <Card>
           {error.status === 404 ? (
             <EmptyState icon={CalendarX} title="Registration is not open" description={error.message} />
@@ -370,7 +371,7 @@ export function RegistrationPage() {
   const view = registration.data
   return (
     <>
-      <PageHeader title="Course registration" description={view.semester.name} />
+      <PageHeader image={studentsLaptop} imageClassName="object-[center_30%]" title="Course registration" description={view.semester.name} />
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_24rem]">
         <div className="order-2 lg:order-1">
           <CataloguePanel canAdd={view.permissions.canAdd} />

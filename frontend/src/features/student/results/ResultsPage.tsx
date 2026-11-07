@@ -1,3 +1,4 @@
+import graduatesSunset from '@/assets/photos/graduates-sunset.webp'
 import { useQuery } from '@tanstack/react-query'
 import { GraduationCap } from 'lucide-react'
 import { errorMessage } from '@/api/errors'
@@ -73,7 +74,7 @@ export function ResultsPage() {
   if (query.error) {
     return (
       <>
-        <PageHeader title="My results" />
+        <PageHeader image={graduatesSunset} imageClassName="object-[center_55%]" title="My results" />
         <Alert tone="error">{errorMessage(query.error)}</Alert>
       </>
     )
@@ -89,7 +90,7 @@ export function ResultsPage() {
   const record = query.data
   return (
     <>
-      <PageHeader title="My results" description={`${record.student.studentNumber} · ${record.student.programName}`} />
+      <PageHeader image={graduatesSunset} imageClassName="object-[center_55%]" title="My results" description={`${record.student.studentNumber} · ${record.student.programName}`} />
       {record.semesters.length === 0 ? (
         <Card>
           <EmptyState

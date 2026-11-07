@@ -1,3 +1,4 @@
+import studyTogether from '@/assets/photos/study-together.webp'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Megaphone } from 'lucide-react'
@@ -148,6 +149,8 @@ export function AnnouncementsPage() {
   return (
     <>
       <PageHeader
+        image={studyTogether}
+        imageClassName="object-[center_35%]"
         title="Announcements"
         description={isRegistrar ? 'Messages to the students of any course.' : isLecturer ? 'Messages to the students in your courses.' : 'Messages from the lecturers of your courses.'}
         actions={

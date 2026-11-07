@@ -1,3 +1,4 @@
+import lectureHall from '@/assets/photos/lecture-hall.webp'
 import { useQuery } from '@tanstack/react-query'
 import { CalendarDays } from 'lucide-react'
 import { Link } from 'react-router'
@@ -31,7 +32,7 @@ export function TimetablePage() {
     const notOpen = toApiError(query.error).status === 404
     return (
       <>
-        <PageHeader title="My timetable" />
+        <PageHeader image={lectureHall} imageClassName="object-[center_40%]" title="My timetable" />
         {notOpen ? (
           <Card>
             <EmptyState icon={CalendarDays} title="No current semester" description={errorMessage(query.error)} />
@@ -60,6 +61,8 @@ export function TimetablePage() {
   return (
     <>
       <PageHeader
+        image={lectureHall}
+        imageClassName="object-[center_40%]"
         title="My timetable"
         description={semester.name}
         actions={status ? <Badge tone={REGISTRATION_STATUS_TONES[status]}>{REGISTRATION_STATUS_LABELS[status]}</Badge> : undefined}

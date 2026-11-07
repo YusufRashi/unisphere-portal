@@ -1,3 +1,4 @@
+import campusAerial from '@/assets/photos/campus-aerial.webp'
 import { LogOut, Menu, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router'
@@ -117,6 +118,11 @@ export function AppLayout() {
 
   return (
     <div className="min-h-dvh">
+      {/* The campus behind everything, faded into the page colour so it never competes with the content. */}
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 print:hidden">
+        <img src={campusAerial} alt="" className="size-full object-cover" />
+        <div className="absolute inset-0 bg-canvas/80" />
+      </div>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-surface focus:px-3 focus:py-2">
         Skip to content
       </a>

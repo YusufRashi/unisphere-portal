@@ -1,3 +1,4 @@
+import lectureHallTalk from '@/assets/photos/lecture-hall-talk.webp'
 import { useQuery } from '@tanstack/react-query'
 import { BookOpen } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
@@ -28,6 +29,8 @@ export function MyCoursesPage() {
   return (
     <>
       <PageHeader
+        image={lectureHallTalk}
+        imageClassName="object-[center_35%]"
         title="My courses"
         description="Class lists, marks entry and statistics for the courses you teach."
         actions={

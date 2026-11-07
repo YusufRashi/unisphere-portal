@@ -80,9 +80,10 @@ public record UniSphereProperties(
      * @param reminderCron              when the reminder job runs (Spring cron, UTC); "-" disables it
      * @param registrationDeadlineLead  how long before registration closes students without a submitted registration are reminded
      * @param feeReminderInterval       how often students with an outstanding balance are reminded
+     * @param retention                 notifications older than this are deleted, read or not
      */
     public record Notifications(@NotBlank String reminderCron, @NotNull Duration registrationDeadlineLead,
-                                @NotNull Duration feeReminderInterval) {
+                                @NotNull Duration feeReminderInterval, @NotNull Duration retention) {
     }
 
     public record BootstrapAdmin(String email, String password, String firstName, String lastName) {

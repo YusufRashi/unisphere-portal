@@ -30,7 +30,7 @@ public final class TestFixtures {
                 new UniSphereProperties.Mail(false, null, 587, null, null, UniSphereProperties.MailSecurity.STARTTLS, null),
                 new UniSphereProperties.BootstrapAdmin(null, null, null, null),
                 new UniSphereProperties.Finance("KES"),
-                new UniSphereProperties.Notifications("-", Duration.ofHours(48), Duration.ofDays(14)));
+                new UniSphereProperties.Notifications("-", Duration.ofHours(48), Duration.ofDays(14), Duration.ofDays(180)));
     }
 
     /** An active user with the given id and password hash, as if loaded from the database. */

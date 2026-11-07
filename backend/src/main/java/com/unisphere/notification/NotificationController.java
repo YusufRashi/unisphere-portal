@@ -13,15 +13,20 @@ import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 /** The user's own notifications, and course announcements. Every signed-in user has an inbox. */
 @Tag(name = "Notifications & announcements")
@@ -33,6 +38,7 @@ public class NotificationController {
 
     private final NotificationService notifications;
     private final AnnouncementService announcements;
+    private final NotificationStream stream;
 
     // ---- Notifications ----
 
@@ -48,6 +54,16 @@ public class NotificationController {
     @GetMapping("/api/notifications/unread-count")
     public UnreadCount unreadCount() {
         return new UnreadCount(notifications.unreadCount());
+    }
+
+    @Operation(summary = "Live unread count (Server-Sent Events): an \"unread\" event now and on every change, until the access token expires")
+    @GetMapping(path = "/api/notifications/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public ResponseEntity<SseEmitter> stream(@AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noStore())
+                // Tells Nginx to pass events on as they come instead of buffering the response.
+                .header("X-Accel-Buffering", "no")
+                .body(stream.open(Long.valueOf(jwt.getSubject()), jwt.getExpiresAt()));
     }
 
     @PostMapping("/api/notifications/{id}/read")

@@ -5,6 +5,7 @@ import com.unisphere.common.security.CurrentUser;
 import com.unisphere.common.web.PageResponse;
 import com.unisphere.notification.dto.NotificationDtos.NotificationView;
 import java.time.Clock;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ public class NotificationService {
 
     private final NotificationRepository notifications;
     private final Clock clock;
+    private final NotificationStream stream;
 
     @Transactional(readOnly = true)
     public PageResponse<NotificationView> mine(boolean unreadOnly, Pageable pageable) {
@@ -40,11 +42,14 @@ public class NotificationService {
             throw ApiException.notFound("Notification", id);
         }
         notifications.markRead(id, userId, clock.instant());
+        stream.changed(List.of(userId));
     }
 
     @Transactional
     public void markAllRead() {
-        notifications.markAllRead(CurrentUser.id(), clock.instant());
+        Long userId = CurrentUser.id();
+        notifications.markAllRead(userId, clock.instant());
+        stream.changed(List.of(userId));
     }
 
     private static NotificationView view(Notification n) {

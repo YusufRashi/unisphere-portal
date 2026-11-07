@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -25,10 +26,12 @@ public class NotificationWriter {
             select r.user_id, cast(:type as varchar), cast(:title as varchar), cast(:message as text), cast(:link as varchar),
                    cast(:dedupeKey as varchar), cast(:now as timestamptz)
             from (%s) r
-            on conflict (user_id, dedupe_key) where dedupe_key is not null do nothing""";
+            on conflict (user_id, dedupe_key) where dedupe_key is not null do nothing
+            returning user_id""";
 
     private final JdbcClient jdbc;
     private final Clock clock;
+    private final NotificationStream stream;
 
     /** @param link a path inside the web app such as {@code /student/results}, or null */
     public record Message(NotificationType type, String title, String message, String link) {
@@ -58,7 +61,9 @@ public class NotificationWriter {
         all.put("link", message.link());
         all.put("dedupeKey", dedupeKey);
         all.put("now", OffsetDateTime.ofInstant(clock.instant(), ZoneOffset.UTC));
-        return jdbc.sql(INSERT.formatted(recipients)).params(all).update();
+        List<Long> recipientsNotified = jdbc.sql(INSERT.formatted(recipients)).params(all).query(Long.class).list();
+        stream.changed(recipientsNotified);
+        return recipientsNotified.size();
     }
 
     static String abbreviate(String text, int max) {

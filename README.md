@@ -1,5 +1,12 @@
 # UniSphere — University Student Management & Academic Portal
 
+[![CI](https://github.com/YusufRashi/unisphere-portal/actions/workflows/ci.yml/badge.svg)](https://github.com/YusufRashi/unisphere-portal/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/YusufRashi/unisphere-portal?sort=semver)](https://github.com/YusufRashi/unisphere-portal/releases)
+![Java 25](https://img.shields.io/badge/Java-25-blue)
+![Spring Boot 4.1](https://img.shields.io/badge/Spring_Boot-4.1-brightgreen)
+![React 19](https://img.shields.io/badge/React-19-61dafb)
+[![MIT licence](https://img.shields.io/badge/licence-MIT-lightgrey)](LICENSE)
+
 A full-stack university information system: course registration, results and GPA, transcripts, fees and
 notifications, with separate workspaces for students, lecturers, the registrar and finance.
 

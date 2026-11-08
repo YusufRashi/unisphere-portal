@@ -19,6 +19,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -597,7 +598,9 @@ public class DemoDataSeeder implements ApplicationRunner {
             params.put("status", status);
             params.put("submitted", submitted == null ? null : utc(submitted));
             params.put("reviewer", reviewed ? registrar : null);
-            params.put("reviewedAt", reviewed ? utc(submitted.plus(Duration.ofHours(6))) : null);
+            params.put("reviewedAt", reviewed
+                    ? utc(Objects.requireNonNull(submitted, "A reviewed registration must have been submitted").plus(Duration.ofHours(6)))
+                    : null);
             params.put("reason", reason);
             params.put("created", utc(added));
             long id = insertId("""
